@@ -211,14 +211,14 @@ isOneToOne: false
                   ]
                 },"projects": {
                   Row: {
-                    "archived_at": string | null,"area": string | null,"created_at": string,"description": string | null,"id": string,"name": string,"owner_id": string,"responsible": string | null,"start_date": string | null,"status": Database["public"]['Enums']["project_status"],"updated_at": string
+                    "archived_at": string | null,"area": string | null,"created_at": string,"description": string | null,"id": string,"name": string,"notepad": string,"owner_id": string,"responsible": string | null,"start_date": string | null,"status": Database["public"]['Enums']["project_status"],"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "archived_at"?: string | null,"area"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"name": string,"owner_id"?: string,"responsible"?: string | null,"start_date"?: string | null,"status"?: Database["public"]['Enums']["project_status"],"updated_at"?: string
+                    "archived_at"?: string | null,"area"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"name": string,"notepad"?: string,"owner_id"?: string,"responsible"?: string | null,"start_date"?: string | null,"status"?: Database["public"]['Enums']["project_status"],"updated_at"?: string
                   }
                   Update: {
-                    "archived_at"?: string | null,"area"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"name"?: string,"owner_id"?: string,"responsible"?: string | null,"start_date"?: string | null,"status"?: Database["public"]['Enums']["project_status"],"updated_at"?: string
+                    "archived_at"?: string | null,"area"?: string | null,"created_at"?: string,"description"?: string | null,"id"?: string,"name"?: string,"notepad"?: string,"owner_id"?: string,"responsible"?: string | null,"start_date"?: string | null,"status"?: Database["public"]['Enums']["project_status"],"updated_at"?: string
                   }
                   Relationships: [
                     

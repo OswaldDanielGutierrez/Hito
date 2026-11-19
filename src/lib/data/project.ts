@@ -15,6 +15,7 @@ export interface ProjectInfo {
   startDate: string | null;
   updatedAt: string;
   archivedAt: string | null;
+  notepad: string;
 }
 
 export interface PhaseData {
@@ -95,6 +96,7 @@ export const getProjectData = cache(async (id: string): Promise<ProjectData | nu
       startDate: p.start_date,
       updatedAt: p.updated_at,
       archivedAt: p.archived_at,
+      notepad: p.notepad,
     },
     phases: (phases.data ?? []).map((ph) => ({
       id: ph.id,

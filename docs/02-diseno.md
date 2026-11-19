@@ -120,7 +120,7 @@ Estado vacío (sin proyectos): solo la tarjeta punteada, con "Aún no tienes pro
 - Ruta: "Proyectos / {nombre}" (13 muted, "Proyectos" es enlace).
 - Fila: ícono de 44 px (radio 12, fondo #E4F5EB) + título 24/800 + descripción 13 muted + StatusLabel. A la derecha: botones "Cambiar estado" (secundario) y "Editar proyecto" (primario).
 - Datos en fila, separación 36 (label 12 muted + valor 14/600): Fase actual ("QA · 4 de 6"), Fin de fase estimado, Entrega final estimada ("20/11/2026 · en 2 días", con el color de la regla), Responsable, y Avance ("Avance · 10 de 17 tareas" con barra de 200 px).
-- Pestañas: **Resumen**, **Fases y tareas** (con contador), **Recursos** (con contador), **Historial**. Activa: 700 con subrayado de 2 px #007A3D. Separación 28.
+- Pestañas: **Resumen**, **Fases y tareas** (con contador), **Recursos** (con contador), **Notas**, **Historial**. Activa: 700 con subrayado de 2 px #007A3D. Separación 28.
 
 **Cuerpo** (relleno 24 × 32, separación 22):
 
