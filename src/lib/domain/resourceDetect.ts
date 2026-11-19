@@ -65,3 +65,23 @@ export function suggestResourceName(rawUrl: string): string {
   if (!readable || looksLikeId || readable.length > 80) return detected.origin;
   return `${detected.origin} · ${readable}`;
 }
+
+const CODE_EXTENSIONS = new Set(["js", "jsx", "ts", "tsx", "py", "sql", "json", "yml", "yaml", "sh", "ps1", "zip", "html", "css"]);
+
+/** Los archivos subidos son `code` si son código o exportaciones; el resto, `document`. */
+export function detectFileKind(fileName: string): ResourceKind {
+  const extension = fileName.toLowerCase().split(".").pop() ?? "";
+  return fileName.includes(".") && CODE_EXTENSIONS.has(extension) ? "code" : "document";
+}
+
+/** Nombre seguro para la ruta de Storage: sin acentos, espacios ni caracteres raros. */
+export function sanitizeFileName(fileName: string): string {
+  const cleaned = fileName
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^[-.]+/, "")
+    .slice(-100);
+  return cleaned || "archivo";
+}

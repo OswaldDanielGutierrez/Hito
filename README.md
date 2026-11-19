@@ -4,7 +4,7 @@ Gestor de proyectos personal para proyectos de automatización e IA. Cada proyec
 
 > "hito" es un nombre provisional. Se cambia en un solo lugar: `src/config/app.ts` (`APP_NAME`).
 
-**Estado:** en construcción. Hechos M0 a M4 y M6; pendientes M5 (recursos), M7 (alertas) y M8 (pulido). La app es **100% responsive**: se usa en celular, tableta y monitores grandes.
+**Estado:** en construcción. Hechos M0 a M6; pendientes M7 (alertas) y M8 (pulido). La app es **100% responsive**: se usa en celular, tableta y monitores grandes.
 
 ## Por dónde empezar
 
@@ -58,7 +58,7 @@ Quedan para v2: Mis tareas, Calendario, alertas por Teams, subtareas, cronograma
 | M2 ✅ | Lógica de dominio con tests |
 | M3 ✅ | Pantalla Inicio |
 | M4 ✅ | Proyecto: Resumen y Fases y tareas |
-| M5 | Recursos, notas y contactos |
+| M5 ✅ | Recursos, notas y contactos |
 | M6 ✅ | Registrar proyecto |
 | M7 | Historial y alertas |
 | M8 | Pulido: búsqueda, PWA, accesibilidad |

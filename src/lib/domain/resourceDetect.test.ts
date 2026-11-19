@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectResource, normalizeUrl, suggestResourceName } from "./resourceDetect";
+import { detectFileKind, detectResource, normalizeUrl, sanitizeFileName, suggestResourceName } from "./resourceDetect";
 
 describe("detectResource", () => {
   it.each([
@@ -64,5 +64,31 @@ describe("suggestResourceName", () => {
 
   it("devuelve vacío si no es un enlace", () => {
     expect(suggestResourceName("hola")).toBe("");
+  });
+});
+
+describe("detectFileKind", () => {
+  it("clasifica archivos por extensión", () => {
+    expect(detectFileKind("plan.pdf")).toBe("document");
+    expect(detectFileKind("Informe FINAL.DOCX")).toBe("document");
+    expect(detectFileKind("flujo.json")).toBe("code");
+    expect(detectFileKind("script.PY")).toBe("code");
+    expect(detectFileKind("sin-extension")).toBe("document");
+    expect(detectFileKind("json")).toBe("document");
+  });
+});
+
+describe("sanitizeFileName", () => {
+  it("quita acentos, espacios y caracteres raros", () => {
+    expect(sanitizeFileName("Presentación final (v2).pptx")).toBe("Presentacion-final-v2-.pptx");
+    expect(sanitizeFileName("../../etc/passwd")).toBe("etc-passwd");
+    expect(sanitizeFileName("***")).toBe("archivo");
+  });
+
+  it("limita el largo conservando la extensión", () => {
+    const long = "a".repeat(300) + ".pdf";
+    const result = sanitizeFileName(long);
+    expect(result.length).toBeLessThanOrEqual(100);
+    expect(result.endsWith(".pdf")).toBe(true);
   });
 });

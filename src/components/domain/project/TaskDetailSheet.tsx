@@ -1,8 +1,8 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
 import { useState, useTransition } from "react";
 import { updateTask } from "@/app/(app)/proyectos/[id]/actions";
+import { setTaskResources } from "@/app/(app)/proyectos/[id]/recursos/actions";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import type { ResourceData, TaskData } from "@/lib/data/project";
@@ -29,7 +29,9 @@ export function TaskDetailSheet({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const linked = resources.filter((r) => task.linkedResourceIds.includes(r.id));
+  const [linkedIds, setLinkedIds] = useState<string[]>(task.linkedResourceIds);
+  const linksChanged =
+    linkedIds.length !== task.linkedResourceIds.length || linkedIds.some((id) => !task.linkedResourceIds.includes(id));
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,8 +46,12 @@ export function TaskDetailSheet({
         estimatedHours: hours === "" ? null : Number(hours),
         blockedReason: blockedReason || null,
       });
-      if (result.ok) onClose();
-      else setError(result.error);
+      if (!result.ok) return setError(result.error);
+      if (linksChanged) {
+        const linked = await setTaskResources({ taskId: task.id, resourceIds: linkedIds });
+        if (!linked.ok) return setError(linked.error);
+      }
+      onClose();
     });
   }
 
@@ -140,31 +146,30 @@ export function TaskDetailSheet({
           </div>
         )}
 
-        <div>
-          <h3 className={labelClass}>Recursos vinculados</h3>
-          {linked.length === 0 ? (
-            <p className="text-sm text-muted">Esta tarea no tiene recursos vinculados.</p>
+        <fieldset>
+          <legend className={labelClass}>Recursos vinculados</legend>
+          {resources.length === 0 ? (
+            <p className="text-sm text-muted">El proyecto aún no tiene recursos. Agrégalos en la pestaña Recursos.</p>
           ) : (
-            <ul className="flex flex-col gap-1.5">
-              {linked.map((r) => (
-                <li key={r.id} className="flex items-center justify-between gap-2 text-sm">
-                  <span className="truncate font-semibold">{r.name}</span>
-                  {r.url && (
-                    <a
-                      href={r.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${r.name} (abre en una pestaña nueva)`}
-                      className="text-muted hover:text-ink"
-                    >
-                      <ExternalLink size={16} strokeWidth={1.9} aria-hidden />
-                    </a>
-                  )}
+            <ul className="flex max-h-48 flex-col gap-1 overflow-y-auto rounded-input border border-line p-1.5">
+              {resources.map((r) => (
+                <li key={r.id}>
+                  <label className="flex min-h-10 cursor-pointer items-center gap-2.5 rounded-input px-2 text-sm hover:bg-page">
+                    <input
+                      type="checkbox"
+                      checked={linkedIds.includes(r.id)}
+                      onChange={(e) =>
+                        setLinkedIds((ids) => (e.target.checked ? [...ids, r.id] : ids.filter((id) => id !== r.id)))
+                      }
+                      className="size-4 shrink-0 accent-green-700"
+                    />
+                    <span className="min-w-0 break-words">{r.name}</span>
+                  </label>
                 </li>
               ))}
             </ul>
           )}
-        </div>
+        </fieldset>
 
         {error && (
           <p role="alert" className="text-sm font-medium text-danger">

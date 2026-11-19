@@ -47,6 +47,7 @@ export interface ResourceData {
   kind: Enums["resource_kind"];
   name: string;
   url: string | null;
+  storagePath: string | null;
   source: string | null;
   pinned: boolean;
   phaseId: string | null;
@@ -123,10 +124,38 @@ export const getProjectData = cache(async (id: string): Promise<ProjectData | nu
       kind: r.kind,
       name: r.name,
       url: r.url,
+      storagePath: r.storage_path,
       source: r.source,
       pinned: r.pinned,
       phaseId: r.phase_id,
       createdAt: r.created_at,
     })),
   };
+});
+
+export interface NoteData {
+  id: string;
+  body: string;
+}
+
+export interface ContactData {
+  id: string;
+  name: string;
+  role: string | null;
+  detail: string | null;
+}
+
+/** Notas y contactos del proyecto (solo los necesita la pestaña Recursos). */
+export const getProjectExtras = cache(async (id: string): Promise<{ notes: NoteData[]; contacts: ContactData[] }> => {
+  if (!uuid.safeParse(id).success) return { notes: [], contacts: [] };
+
+  const supabase = await createClient();
+  const [notes, contacts] = await Promise.all([
+    supabase.from("project_notes").select("id, body").eq("project_id", id).order("position").order("created_at"),
+    supabase.from("project_contacts").select("id, name, role, detail").eq("project_id", id).order("created_at"),
+  ]);
+  const error = notes.error ?? contacts.error;
+  if (error) throw new Error(error.message);
+
+  return { notes: notes.data ?? [], contacts: contacts.data ?? [] };
 });

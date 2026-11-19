@@ -269,8 +269,17 @@ export async function deleteProject(input: { projectId: string; confirmName: str
     if (!project) return fail("No se encontró el proyecto");
     if (parsed.data.confirmName.trim() !== project.name) return fail("El nombre no coincide. No se eliminó nada.");
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { data: files } = user ? await supabase.storage.from("project-files").list(`${user.id}/${project.id}`) : { data: null };
+
     const { error } = await supabase.from("projects").delete().eq("id", project.id);
     if (error) return fail(error.message);
+
+    if (user && files && files.length > 0) {
+      await supabase.storage.from("project-files").remove(files.map((f) => `${user.id}/${project.id}/${f.name}`));
+    }
     return { ok: true };
   });
   if (!result.ok) return result;

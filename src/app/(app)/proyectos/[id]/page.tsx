@@ -177,9 +177,16 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
 
         <div className="flex flex-col gap-[22px]">
           <section aria-labelledby="fijados-titulo" className={`${card} min-w-0 p-4 sm:p-5`}>
-            <h2 id="fijados-titulo" className="mb-3 text-base font-extrabold">
-              Recursos fijados
-            </h2>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h2 id="fijados-titulo" className="text-base font-extrabold">
+                Recursos fijados
+              </h2>
+              {resources.length > 0 && (
+                <Link href={`/proyectos/${project.id}/recursos`} className="text-[13px] font-bold text-green-700 hover:underline">
+                  Ver los {resources.length}
+                </Link>
+              )}
+            </div>
             {pinned.length === 0 ? (
               <p className="text-sm text-muted">Aún no hay recursos fijados.</p>
             ) : (

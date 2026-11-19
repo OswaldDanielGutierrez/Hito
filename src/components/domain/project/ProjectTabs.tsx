@@ -17,7 +17,7 @@ export function ProjectTabs({ projectId, taskCount, resourceCount }: { projectId
   const tabs: Tab[] = [
     { href: base, label: "Resumen", enabled: true },
     { href: `${base}/fases`, label: "Fases y tareas", count: taskCount, enabled: true },
-    { href: `${base}/recursos`, label: "Recursos", count: resourceCount, enabled: false },
+    { href: `${base}/recursos`, label: "Recursos", count: resourceCount, enabled: true },
     { href: `${base}/historial`, label: "Historial", enabled: false },
   ];
 
