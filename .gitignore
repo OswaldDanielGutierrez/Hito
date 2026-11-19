@@ -1,0 +1,25 @@
+# Secretos
+.env
+.env.local
+.env.*.local
+
+# Dependencias y builds
+node_modules/
+.next/
+out/
+dist/
+coverage/
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# Vercel
+.vercel/
+
+# Respaldos, herramientas locales y sistema
+_archivo/
+.claude/
+.DS_Store
+Thumbs.db
+*.log
