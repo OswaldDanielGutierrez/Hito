@@ -8,8 +8,8 @@ const soon = "hidden cursor-not-allowed text-sm font-medium text-green-200 opaci
 export function NavLinks() {
   const pathname = usePathname();
   const items = [
-    { href: "/", label: "Proyectos", active: pathname === "/" || pathname.startsWith("/proyectos") },
-    { href: "/tareas", label: "Mis tareas", active: pathname.startsWith("/tareas") },
+    { href: "/", label: "Proyectos", short: "Proyectos", active: pathname === "/" || pathname.startsWith("/proyectos") },
+    { href: "/tareas", label: "Mis tareas", short: "Tareas", active: pathname.startsWith("/tareas") },
   ];
 
   return (
@@ -19,13 +19,19 @@ export function NavLinks() {
           key={item.href}
           href={item.href}
           aria-current={item.active ? "page" : undefined}
-          className={`flex h-full items-center border-b-2 text-sm transition-colors duration-[120ms] ease-out ${
+          aria-label={item.label}
+          className={`flex h-full items-center border-b-2 text-sm whitespace-nowrap transition-colors duration-[120ms] ease-out ${
             item.active
               ? "border-green-300 font-semibold text-white"
               : "border-transparent font-medium text-green-200 hover:text-white"
           }`}
         >
-          {item.label}
+          <span aria-hidden className="max-[359px]:hidden">
+            {item.label}
+          </span>
+          <span aria-hidden className="hidden max-[359px]:inline">
+            {item.short}
+          </span>
         </Link>
       ))}
       <span aria-disabled="true" title="Próximamente" className={soon}>

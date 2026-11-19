@@ -467,3 +467,27 @@ export async function deletePhase(input: { phaseId: string }): Promise<ActionRes
     return { ok: true };
   });
 }
+
+export async function deleteTask(input: { taskId: string }): Promise<ActionResult> {
+  const parsed = z.object({ taskId: id }).safeParse(input);
+  if (!parsed.success) return fail(firstIssue(parsed.error));
+
+  return run(async () => {
+    const supabase = await createClient();
+    const { data: task } = await supabase.from("tasks").select("id, title, project_id").eq("id", parsed.data.taskId).maybeSingle();
+    if (!task) return fail("No se encontró la tarea");
+
+    const { error } = await supabase.from("tasks").delete().eq("id", task.id);
+    if (error) return fail(error.message);
+
+    await logActivity(supabase, {
+      projectId: task.project_id,
+      kind: "task",
+      entityType: "task",
+      entityId: task.id,
+      summary: "Tarea eliminada",
+      oldValue: task.title,
+    });
+    return { ok: true };
+  });
+}

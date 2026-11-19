@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateTask } from "@/app/(app)/proyectos/[id]/actions";
+import { deleteTask, updateTask } from "@/app/(app)/proyectos/[id]/actions";
 import { setTaskResources } from "@/app/(app)/proyectos/[id]/recursos/actions";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
@@ -27,6 +27,7 @@ export function TaskDetailSheet({
   const [dueDate, setDueDate] = useState(task.dueDate ?? "");
   const [hours, setHours] = useState(task.estimatedHours === null ? "" : String(task.estimatedHours));
   const [blockedReason, setBlockedReason] = useState(task.blockedReason ?? "");
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -179,7 +180,34 @@ export function TaskDetailSheet({
           </p>
         )}
 
-        <div className="flex justify-end gap-3 border-t border-line pt-4">
+        <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
+          {confirmDelete ? (
+            <span className="mr-auto flex items-center gap-2">
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() =>
+                  startTransition(async () => {
+                    const result = await deleteTask({ taskId: task.id });
+                    if (result.ok) {
+                      toast("Tarea eliminada");
+                      onClose();
+                    } else setError(result.error);
+                  })
+                }
+                className="h-[38px] rounded-button bg-danger px-3 text-sm font-semibold text-white disabled:opacity-60"
+              >
+                Confirmar eliminación
+              </button>
+              <button type="button" onClick={() => setConfirmDelete(false)} className="text-sm font-semibold text-muted hover:text-ink">
+                No
+              </button>
+            </span>
+          ) : (
+            <button type="button" onClick={() => setConfirmDelete(true)} className="mr-auto py-2 text-sm font-bold text-danger hover:underline">
+              Eliminar tarea
+            </button>
+          )}
           <Button type="button" variant="text" onClick={onClose}>
             Cancelar
           </Button>
