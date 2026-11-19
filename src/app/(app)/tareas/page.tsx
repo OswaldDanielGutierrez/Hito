@@ -26,7 +26,7 @@ export default function MyTasksPage() {
 
 function MyTasksSkeleton() {
   return (
-    <main aria-busy="true" aria-label="Cargando tareas" className="mx-auto flex w-full max-w-[1376px] flex-col gap-4 px-4 py-5 sm:px-8 sm:py-7">
+    <main id="contenido" aria-busy="true" aria-label="Cargando tareas" className="mx-auto flex w-full max-w-[1376px] flex-col gap-4 px-4 py-5 sm:px-8 sm:py-7">
       <div className="h-9 w-56 animate-pulse rounded-card bg-surface" />
       {[0, 1, 2].map((i) => (
         <div key={i} className="h-32 animate-pulse rounded-card bg-surface" />
@@ -42,7 +42,7 @@ async function MyTasksContent() {
   const groups = groupMyTasks(tasks, today).filter((g) => g.tasks.length > 0);
 
   return (
-    <main className="mx-auto flex w-full max-w-[1376px] flex-col gap-5 px-4 py-5 sm:gap-[22px] sm:px-8 sm:py-7">
+    <main id="contenido" className="mx-auto flex w-full max-w-[1376px] flex-col gap-5 px-4 py-5 sm:gap-[22px] sm:px-8 sm:py-7">
       <div>
         <h1 className="text-2xl leading-8 font-extrabold tracking-[-0.02em] sm:text-[30px] sm:leading-[38px]">Mis tareas</h1>
         <p className="mt-1 text-sm text-muted">

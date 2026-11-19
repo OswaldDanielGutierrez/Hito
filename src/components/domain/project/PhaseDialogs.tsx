@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { addPhase, updatePhaseDate } from "@/app/(app)/proyectos/[id]/actions";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import { toast } from "@/components/ui/Toaster";
 import type { PhaseData } from "@/lib/data/project";
 import { addDays, diffDays, formatDate } from "@/lib/domain/dates";
 import { fieldClass, labelClass } from "@/lib/ui-colors";
@@ -31,7 +32,10 @@ export function EditPhaseDateDialog({
     if (!date) return setError("Elige una fecha");
     startTransition(async () => {
       const result = await updatePhaseDate({ phaseId: phase.id, date, reason, shiftFollowing: shift && delta !== 0 });
-      if (result.ok) onClose();
+      if (result.ok) {
+        toast("Fecha actualizada");
+        onClose();
+      }
       else setError(result.error);
     });
   }
@@ -117,7 +121,10 @@ export function NewPhaseDialog({
     e.preventDefault();
     startTransition(async () => {
       const result = await addPhase({ projectId, name, date });
-      if (result.ok) onClose();
+      if (result.ok) {
+        toast("Fase agregada");
+        onClose();
+      }
       else setError(result.error);
     });
   }

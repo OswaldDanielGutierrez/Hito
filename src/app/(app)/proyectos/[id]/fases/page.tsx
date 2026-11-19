@@ -21,7 +21,7 @@ async function PhasesContent({ params }: { params: Promise<{ id: string }> }) {
   if (!data) notFound();
 
   return (
-    <main className="mx-auto w-full max-w-[1376px] px-4 sm:px-8 py-6">
+    <main id="contenido" className="mx-auto w-full max-w-[1376px] px-4 sm:px-8 py-6">
       <PhasesBoard
         projectId={data.project.id}
         phases={data.phases}

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { addLinkResource, deleteResource, updateResource } from "@/app/(app)/proyectos/[id]/recursos/actions";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import { toast } from "@/components/ui/Toaster";
 import type { ResourceData } from "@/lib/data/project";
 import { suggestResourceName } from "@/lib/domain/resourceDetect";
 import { fieldClass, labelClass } from "@/lib/ui-colors";
@@ -57,13 +58,19 @@ export function AddResourceDialog({
     startTransition(async () => {
       if (mode === "link") {
         const result = await addLinkResource({ projectId, url, name, phaseId: phaseId || null });
-        if (result.ok) onClose();
+        if (result.ok) {
+          toast("Enlace agregado");
+          onClose();
+        }
         else setError(result.error);
         return;
       }
       if (!file) return setError("Elige un archivo");
       const result = await uploadProjectFile({ file, projectId, userId, phaseId: phaseId || null });
-      if (result.ok) onClose();
+      if (result.ok) {
+        toast("Archivo subido");
+        onClose();
+      }
       else setError(result.error);
     });
   }
@@ -176,7 +183,10 @@ export function EditResourceDialog({
         url: isFile ? undefined : url,
         phaseId: phaseId || null,
       });
-      if (result.ok) onClose();
+      if (result.ok) {
+        toast("Recurso actualizado");
+        onClose();
+      }
       else setError(result.error);
     });
   }
@@ -248,7 +258,10 @@ export function DeleteResourceDialog({ resource, onClose }: { resource: Resource
           onClick={() =>
             startTransition(async () => {
               const result = await deleteResource({ resourceId: resource.id });
-              if (result.ok) onClose();
+              if (result.ok) {
+                toast("Recurso eliminado");
+                onClose();
+              }
               else setError(result.error);
             })
           }

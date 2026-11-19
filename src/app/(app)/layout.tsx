@@ -53,6 +53,12 @@ async function AccountTopBar() {
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <>
+      <a
+        href="#contenido"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[70] focus:rounded-button focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:shadow-card-hover"
+      >
+        Saltar al contenido
+      </a>
       <Suspense fallback={<TopBarSkeleton />}>
         <AccountTopBar />
       </Suspense>

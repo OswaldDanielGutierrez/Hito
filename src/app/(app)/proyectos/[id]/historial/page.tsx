@@ -20,7 +20,7 @@ async function HistoryContent({ params }: { params: Promise<{ id: string }> }) {
   if (!data) notFound();
 
   return (
-    <main className="mx-auto w-full max-w-[1376px] px-4 py-5 sm:px-8 sm:py-6">
+    <main id="contenido" className="mx-auto w-full max-w-[1376px] px-4 py-5 sm:px-8 sm:py-6">
       <HistoryView
         projectId={data.project.id}
         entries={history.entries}

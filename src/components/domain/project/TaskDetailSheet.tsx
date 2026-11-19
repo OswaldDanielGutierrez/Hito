@@ -5,6 +5,7 @@ import { updateTask } from "@/app/(app)/proyectos/[id]/actions";
 import { setTaskResources } from "@/app/(app)/proyectos/[id]/recursos/actions";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import { toast } from "@/components/ui/Toaster";
 import type { ResourceData, TaskData } from "@/lib/data/project";
 import type { TaskState } from "@/lib/domain/types";
 import { priorityLabel, taskStateLabel } from "@/lib/labels";
@@ -51,6 +52,7 @@ export function TaskDetailSheet({
         const linked = await setTaskResources({ taskId: task.id, resourceIds: linkedIds });
         if (!linked.ok) return setError(linked.error);
       }
+      toast("Tarea guardada");
       onClose();
     });
   }

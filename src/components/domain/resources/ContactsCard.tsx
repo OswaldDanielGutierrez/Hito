@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { deleteContact, saveContact } from "@/app/(app)/proyectos/[id]/recursos/actions";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import { toast } from "@/components/ui/Toaster";
 import type { ContactData } from "@/lib/data/project";
 import { fieldClass, labelClass } from "@/lib/ui-colors";
 
@@ -78,7 +79,10 @@ function ContactDialog({ projectId, contact, onClose }: { projectId: string; con
     e.preventDefault();
     startTransition(async () => {
       const result = await saveContact({ projectId, contactId: contact?.id, name, role, detail });
-      if (result.ok) onClose();
+      if (result.ok) {
+        toast(contact ? "Contacto actualizado" : "Contacto agregado");
+        onClose();
+      }
       else setError(result.error);
     });
   }

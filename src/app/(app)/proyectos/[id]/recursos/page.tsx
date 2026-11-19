@@ -23,7 +23,7 @@ async function ResourcesContent({ params }: { params: Promise<{ id: string }> })
   if (!data || !user) notFound();
 
   return (
-    <main className="mx-auto w-full max-w-[1376px] px-4 py-5 sm:px-8 sm:py-6">
+    <main id="contenido" className="mx-auto w-full max-w-[1376px] px-4 py-5 sm:px-8 sm:py-6">
       <ResourcesBoard
         projectId={data.project.id}
         userId={user.id}

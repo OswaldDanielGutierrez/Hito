@@ -65,6 +65,19 @@ Quedan para v2: Mis tareas, Calendario, alertas por Teams, subtareas, cronograma
 
 Detalle y criterios de "listo" en [docs/04-plan-de-construccion.md](docs/04-plan-de-construccion.md).
 
+## Activar el correo de alertas
+
+Las alertas dentro de la app ya funcionan solas (`pg_cron` ejecuta `generate_alerts()` todos los días a las 7:00 de Bogotá). El **correo** está construido pero apagado hasta que tengas Resend:
+
+1. Crea una cuenta en https://resend.com, genera una API key y verifica el dominio o correo remitente.
+2. Guarda los secretos de la función: `npx supabase secrets set RESEND_API_KEY=... ALERTS_FROM_EMAIL=...` (opcional `SITE_URL`).
+3. En el editor SQL de Supabase guarda la conexión en Vault (nunca en el repositorio):
+   ```sql
+   select vault.create_secret('https://nqndzntboclwfzdotqiu.supabase.co', 'project_url');
+   select vault.create_secret('<clave service_role legacy (eyJ...)>', 'service_role_key');
+   ```
+4. Listo: a las 7:10 de Bogotá `dispatch_email_alerts()` llama a la función `send-alerts`, que envía los correos pendientes y los marca como enviados.
+
 ## Reglas que no se negocian
 
 - Nunca subir secretos. `.env.local` está en `.gitignore`.

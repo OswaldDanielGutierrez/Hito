@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { APP_NAME } from "@/config/app";
 import { Toaster } from "@/components/ui/Toaster";
@@ -13,6 +13,11 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: APP_NAME,
   description: "Gestor de proyectos personal de automatización e IA",
+  appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "default" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#022C17",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

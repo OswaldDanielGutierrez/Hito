@@ -34,7 +34,7 @@ export async function HomeContent({ filter }: { filter: StatusFilter }) {
   const name = firstName(settingsResult.data?.display_name, userResult.data.user?.email);
 
   return (
-    <main className="mx-auto flex w-full max-w-[1376px] flex-col gap-[22px] px-4 sm:px-8 py-7">
+    <main id="contenido" className="mx-auto flex w-full max-w-[1376px] flex-col gap-[22px] px-4 sm:px-8 py-7">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm text-muted">{formatLongDate(now)}</p>

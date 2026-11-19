@@ -13,7 +13,7 @@ export function NavLinks() {
   ];
 
   return (
-    <nav aria-label="Principal" className="flex h-full items-center gap-4 md:gap-6">
+    <nav aria-label="Principal" className="flex h-full items-center gap-4 md:gap-6 max-[359px]:gap-3">
       {items.map((item) => (
         <Link
           key={item.href}

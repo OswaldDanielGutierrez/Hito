@@ -206,12 +206,12 @@ export function PhaseGroup({
             <table className="hidden w-full min-w-[900px] border-collapse lg:table">
               <thead>
                 <tr>
-                  <th className={th}>Tarea</th>
-                  <th className={`${th} w-[140px]`}>Estado</th>
-                  <th className={`${th} w-[120px]`}>Prioridad</th>
-                  <th className={`${th} w-[110px]`}>Fecha</th>
-                  <th className={`${th} w-[100px] text-right`}>Estimado</th>
-                  <th className={`${th} w-[120px]`}>Recursos</th>
+                  <th scope="col" className={th}>Tarea</th>
+                  <th scope="col" className={`${th} w-[140px]`}>Estado</th>
+                  <th scope="col" className={`${th} w-[120px]`}>Prioridad</th>
+                  <th scope="col" className={`${th} w-[110px]`}>Fecha</th>
+                  <th scope="col" className={`${th} w-[100px] text-right`}>Estimado</th>
+                  <th scope="col" className={`${th} w-[120px]`}>Recursos</th>
                 </tr>
               </thead>
               <tbody>

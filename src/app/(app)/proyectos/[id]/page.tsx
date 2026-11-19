@@ -57,7 +57,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
   );
 
   return (
-    <main className="mx-auto flex w-full max-w-[1376px] flex-col gap-5 px-4 py-5 sm:gap-[22px] sm:px-8 sm:py-6">
+    <main id="contenido" className="mx-auto flex w-full max-w-[1376px] flex-col gap-5 px-4 py-5 sm:gap-[22px] sm:px-8 sm:py-6">
       <section aria-labelledby="fases-titulo">
         <div className="mb-3.5 flex items-baseline justify-between">
           <h2 id="fases-titulo" className="text-lg font-extrabold">

@@ -11,6 +11,7 @@ import {
 } from "@/app/(app)/proyectos/actions";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import { toast } from "@/components/ui/Toaster";
 import type { ProjectInfo } from "@/lib/data/project";
 import type { ProjectStatus } from "@/lib/domain/types";
 import { projectStatusLabel } from "@/lib/labels";
@@ -73,7 +74,10 @@ function ChangeStatusDialog({
         note,
         completePending: suggestCompleting && completePending,
       });
-      if (result.ok) onClose();
+      if (result.ok) {
+        toast("Estado actualizado");
+        onClose();
+      }
       else setError(result.error);
     });
   }
@@ -174,7 +178,10 @@ function EditProjectDialog({
         responsible,
         startDate: startDate || null,
       });
-      if (result.ok) onClose();
+      if (result.ok) {
+        toast("Cambios guardados");
+        onClose();
+      }
       else setError(result.error);
     });
   }
