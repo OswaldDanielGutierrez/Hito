@@ -23,3 +23,8 @@ _archivo/
 .DS_Store
 Thumbs.db
 *.log
+
+# TypeScript / Next
+*.tsbuildinfo
+next-env.d.ts
+*.pem

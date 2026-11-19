@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/* Tokens de design/tokens.json */
+@theme {
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+
+  --color-green-900: #022c17;
+  --color-green-800: #04512a;
+  --color-green-700: #007a3d;
+  --color-green-700-hover: #00652f;
+  --color-green-500: #00a859;
+  --color-green-300: #5fd597;
+  --color-green-200: #b5d8c4;
+  --color-green-100: #c8ecd7;
+  --color-green-50: #e4f5eb;
+
+  --color-ink: #17201b;
+  --color-ink-soft: #3c4741;
+  --color-muted: #58635d;
+  --color-line: #e1e6e3;
+  --color-surface: #eef2f0;
+  --color-page: #f6f8f7;
+  --color-input-border: #7f8a84;
+  --color-disabled: #c9d0cc;
+  --color-gray-500: #9aa49f;
+
+  --color-status-development: #2f6fc4;
+  --color-status-qa: #d9822b;
+  --color-status-production: #00a859;
+  --color-status-delivered: #04512a;
+  --color-status-on-hold: #58635d;
+
+  --color-danger: #b42318;
+  --color-warn: #8a4a0b;
+
+  --radius-card: 14px;
+  --radius-dialog: 20px;
+  --radius-button: 10px;
+  --radius-input: 8px;
+  --radius-label: 6px;
+  --radius-pill: 999px;
+
+  --shadow-card-hover: 0 8px 24px rgba(2, 44, 23, 0.08);
+  --shadow-dialog: 0 24px 64px rgba(0, 0, 0, 0.3);
+}
+
+:root {
+  --top-bar-height: 56px;
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-green-700);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
