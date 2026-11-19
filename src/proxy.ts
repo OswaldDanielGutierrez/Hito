@@ -25,7 +25,10 @@ export async function proxy(request: NextRequest) {
 
   const isLogin = request.nextUrl.pathname.startsWith("/login");
 
-  if (!user && !isLogin) {
+  // Las acciones del servidor esperan su propia respuesta: redirigirlas rompe el cliente (p. ej. "Salir" con la sesión vencida).
+  const isServerAction = request.headers.has("next-action");
+
+  if (!user && !isLogin && !isServerAction) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = "";

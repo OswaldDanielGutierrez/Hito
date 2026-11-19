@@ -1,8 +1,9 @@
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import Link from "next/link";
 import { APP_NAME } from "@/config/app";
 import { AvatarMenu } from "./AvatarMenu";
 import { NavLinks } from "./NavLinks";
+import { NotificationsBell, type NotificationItem } from "./NotificationsBell";
 
 export function TopBarSkeleton() {
   return (
@@ -15,13 +16,26 @@ export function TopBarSkeleton() {
   );
 }
 
-export function TopBar({ initials, email }: { initials: string; email: string }) {
+export function TopBar({
+  initials,
+  email,
+  displayName,
+  notifications,
+  unread,
+}: {
+  initials: string;
+  email: string;
+  displayName: string;
+  notifications: NotificationItem[];
+  unread: number;
+}) {
   return (
     <header className="bg-green-900">
       <div className="mx-auto flex h-[var(--top-bar-height)] max-w-[1376px] items-center gap-4 px-4 sm:px-8 md:gap-6">
         <Link href="/" className="mr-2 flex items-center gap-2">
           <span aria-hidden className="inline-block size-4 rotate-45 rounded-[3px] bg-green-500" />
-          <span className="text-base font-extrabold text-white">{APP_NAME}</span>
+          <span className="hidden text-base font-extrabold text-white min-[420px]:inline">{APP_NAME}</span>
+          <span className="sr-only min-[420px]:hidden">{APP_NAME}</span>
         </Link>
 
         <NavLinks />
@@ -38,15 +52,8 @@ export function TopBar({ initials, email }: { initials: string; email: string })
               className="h-9 w-[280px] cursor-not-allowed rounded-input bg-green-800 pr-3 pl-9 text-sm text-white placeholder:text-green-200 xl:w-[300px]"
             />
           </label>
-          <button
-            type="button"
-            disabled
-            aria-label="Notificaciones (próximamente)"
-            className="hidden size-9 cursor-not-allowed items-center justify-center rounded-full text-green-200 opacity-60 sm:flex"
-          >
-            <Bell size={18} strokeWidth={1.9} aria-hidden />
-          </button>
-          <AvatarMenu initials={initials} email={email} />
+          <NotificationsBell items={notifications} unread={unread} />
+          <AvatarMenu initials={initials} email={email} displayName={displayName} />
         </div>
       </div>
     </header>

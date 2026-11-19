@@ -161,3 +161,55 @@ export const getProjectExtras = cache(async (id: string): Promise<{ notes: NoteD
 
   return { notes: notes.data ?? [], contacts: contacts.data ?? [] };
 });
+
+export interface ActivityData {
+  id: number;
+  kind: Enums["change_kind"];
+  summary: string;
+  oldValue: string | null;
+  newValue: string | null;
+  reason: string | null;
+  createdAt: string;
+}
+
+export interface AlertRuleData {
+  kind: Enums["alert_kind"];
+  daysBefore: number;
+  enabled: boolean;
+}
+
+/** Historial de cambios, reglas de alerta del proyecto y canales de notificación del usuario. */
+export const getProjectHistory = cache(
+  async (id: string): Promise<{ entries: ActivityData[]; rules: AlertRuleData[]; notifyInApp: boolean; notifyEmail: boolean }> => {
+    if (!uuid.safeParse(id).success) return { entries: [], rules: [], notifyInApp: true, notifyEmail: true };
+
+    const supabase = await createClient();
+    const [log, rules, settings] = await Promise.all([
+      supabase
+        .from("activity_log")
+        .select("id, kind, summary, old_value, new_value, reason, created_at")
+        .eq("project_id", id)
+        .order("created_at", { ascending: false })
+        .limit(300),
+      supabase.from("alert_rules").select("kind, days_before, enabled").eq("project_id", id),
+      supabase.from("user_settings").select("notify_in_app, notify_email").maybeSingle(),
+    ]);
+    const error = log.error ?? rules.error ?? settings.error;
+    if (error) throw new Error(error.message);
+
+    return {
+      entries: (log.data ?? []).map((e) => ({
+        id: e.id,
+        kind: e.kind,
+        summary: e.summary,
+        oldValue: e.old_value,
+        newValue: e.new_value,
+        reason: e.reason,
+        createdAt: e.created_at,
+      })),
+      rules: (rules.data ?? []).map((r) => ({ kind: r.kind, daysBefore: r.days_before, enabled: r.enabled })),
+      notifyInApp: settings.data?.notify_in_app ?? true,
+      notifyEmail: settings.data?.notify_email ?? true,
+    };
+  },
+);

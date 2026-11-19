@@ -92,3 +92,9 @@ export function formatLongDate(now: Date = new Date()): string {
 export function timeInBogota(now: Date = new Date()): string {
   return new Intl.DateTimeFormat("en-GB", { timeZone: TIMEZONE, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(now);
 }
+
+/** `dd/MM/yyyy HH:mm` en America/Bogota para una marca de tiempo ISO. */
+export function formatDateTime(iso: string): string {
+  const d = new Date(iso);
+  return `${formatDate(todayInBogota(d))} ${timeInBogota(d)}`;
+}

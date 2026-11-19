@@ -35,3 +35,11 @@ export const healthLabel = {
   late: "Atrasado",
   on_hold: "Detenido",
 } as const;
+
+export const changeKindLabel = {
+  status: "Estado",
+  date: "Fecha",
+  task: "Tarea",
+  phase: "Fase",
+  scope: "Alcance",
+} as const;

@@ -19,7 +19,7 @@ export function ProjectTabs({ projectId, taskCount, resourceCount }: { projectId
     { href: `${base}/fases`, label: "Fases y tareas", count: taskCount, enabled: true },
     { href: `${base}/recursos`, label: "Recursos", count: resourceCount, enabled: true },
     { href: `${base}/notas`, label: "Notas", enabled: true },
-    { href: `${base}/historial`, label: "Historial", enabled: false },
+    { href: `${base}/historial`, label: "Historial", enabled: true },
   ];
 
   return (

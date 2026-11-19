@@ -6,6 +6,7 @@ import {
   daysUntil,
   diffDays,
   formatDate,
+  formatDateTime,
   formatDayMonth,
   formatLongDate,
   greeting,
@@ -96,5 +97,12 @@ describe("timeInBogota", () => {
   it("devuelve HH:mm de Bogotá", () => {
     expect(timeInBogota(new Date("2026-11-19T14:05:00Z"))).toBe("09:05");
     expect(timeInBogota(new Date("2026-11-19T05:00:00Z"))).toBe("00:00");
+  });
+});
+
+describe("formatDateTime", () => {
+  it("formatea con la hora de Bogotá", () => {
+    expect(formatDateTime("2026-11-19T14:05:00Z")).toBe("19/11/2026 09:05");
+    expect(formatDateTime("2026-11-19T03:30:00Z")).toBe("18/11/2026 22:30");
   });
 });

@@ -25,3 +25,11 @@ export const resourceKindColors: Record<ResourceKind, Pair> = {
 export const fieldClass =
   "h-10 w-full rounded-input border border-input-border bg-white px-3 text-base sm:text-sm disabled:opacity-60";
 export const labelClass = "mb-1 block text-xs font-medium text-muted";
+
+export const changeKindColors: Record<"status" | "date" | "task" | "phase" | "scope", Pair> = {
+  status: { bg: "#FDF0E3", ink: "#8A4A0B" },
+  date: { bg: "#FDECEA", ink: "#B42318" },
+  task: { bg: "#E6F0FB", ink: "#1D4F91" },
+  phase: { bg: "#E4F5EB", ink: "#00652F" },
+  scope: { bg: "#EEF2F0", ink: "#58635D" },
+};
