@@ -45,6 +45,39 @@ try {
     .single();
   check("A crea una fase", !phase.error);
 
+  // Tablas añadidas en M5–M8: cada usuario solo ve y toca lo suyo.
+  const projectId = proj.data.id;
+  const seeded = await Promise.all([
+    a.from("resources").insert({ project_id: projectId, kind: "link", name: "Recurso de A", url: "https://github.com/a/a" }),
+    a.from("project_notes").insert({ project_id: projectId, body: "Nota de A" }),
+    a.from("project_contacts").insert({ project_id: projectId, name: "Contacto de A" }),
+    a.from("activity_log").insert({ project_id: projectId, kind: "scope", summary: "Cambio de A" }),
+    a.from("alert_rules").insert({ project_id: projectId, kind: "overdue", days_before: 0 }),
+    a.from("notifications").insert({ project_id: projectId, kind: "overdue", title: "Alerta de A", scheduled_for: "2026-12-01", channel: "in_app" }),
+  ]);
+  check("A crea recursos, notas, contactos, historial, reglas y notificaciones", seeded.every((r) => !r.error));
+
+  for (const table of ["resources", "project_notes", "project_contacts", "activity_log", "alert_rules", "notifications"]) {
+    const asB = await b.from(table).select("*");
+    check(`B no ve filas de ${table} de A`, !asB.error && asB.data.length === 0);
+    const asAnon = await anonymous.from(table).select("*");
+    check(`Sin sesión no se ve ${table}`, !asAnon.data?.length);
+  }
+
+  const updateNotepad = await b.from("projects").update({ notepad: "hackeado" }).eq("id", projectId).select();
+  check("B no puede escribir en el bloc de notas de A", updateNotepad.data?.length === 0);
+  const deleteResource = await b.from("resources").delete().eq("project_id", projectId).select();
+  check("B no puede borrar recursos de A", deleteResource.data?.length === 0);
+  const markRead = await b.from("notifications").update({ read_at: new Date().toISOString() }).eq("project_id", projectId).select();
+  check("B no puede marcar como leídas las notificaciones de A", markRead.data?.length === 0);
+
+  const moveAsB = await b.rpc("move_phase", { p_phase_id: phase.data.id, p_direction: "down" });
+  check("B no puede mover fases de A (move_phase respeta RLS)", !!moveAsB.error);
+  const generateAsA = await a.rpc("generate_alerts");
+  check("Un usuario normal no puede ejecutar generate_alerts", !!generateAsA.error);
+  const createAsAnon = await anonymous.rpc("create_project", { p_name: "x", p_area: "", p_description: "", p_responsible: "", p_start_date: "2026-12-01", p_phases: [{ name: "F", date: "2026-12-01" }] });
+  check("Sin sesión no se puede crear proyectos (create_project)", !!createAsAnon.error);
+
   const seenByA = await a.from("projects").select("id");
   check("A ve su proyecto", seenByA.data?.length === 1);
 

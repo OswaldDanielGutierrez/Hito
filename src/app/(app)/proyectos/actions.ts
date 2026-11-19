@@ -54,16 +54,20 @@ const createSchema = z.object({
 });
 
 /** Crea proyecto, fases, recursos y reglas de alerta en una sola transacción (función `create_project`). */
-export async function createProject(input: z.input<typeof createSchema>): Promise<ActionResult> {
+export type CreateResult = { ok: true; projectId: string } | { ok: false; error: string };
+
+const failCreate = (error: string): CreateResult => ({ ok: false, error });
+
+export async function createProject(input: z.input<typeof createSchema>): Promise<CreateResult> {
   const parsed = createSchema.safeParse(input);
-  if (!parsed.success) return fail(firstIssue(parsed.error));
+  if (!parsed.success) return failCreate(firstIssue(parsed.error));
   const v = parsed.data;
 
   const resources = [];
   for (const r of v.resources) {
     const href = normalizeUrl(r.url);
     const detected = detectResource(r.url);
-    if (!href || !detected) return fail(`El enlace «${r.url}» no es válido`);
+    if (!href || !detected) return failCreate(`El enlace «${r.url}» no es válido`);
     resources.push({ kind: detected.kind, name: r.name, url: href, source: detected.origin });
   }
 
@@ -80,14 +84,14 @@ export async function createProject(input: z.input<typeof createSchema>): Promis
       p_resources: resources,
       p_notify_phase: v.notifyPhase,
     });
-    if (error || !data) return fail(error?.message ?? "No se pudo crear el proyecto");
+    if (error || !data) return failCreate(error?.message ?? "No se pudo crear el proyecto");
     projectId = data;
   } catch (e) {
-    return fail(e instanceof Error ? e.message : "No se pudo crear el proyecto");
+    return failCreate(e instanceof Error ? e.message : "No se pudo crear el proyecto");
   }
 
   refresh();
-  redirect(`/proyectos/${projectId}`);
+  return { ok: true, projectId };
 }
 
 const updateSchema = z.object({

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { createProject } from "@/app/(app)/proyectos/actions";
 import { Button } from "@/components/ui/Button";
+import { toast } from "@/components/ui/Toaster";
 import { Dialog } from "@/components/ui/Dialog";
 import type { TemplateData } from "@/lib/data/templates";
 import { addDays, formatDate } from "@/lib/domain/dates";
@@ -13,6 +14,7 @@ import { detectResource, normalizeUrl, suggestResourceName } from "@/lib/domain/
 import { calculatePhaseDates, hasDatesOutOfOrder } from "@/lib/domain/templates";
 import { resourceKindLabel } from "@/lib/labels";
 import { fieldClass, labelClass } from "@/lib/ui-colors";
+import { MAX_FILE_MB, uploadProjectFile } from "@/components/domain/resources/upload";
 
 interface PhaseRow {
   key: string;
@@ -31,7 +33,7 @@ const NEXT_LABEL = ["Fases y fechas", "Recursos"];
 
 const newKey = () => crypto.randomUUID();
 
-export function NewProjectDialog({ templates, today }: { templates: TemplateData[]; today: string }) {
+export function NewProjectDialog({ templates, today, userId }: { templates: TemplateData[]; today: string; userId: string }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -50,6 +52,7 @@ export function NewProjectDialog({ templates, today }: { templates: TemplateData
   const [links, setLinks] = useState<LinkRow[]>([]);
   const [linkInput, setLinkInput] = useState("");
   const [linkError, setLinkError] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -137,7 +140,16 @@ export function NewProjectDialog({ templates, today }: { templates: TemplateData
         resources: links.map((l) => ({ url: l.url, name: l.name })),
         notifyPhase,
       });
-      if (result && !result.ok) setError(result.error);
+      if (!result.ok) return setError(result.error);
+
+      const failed: string[] = [];
+      for (const file of files) {
+        const uploaded = await uploadProjectFile({ file, projectId: result.projectId, userId, phaseId: null });
+        if (!uploaded.ok) failed.push(uploaded.error);
+      }
+      toast("Proyecto creado");
+      if (failed.length > 0) toast(`${failed.length === 1 ? "Un archivo no se pudo subir" : `${failed.length} archivos no se pudieron subir`}: ${failed[0]}`, "error");
+      router.push(`/proyectos/${result.projectId}`);
     });
   }
 
@@ -296,7 +308,7 @@ export function NewProjectDialog({ templates, today }: { templates: TemplateData
           <div className="flex flex-col gap-4">
             <p className="text-sm text-muted">
               Opcional. Pega enlaces de documentos, flujos, repositorios o diseños; detecto el tipo por el dominio (SharePoint,
-              Power Automate, GitHub, Figma o cualquier URL). La subida de archivos se hace desde la pestaña Recursos.
+              Power Automate, GitHub, Figma o cualquier URL). También puedes adjuntar archivos.
             </p>
 
             <div>
@@ -360,6 +372,40 @@ export function NewProjectDialog({ templates, today }: { templates: TemplateData
                 })}
               </ul>
             )}
+            <div>
+              <label htmlFor="np-files" className={labelClass}>
+                Archivos (máx. {MAX_FILE_MB} MB cada uno)
+              </label>
+              <input
+                id="np-files"
+                type="file"
+                multiple
+                onChange={(e) => {
+                  const picked = [...(e.target.files ?? [])];
+                  e.target.value = "";
+                  setFiles((current) => [...current, ...picked]);
+                }}
+                className="block w-full text-base file:mr-3 file:h-10 file:rounded-button file:border file:border-input-border file:bg-white file:px-4 file:text-sm file:font-semibold sm:text-sm"
+              />
+              {files.length > 0 && (
+                <ul className="mt-2.5 flex flex-col gap-2">
+                  {files.map((f, i) => (
+                    <li key={`${f.name}-${i}`} className="flex items-center gap-3 rounded-input bg-page px-3 py-2 text-sm">
+                      <span className="min-w-0 flex-1 break-words">{f.name}</span>
+                      <span className="shrink-0 text-xs text-muted">{(f.size / 1024 / 1024).toFixed(1)} MB</span>
+                      <button
+                        type="button"
+                        aria-label={`Quitar el archivo ${f.name}`}
+                        onClick={() => setFiles((current) => current.filter((_, j) => j !== i))}
+                        className="flex size-9 shrink-0 items-center justify-center rounded-input text-muted hover:bg-surface hover:text-ink"
+                      >
+                        <X size={16} strokeWidth={1.9} aria-hidden />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         )}
 

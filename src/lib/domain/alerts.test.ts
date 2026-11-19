@@ -48,4 +48,27 @@ describe("upcomingAlerts", () => {
     const result = upcomingAlerts({ phases: [], tasks: [], deliverySettled: true }, "2026-11-18", "10:00");
     expect(result).toEqual([]);
   });
+
+  it("respeta las reglas desactivadas", () => {
+    const rules = [
+      { kind: "phase_due_soon" as const, daysBefore: 2, enabled: false },
+      { kind: "final_due" as const, daysBefore: 3, enabled: true },
+    ];
+    const result = upcomingAlerts({ phases, tasks: [], rules }, "2026-11-18", "10:00", 10);
+    expect(result.map((a) => a.text)).toEqual(["Entrega final en 3 días"]);
+  });
+
+  it("usa los días de anticipación de cada regla", () => {
+    const rules = [{ kind: "phase_due_soon" as const, daysBefore: 5, enabled: true }];
+    const result = upcomingAlerts({ phases, tasks: [], rules }, "2026-11-10", "10:00", 10);
+    expect(result).toEqual([
+      { date: "2026-11-19", time: "09:00", text: "La fase QA vence el 24/11" },
+      { date: "2026-11-25", time: "09:00", text: "La fase Producción vence el 30/11" },
+    ]);
+  });
+
+  it("sin reglas activas no hay alertas", () => {
+    const rules = [{ kind: "final_due" as const, daysBefore: 1, enabled: false }];
+    expect(upcomingAlerts({ phases, tasks: [], rules }, "2026-11-10", "10:00")).toEqual([]);
+  });
 });

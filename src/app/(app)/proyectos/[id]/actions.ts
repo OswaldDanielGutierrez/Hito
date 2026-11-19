@@ -376,3 +376,94 @@ export async function addPhase(input: { projectId: string; name: string; date: s
     return { ok: true };
   });
 }
+
+export async function renamePhase(input: { phaseId: string; name: string }): Promise<ActionResult> {
+  const parsed = z
+    .object({ phaseId: id, name: z.string().trim().min(1, "Escribe el nombre de la fase").max(80, "El nombre es muy largo") })
+    .safeParse(input);
+  if (!parsed.success) return fail(firstIssue(parsed.error));
+
+  return run(async () => {
+    const supabase = await createClient();
+    const { data: phase } = await supabase.from("phases").select("id, name, project_id").eq("id", parsed.data.phaseId).maybeSingle();
+    if (!phase) return fail("No se encontró la fase");
+    if (phase.name === parsed.data.name) return { ok: true };
+
+    const { error } = await supabase.from("phases").update({ name: parsed.data.name }).eq("id", phase.id);
+    if (error) return fail(error.message);
+
+    await logActivity(supabase, {
+      projectId: phase.project_id,
+      kind: "phase",
+      entityType: "phase",
+      entityId: phase.id,
+      summary: "Fase renombrada",
+      oldValue: phase.name,
+      newValue: parsed.data.name,
+    });
+    return { ok: true };
+  });
+}
+
+export async function movePhase(input: { phaseId: string; direction: "up" | "down" }): Promise<ActionResult> {
+  const parsed = z.object({ phaseId: id, direction: z.enum(["up", "down"]) }).safeParse(input);
+  if (!parsed.success) return fail(firstIssue(parsed.error));
+
+  return run(async () => {
+    const supabase = await createClient();
+    const { data: phase } = await supabase.from("phases").select("id, name, project_id").eq("id", parsed.data.phaseId).maybeSingle();
+    if (!phase) return fail("No se encontró la fase");
+
+    const { error } = await supabase.rpc("move_phase", { p_phase_id: phase.id, p_direction: parsed.data.direction });
+    if (error) return fail(error.message);
+
+    await logActivity(supabase, {
+      projectId: phase.project_id,
+      kind: "phase",
+      entityType: "phase",
+      entityId: phase.id,
+      summary: `Orden de la fase ${phase.name}`,
+      newValue: parsed.data.direction === "up" ? "Subió una posición" : "Bajó una posición",
+    });
+    return { ok: true };
+  });
+}
+
+export async function deletePhase(input: { phaseId: string }): Promise<ActionResult> {
+  const parsed = z.object({ phaseId: id }).safeParse(input);
+  if (!parsed.success) return fail(firstIssue(parsed.error));
+
+  return run(async () => {
+    const supabase = await createClient();
+    const { data: phase } = await supabase.from("phases").select("*").eq("id", parsed.data.phaseId).maybeSingle();
+    if (!phase) return fail("No se encontró la fase");
+
+    const { count } = await supabase.from("tasks").select("id", { count: "exact", head: true }).eq("phase_id", phase.id);
+
+    const { error } = await supabase.from("phases").delete().eq("id", phase.id);
+    if (error) return fail(error.message);
+
+    if (phase.status === "in_progress") {
+      const { data: next } = await supabase
+        .from("phases")
+        .select("id")
+        .eq("project_id", phase.project_id)
+        .neq("status", "completed")
+        .order("position")
+        .limit(1)
+        .maybeSingle();
+      if (next) await supabase.from("phases").update({ status: "in_progress" }).eq("id", next.id);
+    }
+
+    await logActivity(supabase, {
+      projectId: phase.project_id,
+      kind: "phase",
+      entityType: "phase",
+      entityId: phase.id,
+      summary: "Fase eliminada",
+      oldValue: phase.name,
+      newValue: count ? `También se eliminaron ${count} ${count === 1 ? "tarea" : "tareas"}` : null,
+    });
+    return { ok: true };
+  });
+}

@@ -22,10 +22,11 @@ export async function HomeContent({ filter }: { filter: StatusFilter }) {
   await connection();
 
   const supabase = await createClient();
-  const [input, userResult, settingsResult] = await Promise.all([
+  const [input, userResult, settingsResult, archived] = await Promise.all([
     loadPortfolioInput(),
     supabase.auth.getUser(),
     supabase.from("user_settings").select("display_name").maybeSingle(),
+    supabase.from("projects").select("id", { count: "exact", head: true }).not("archived_at", "is", null),
   ]);
 
   const now = new Date();
@@ -83,7 +84,14 @@ export async function HomeContent({ filter }: { filter: StatusFilter }) {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <FilterPills active={filter} counts={counts} />
-        <span className="text-[13px] text-muted">Ordenados por entrega más cercana</span>
+        <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted">
+          {(archived.count ?? 0) > 0 && (
+            <Link href="/archivados" className="font-bold text-green-700 hover:underline">
+              Archivados ({archived.count})
+            </Link>
+          )}
+          Ordenados por entrega más cercana
+        </span>
       </div>
 
       <section aria-label="Proyectos" className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-[18px] min-[1280px]:grid-cols-3">

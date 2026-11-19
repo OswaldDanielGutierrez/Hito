@@ -7,7 +7,7 @@ import { ProjectBodySkeleton } from "@/components/domain/project/BodySkeleton";
 import { Bar } from "@/components/ui/Bar";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { TaskStateBadge } from "@/components/ui/TaskStateBadge";
-import { getProjectData } from "@/lib/data/project";
+import { getAlertRules, getProjectData } from "@/lib/data/project";
 import { upcomingAlerts } from "@/lib/domain/alerts";
 import { daysUntil, formatDate, formatDayMonth, timeInBogota, todayInBogota } from "@/lib/domain/dates";
 import { phaseNote } from "@/lib/domain/phaseNote";
@@ -36,7 +36,7 @@ export default function ProjectSummary({ params }: PageProps<"/proyectos/[id]">)
 async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
   await connection();
   const { id } = await params;
-  const data = await getProjectData(id);
+  const [data, rules] = await Promise.all([getProjectData(id), getAlertRules(id)]);
   if (!data) notFound();
 
   const { project, phases, tasks, resources } = data;
@@ -51,6 +51,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
       phases,
       tasks: tasks.map((t) => ({ title: t.title, state: t.state, dueDate: t.dueDate, parentTaskId: t.parentTaskId })),
       deliverySettled: project.status === "delivered",
+      rules: rules.length > 0 ? rules : undefined,
     },
     today,
     timeInBogota(now),

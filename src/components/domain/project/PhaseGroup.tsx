@@ -1,12 +1,16 @@
 "use client";
 
-import { ChevronRight, Link as LinkIcon, Plus } from "lucide-react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { ArrowDown, ArrowUp, ChevronRight, Link as LinkIcon, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import type { PhaseData, TaskData } from "@/lib/data/project";
 import { daysUntil, formatDate } from "@/lib/domain/dates";
 import { phaseNote } from "@/lib/domain/phaseNote";
 import { priorityLabel, taskStateLabel } from "@/lib/labels";
 import { priorityColors, taskStateColors } from "@/lib/ui-colors";
+
+const menuItem =
+  "flex cursor-pointer items-center gap-2 rounded-input px-3 py-2.5 text-base outline-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40 data-[highlighted]:bg-surface sm:py-2 sm:text-sm";
 
 const th = "px-3 py-2 text-left text-[11px] font-bold tracking-[.06em] text-muted uppercase";
 
@@ -27,6 +31,11 @@ export function PhaseGroup({
   onEditDate,
   onComplete,
   onReopen,
+  onRename,
+  onMove,
+  onDelete,
+  canMoveUp,
+  canMoveDown,
 }: {
   phase: PhaseData;
   index: number;
@@ -44,6 +53,11 @@ export function PhaseGroup({
   onEditDate: () => void;
   onComplete: () => void;
   onReopen: () => void;
+  onRename: () => void;
+  onMove: (direction: "up" | "down") => void;
+  onDelete: () => void;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
 }) {
   const [draft, setDraft] = useState("");
   const isDone = phase.status === "completed";
@@ -153,6 +167,35 @@ export function PhaseGroup({
               {counts.done}/{total}
             </span>
           </div>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger
+              aria-label={`Opciones de la fase ${phase.name}`}
+              className="flex size-10 shrink-0 items-center justify-center rounded-full text-muted hover:bg-surface hover:text-ink sm:size-9"
+            >
+              <MoreHorizontal size={18} strokeWidth={1.9} aria-hidden />
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content align="end" sideOffset={4} className="z-50 min-w-[190px] rounded-card border border-line bg-white p-1.5 shadow-card-hover">
+                <DropdownMenu.Item className={menuItem} onSelect={onRename}>
+                  <Pencil size={16} strokeWidth={1.9} aria-hidden />
+                  Renombrar
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className={menuItem} disabled={!canMoveUp} onSelect={() => onMove("up")}>
+                  <ArrowUp size={16} strokeWidth={1.9} aria-hidden />
+                  Mover arriba
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className={menuItem} disabled={!canMoveDown} onSelect={() => onMove("down")}>
+                  <ArrowDown size={16} strokeWidth={1.9} aria-hidden />
+                  Mover abajo
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator className="my-1 h-px bg-line" />
+                <DropdownMenu.Item className={`${menuItem} text-danger`} onSelect={onDelete}>
+                  <Trash2 size={16} strokeWidth={1.9} aria-hidden />
+                  Eliminar
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
         </div>
       </div>
 

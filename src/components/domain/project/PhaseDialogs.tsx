@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { addPhase, updatePhaseDate } from "@/app/(app)/proyectos/[id]/actions";
+import { addPhase, deletePhase, renamePhase, updatePhaseDate } from "@/app/(app)/proyectos/[id]/actions";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { toast } from "@/components/ui/Toaster";
@@ -168,6 +168,92 @@ export function NewPhaseDialog({
           </Button>
         </div>
       </form>
+    </Dialog>
+  );
+}
+
+export function RenamePhaseDialog({ phase, onClose }: { phase: PhaseData; onClose: () => void }) {
+  const [name, setName] = useState(phase.name);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    startTransition(async () => {
+      const result = await renamePhase({ phaseId: phase.id, name });
+      if (result.ok) {
+        toast("Fase renombrada");
+        onClose();
+      } else setError(result.error);
+    });
+  }
+
+  return (
+    <Dialog open onOpenChange={(open) => !open && onClose()} title="Renombrar fase" description={phase.name}>
+      <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
+        <div>
+          <label htmlFor="rename-phase" className={labelClass}>
+            Nombre
+          </label>
+          <input id="rename-phase" required autoFocus maxLength={80} value={name} onChange={(e) => setName(e.target.value)} className={fieldClass} />
+        </div>
+        {error && (
+          <p role="alert" className="text-sm font-medium text-danger">
+            {error}
+          </p>
+        )}
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="text" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={pending || !name.trim() || name.trim() === phase.name}>
+            {pending ? "Guardando…" : "Guardar"}
+          </Button>
+        </div>
+      </form>
+    </Dialog>
+  );
+}
+
+export function DeletePhaseDialog({ phase, taskCount, onClose }: { phase: PhaseData; taskCount: number; onClose: () => void }) {
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  return (
+    <Dialog open onOpenChange={(open) => !open && onClose()} title="Eliminar fase" description={phase.name}>
+      <p className="mb-5 text-sm">
+        ¿Eliminar la fase <strong className="break-words">{phase.name}</strong>?{" "}
+        {taskCount > 0
+          ? `También se eliminarán sus ${taskCount} ${taskCount === 1 ? "tarea" : "tareas"}.`
+          : "No tiene tareas."}{" "}
+        Esta acción no se puede deshacer.
+      </p>
+      {error && (
+        <p role="alert" className="mb-4 text-sm font-medium text-danger">
+          {error}
+        </p>
+      )}
+      <div className="flex justify-end gap-3">
+        <Button type="button" variant="text" onClick={onClose}>
+          Cancelar
+        </Button>
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() =>
+            startTransition(async () => {
+              const result = await deletePhase({ phaseId: phase.id });
+              if (result.ok) {
+                toast("Fase eliminada");
+                onClose();
+              } else setError(result.error);
+            })
+          }
+          className="h-[38px] rounded-button bg-danger px-4 text-sm font-semibold text-white disabled:opacity-60"
+        >
+          {pending ? "Eliminando…" : "Eliminar fase"}
+        </button>
+      </div>
     </Dialog>
   );
 }

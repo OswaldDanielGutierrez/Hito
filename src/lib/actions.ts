@@ -18,6 +18,7 @@ export const isoDate = z
 export function refreshProjectViews() {
   revalidatePath("/proyectos/[id]", "layout");
   revalidatePath("/");
+  revalidatePath("/archivados");
 }
 
 /** Ejecuta una acción, captura errores y revalida solo si salió bien. */

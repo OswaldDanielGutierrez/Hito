@@ -1,4 +1,5 @@
-import { addDays, daysText, formatDayMonth } from "./dates";
+import type { AlertKind } from "./alertRules";
+import { addDays, formatDayMonth } from "./dates";
 import { finalDeliveryDate } from "./progress";
 import type { PhaseInput, TaskState } from "./types";
 
@@ -19,38 +20,68 @@ interface AlertTask {
   parentTaskId?: string | null;
 }
 
+export interface RuleInput {
+  kind: AlertKind;
+  daysBefore: number;
+  enabled: boolean;
+}
+
+/** Reglas que se crean por defecto en cada proyecto. */
+export const DEFAULT_RULES: RuleInput[] = [
+  { kind: "phase_due_soon", daysBefore: 2, enabled: true },
+  { kind: "final_due", daysBefore: 3, enabled: true },
+  { kind: "final_due", daysBefore: 1, enabled: true },
+  { kind: "final_due", daysBefore: 0, enabled: true },
+  { kind: "task_due", daysBefore: 1, enabled: true },
+];
+
+const when = (days: number) => (days === 0 ? "hoy" : days === 1 ? "mañana" : `en ${days} días`);
+
 /**
- * Próximas alertas según las reglas por defecto (hora de Bogotá):
- * fase 2 días antes (09:00), entrega final 3 y 1 día antes (09:00) y el día (08:00),
- * tarea el día anterior a su vencimiento (09:00).
+ * Próximas alertas según las reglas activas del proyecto (hora de Bogotá):
+ * fase y tarea a las 09:00, entrega final a las 09:00 y el mismo día a las 08:00.
+ * Sin reglas explícitas usa las de por defecto.
  */
 export function upcomingAlerts(
-  input: { phases: AlertPhase[]; tasks: AlertTask[]; deliverySettled?: boolean },
+  input: { phases: AlertPhase[]; tasks: AlertTask[]; deliverySettled?: boolean; rules?: RuleInput[] },
   nowDate: string,
   nowTime: string,
   limit = 3,
 ): UpcomingAlert[] {
+  const rules = (input.rules ?? DEFAULT_RULES).filter((r) => r.enabled);
   const alerts: UpcomingAlert[] = [];
 
-  for (const p of input.phases) {
-    if (p.status === "completed" || !p.estimatedDate) continue;
-    alerts.push({
-      date: addDays(p.estimatedDate, -2),
-      time: "09:00",
-      text: `La fase ${p.name} vence el ${formatDayMonth(p.estimatedDate)}`,
-    });
+  for (const rule of rules.filter((r) => r.kind === "phase_due_soon")) {
+    for (const p of input.phases) {
+      if (p.status === "completed" || !p.estimatedDate) continue;
+      alerts.push({
+        date: addDays(p.estimatedDate, -rule.daysBefore),
+        time: "09:00",
+        text: `La fase ${p.name} vence el ${formatDayMonth(p.estimatedDate)}`,
+      });
+    }
   }
 
   const finalDate = input.deliverySettled ? null : finalDeliveryDate(input.phases);
   if (finalDate) {
-    alerts.push({ date: addDays(finalDate, -3), time: "09:00", text: `Entrega final ${daysText(3).toLowerCase()}` });
-    alerts.push({ date: addDays(finalDate, -1), time: "09:00", text: `Entrega final ${daysText(1).toLowerCase()}` });
-    alerts.push({ date: finalDate, time: "08:00", text: "Hoy es la entrega final" });
+    for (const rule of rules.filter((r) => r.kind === "final_due")) {
+      alerts.push({
+        date: addDays(finalDate, -rule.daysBefore),
+        time: rule.daysBefore === 0 ? "08:00" : "09:00",
+        text: rule.daysBefore === 0 ? "Hoy es la entrega final" : `Entrega final ${when(rule.daysBefore)}`,
+      });
+    }
   }
 
-  for (const t of input.tasks) {
-    if (t.state === "done" || !t.dueDate || t.parentTaskId) continue;
-    alerts.push({ date: addDays(t.dueDate, -1), time: "09:00", text: `La tarea "${t.title}" vence mañana` });
+  for (const rule of rules.filter((r) => r.kind === "task_due")) {
+    for (const t of input.tasks) {
+      if (t.state === "done" || !t.dueDate || t.parentTaskId) continue;
+      alerts.push({
+        date: addDays(t.dueDate, -rule.daysBefore),
+        time: "09:00",
+        text: `La tarea "${t.title}" vence ${when(rule.daysBefore)}`,
+      });
+    }
   }
 
   return alerts

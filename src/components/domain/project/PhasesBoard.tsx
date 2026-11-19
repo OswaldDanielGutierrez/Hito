@@ -5,6 +5,7 @@ import { useOptimistic, useState, useTransition } from "react";
 import {
   addTask,
   completePhase,
+  movePhase,
   reopenPhase,
   setTaskState,
   type ActionResult,
@@ -14,7 +15,7 @@ import type { PhaseData, ResourceData, TaskData } from "@/lib/data/project";
 import { currentPhase } from "@/lib/domain/progress";
 import { taskStateLabel, taskStateNext } from "@/lib/labels";
 import { taskStateColors } from "@/lib/ui-colors";
-import { EditPhaseDateDialog, NewPhaseDialog } from "./PhaseDialogs";
+import { DeletePhaseDialog, EditPhaseDateDialog, NewPhaseDialog, RenamePhaseDialog } from "./PhaseDialogs";
 import { PhaseGroup } from "./PhaseGroup";
 import { TaskDetailSheet } from "./TaskDetailSheet";
 
@@ -48,6 +49,8 @@ export function PhasesBoard({
   });
   const [addingIn, setAddingIn] = useState<string | null>(null);
   const [editingPhase, setEditingPhase] = useState<PhaseData | null>(null);
+  const [renamingPhase, setRenamingPhase] = useState<PhaseData | null>(null);
+  const [deletingPhase, setDeletingPhase] = useState<PhaseData | null>(null);
   const [newPhaseOpen, setNewPhaseOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -150,6 +153,11 @@ export function PhasesBoard({
             onEditDate={() => setEditingPhase(phase)}
             onComplete={() => run(() => completePhase({ phaseId: phase.id }))}
             onReopen={() => run(() => reopenPhase({ phaseId: phase.id }))}
+            onRename={() => setRenamingPhase(phase)}
+            onMove={(direction) => run(() => movePhase({ phaseId: phase.id, direction }))}
+            onDelete={() => setDeletingPhase(phase)}
+            canMoveUp={i > 0}
+            canMoveDown={i < phases.length - 1}
           />
         ))
       )}
@@ -162,6 +170,15 @@ export function PhasesBoard({
             phases.filter((p) => p.position > editingPhase.position && p.status !== "completed" && p.estimatedDate).length
           }
           onClose={() => setEditingPhase(null)}
+        />
+      )}
+      {renamingPhase && <RenamePhaseDialog key={renamingPhase.id} phase={renamingPhase} onClose={() => setRenamingPhase(null)} />}
+      {deletingPhase && (
+        <DeletePhaseDialog
+          key={deletingPhase.id}
+          phase={deletingPhase}
+          taskCount={tasks.filter((t) => t.phaseId === deletingPhase.id && !t.parentTaskId).length}
+          onClose={() => setDeletingPhase(null)}
         />
       )}
       {newPhaseOpen && <NewPhaseDialog projectId={projectId} lastDate={lastDate} onClose={() => setNewPhaseOpen(false)} />}

@@ -178,6 +178,15 @@ export interface AlertRuleData {
   enabled: boolean;
 }
 
+/** Reglas de alerta del proyecto. */
+export const getAlertRules = cache(async (id: string): Promise<AlertRuleData[]> => {
+  if (!uuid.safeParse(id).success) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("alert_rules").select("kind, days_before, enabled").eq("project_id", id);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((r) => ({ kind: r.kind, daysBefore: r.days_before, enabled: r.enabled }));
+});
+
 /** Historial de cambios, reglas de alerta del proyecto y canales de notificación del usuario. */
 export const getProjectHistory = cache(
   async (id: string): Promise<{ entries: ActivityData[]; rules: AlertRuleData[]; notifyInApp: boolean; notifyEmail: boolean }> => {

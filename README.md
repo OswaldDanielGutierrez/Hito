@@ -4,7 +4,7 @@ Gestor de proyectos personal para proyectos de automatización e IA. Cada proyec
 
 > "hito" es un nombre provisional. Se cambia en un solo lugar: `src/config/app.ts` (`APP_NAME`).
 
-**Estado:** en construcción. Hechos M0 a M6; pendientes M7 (alertas) y M8 (pulido). La app es **100% responsive**: se usa en celular, tableta y monitores grandes.
+**Estado:** v1 completa (M0 a M8) y en producción. La app es **100% responsive** (desde 320 px) e instalable como PWA. Solo falta activar el envío de correo con Resend (ver más abajo).
 
 ## Por dónde empezar
 
@@ -47,7 +47,9 @@ Cuando empiece el desarrollo se agregarán `src/` (la app Next.js) y `supabase/f
 
 Acceso con correo · Inicio con todos los proyectos · Registro con plantillas de fases · Fases y tareas · Recursos, notas y contactos · Historial de cambios · Alertas en la app y por correo · Búsqueda global (`Ctrl K`) · Instalable como PWA.
 
-Quedan para v2: Mis tareas, Calendario, alertas por Teams, subtareas, cronograma, exportar a Excel.
+Además de lo anterior: bloc de notas por proyecto, Mis tareas, archivados, Mi cuenta (nombre y contraseña) y administración de fases (renombrar, mover, eliminar).
+
+Quedan para v2: Calendario, alertas por Teams, subtareas, cronograma, exportar a Excel.
 
 ## Hitos de construcción
 
@@ -60,8 +62,8 @@ Quedan para v2: Mis tareas, Calendario, alertas por Teams, subtareas, cronograma
 | M4 ✅ | Proyecto: Resumen y Fases y tareas |
 | M5 ✅ | Recursos, notas y contactos |
 | M6 ✅ | Registrar proyecto |
-| M7 | Historial y alertas |
-| M8 | Pulido: búsqueda, PWA, accesibilidad |
+| M7 ✅ | Historial y alertas |
+| M8 ✅ | Pulido: búsqueda, PWA, accesibilidad |
 
 Detalle y criterios de "listo" en [docs/04-plan-de-construccion.md](docs/04-plan-de-construccion.md).
 

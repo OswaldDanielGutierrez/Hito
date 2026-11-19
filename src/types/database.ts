@@ -353,8 +353,20 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "create_project":
+            "alert_when":
+{ Args: { "p_days": number }; Returns: string
+                           },
+"create_project":
 { Args: { "p_area": string,"p_description": string,"p_name": string,"p_notify_phase"?: boolean,"p_phases": Json,"p_resources"?: Json,"p_responsible": string,"p_start_date": string }; Returns: string
+                           },
+"dispatch_email_alerts":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"generate_alerts":
+{ Args: { "p_today"?: string }; Returns: number
+                           },
+"move_phase":
+{ Args: { "p_direction": string,"p_phase_id": string }; Returns: undefined
                            }
           }
           Enums: {
