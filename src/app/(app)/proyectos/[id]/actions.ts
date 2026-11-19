@@ -2,23 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { fail, firstIssue, isoDate, uuid, type ActionResult } from "@/lib/actions";
 import { logActivity } from "@/lib/data/activity";
 import { addDays, diffDays, formatDate, todayInBogota } from "@/lib/domain/dates";
 import { priorityLabel, taskStateLabel } from "@/lib/labels";
 import { createClient } from "@/lib/supabase/server";
 
-export type ActionResult = { ok: true } | { ok: false; error: string };
+export type { ActionResult };
 
-const id = z.string().uuid();
-const isoDate = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida")
-  .refine((d) => new Date(`${d}T00:00:00Z`).toISOString().slice(0, 10) === d, "Fecha inválida");
+const id = uuid;
 const taskState = z.enum(["pending", "in_progress", "done", "blocked"]);
 const priority = z.enum(["high", "medium", "low"]);
 const reason = z.string().trim().max(300, "El motivo es muy largo").optional();
-
-const fail = (error: string): ActionResult => ({ ok: false, error });
 
 function refresh() {
   revalidatePath("/proyectos/[id]", "layout");
@@ -34,8 +29,6 @@ async function run(fn: () => Promise<ActionResult>): Promise<ActionResult> {
     return fail(e instanceof Error ? e.message : "No se pudo guardar el cambio");
   }
 }
-
-const firstIssue = (e: z.ZodError) => e.issues[0]?.message ?? "Datos inválidos";
 
 export async function setTaskState(input: { taskId: string; state: string }): Promise<ActionResult> {
   const parsed = z.object({ taskId: id, state: taskState }).safeParse(input);

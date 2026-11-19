@@ -1,13 +1,21 @@
 # 02 · Diseño
 
-Interfaz de escritorio, clara, con una barra superior verde oscura y contenido sobre fondo gris muy claro. **Sin barra lateral.** Tokens exactos en `design/tokens.json`.
+Interfaz clara y 100% responsive (desde 320 px hasta monitores grandes), con una barra superior verde oscura y contenido sobre fondo gris muy claro. **Sin barra lateral.** Tokens exactos en `design/tokens.json`.
 
 ## Principios
 1. **Visual primero.** El estado se ve en color, forma y barras, y además siempre hay texto.
 2. **Densidad cómoda.** Tarjetas y tablas con aire; nada decorativo.
 3. **Una acción principal por pantalla**, en verde primario.
 4. **Fechas siempre visibles** y en el mismo formato: `dd/MM/yyyy`.
-5. Mínimo 1280 px de ancho. Entre 1024 y 1280 px las cuadrículas bajan de 3 a 2 columnas.
+5. **Responsive mobile-first, sin ancho mínimo.** Debe usarse y verse bien en cualquier pantalla y resolución, incluido el celular. Sin desborde horizontal de la página. Las medidas de abajo describen el escritorio; en pantallas menores se adaptan así:
+   - **Márgenes:** 16 px en móvil, 32 px desde 640 px. Contenido centrado con ancho máximo de 1376 px.
+   - **Barra superior:** en móvil solo logo y avatar; "Mis tareas" y "Calendario" desde 768 px, buscador desde 1024 px, campana desde 640 px.
+   - **Cuadrículas de proyectos:** 1 columna en móvil, 2 desde 768 px, 3 desde 1280 px. Indicadores: 2×2 en móvil, 4 en fila desde 1024 px.
+   - **Cabecera de proyecto:** título, botones y datos se apilan; las pestañas se desplazan horizontalmente.
+   - **Resumen:** las tarjetas de fase se desplazan horizontalmente con ajuste (snap); las dos columnas pasan a una bajo 1100 px.
+   - **Fases y tareas:** bajo 1024 px cada tarea es una tarjeta (título, botón de estado de 40 px, prioridad, fecha, horas); desde 1024 px, la tabla.
+   - **Diálogos:** centrados con márgenes en móvil, con pie fijo en el asistente de registro; el panel de detalle ocupa todo el ancho.
+   - **Formularios:** campos de 16 px en móvil (evita el zoom automático de iOS); columnas dobles pasan a una.
 
 ## Tipografía
 Plus Jakarta Sans (Google Fonts), pesos 400, 500, 600, 700, 800. Números con `font-variant-numeric: tabular-nums`.

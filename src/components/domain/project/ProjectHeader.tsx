@@ -1,18 +1,18 @@
 import { Workflow } from "lucide-react";
 import Link from "next/link";
 import { Bar } from "@/components/ui/Bar";
-import { buttonClass } from "@/components/ui/Button";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import type { ProjectData } from "@/lib/data/project";
 import { daysColor, daysText, daysUntil, formatDate } from "@/lib/domain/dates";
 import { currentPhase, finalDeliveryDate, projectProgress } from "@/lib/domain/progress";
+import { ArchivedNotice, ProjectActions } from "./ProjectActions";
 import { ProjectTabs } from "./ProjectTabs";
 
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 export function ProjectHeaderSkeleton() {
   return (
-    <div aria-busy="true" className="border-b border-line bg-white px-8 py-[18px]">
+    <div aria-busy="true" className="border-b border-line bg-white px-4 sm:px-8 py-[18px]">
       <div className="mx-auto max-w-[1376px]">
         <div className="mb-3 h-4 w-48 animate-pulse rounded-label bg-surface" />
         <div className="mb-6 h-11 w-96 animate-pulse rounded-card bg-surface" />
@@ -31,7 +31,9 @@ export function ProjectHeader({ data, today }: { data: ProjectData; today: strin
   const topLevelTasks = tasks.filter((t) => !t.parentTaskId).length;
 
   return (
-    <div className="border-b border-line bg-white px-8 pt-[18px]">
+    <>
+    {project.archivedAt && <ArchivedNotice projectId={project.id} />}
+    <div className="border-b border-line bg-white px-4 sm:px-8 pt-4 sm:pt-[18px]">
       <div className="mx-auto max-w-[1376px]">
         <nav aria-label="Ruta" className="mb-3 text-[13px] text-muted">
           <Link href="/" className="hover:text-ink hover:underline">
@@ -40,28 +42,27 @@ export function ProjectHeader({ data, today }: { data: ProjectData; today: strin
           / <span aria-current="page">{project.name}</span>
         </nav>
 
-        <div className="flex items-center justify-between gap-6">
-          <div className="flex min-w-0 items-center gap-3.5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3.5 gap-y-2">
             <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-700">
               <Workflow size={22} strokeWidth={1.9} />
             </span>
             <div className="min-w-0">
-              <h1 className="text-2xl leading-[30px] font-extrabold tracking-[-0.015em]">{project.name}</h1>
-              {project.description && <p className="truncate text-[13px] text-muted">{project.description}</p>}
+              <h1 className="text-xl leading-[26px] font-extrabold tracking-[-0.015em] break-words sm:text-2xl sm:leading-[30px]">{project.name}</h1>
+              {project.description && <p className="text-[13px] text-muted sm:truncate">{project.description}</p>}
             </div>
             <StatusLabel status={project.status} />
           </div>
-          <div className="flex shrink-0 gap-3">
-            <button type="button" disabled title="Próximamente" className={buttonClass("secondary")}>
-              Cambiar estado
-            </button>
-            <button type="button" disabled title="Próximamente" className={buttonClass("primary")}>
-              Editar proyecto
-            </button>
+          <div className="flex gap-3 lg:shrink-0">
+            <ProjectActions
+              project={project}
+              pendingPhases={phases.filter((p) => p.status !== "completed").length}
+              hasPhases={phases.length > 0}
+            />
           </div>
         </div>
 
-        <dl className="mt-[18px] mb-[18px] flex flex-wrap gap-x-9 gap-y-3">
+        <dl className="mt-4 mb-4 flex flex-wrap gap-x-6 gap-y-3 sm:mt-[18px] sm:mb-[18px] sm:gap-x-9">
           <Datum label="Fase actual">
             {current ? `${current.name} · ${phases.indexOf(current) + 1} de ${phases.length}` : "—"}
           </Datum>
@@ -77,11 +78,11 @@ export function ProjectHeader({ data, today }: { data: ProjectData; today: strin
             )}
           </Datum>
           <Datum label="Responsable">{project.responsible ?? "—"}</Datum>
-          <div>
+          <div className="basis-full sm:basis-auto">
             <dt className="text-xs font-medium text-muted">
               Avance · {progress.done} de {topLevelTasks} tareas
             </dt>
-            <dd className="mt-1.5 w-[200px]">
+            <dd className="mt-1.5 w-full sm:w-[200px]">
               <Bar percent={progress.percent} label={`Avance del proyecto ${project.name}`} />
             </dd>
           </div>
@@ -90,6 +91,7 @@ export function ProjectHeader({ data, today }: { data: ProjectData; today: strin
         <ProjectTabs projectId={project.id} taskCount={topLevelTasks} resourceCount={resources.length} />
       </div>
     </div>
+    </>
   );
 }
 

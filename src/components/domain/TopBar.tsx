@@ -7,58 +7,62 @@ const soon = "cursor-not-allowed text-sm font-medium text-green-200 opacity-60";
 
 export function TopBarSkeleton() {
   return (
-    <header className="flex h-[var(--top-bar-height)] items-center bg-green-900 px-8">
-      <span aria-hidden className="mr-2 inline-block size-4 rotate-45 rounded-[3px] bg-green-500" />
-      <span className="text-base font-extrabold text-white">{APP_NAME}</span>
+    <header className="bg-green-900">
+      <div className="mx-auto flex h-[var(--top-bar-height)] max-w-[1376px] items-center px-4 sm:px-8">
+        <span aria-hidden className="mr-2 inline-block size-4 rotate-45 rounded-[3px] bg-green-500" />
+        <span className="text-base font-extrabold text-white">{APP_NAME}</span>
+      </div>
     </header>
   );
 }
 
 export function TopBar({ initials, email }: { initials: string; email: string }) {
   return (
-    <header className="flex h-[var(--top-bar-height)] items-center gap-6 bg-green-900 px-8">
-      <Link href="/" className="mr-2 flex items-center gap-2">
-        <span aria-hidden className="inline-block size-4 rotate-45 rounded-[3px] bg-green-500" />
-        <span className="text-base font-extrabold text-white">{APP_NAME}</span>
-      </Link>
-
-      <nav aria-label="Principal" className="flex h-full items-center gap-6">
-        <Link
-          href="/"
-          aria-current="page"
-          className="flex h-full items-center border-b-2 border-green-300 text-sm font-semibold text-white"
-        >
-          Proyectos
+    <header className="bg-green-900">
+      <div className="mx-auto flex h-[var(--top-bar-height)] max-w-[1376px] items-center gap-4 px-4 sm:px-8 md:gap-6">
+        <Link href="/" className="mr-2 flex items-center gap-2">
+          <span aria-hidden className="inline-block size-4 rotate-45 rounded-[3px] bg-green-500" />
+          <span className="text-base font-extrabold text-white">{APP_NAME}</span>
         </Link>
-        <span aria-disabled="true" title="Próximamente" className={soon}>
-          Mis tareas
-        </span>
-        <span aria-disabled="true" title="Próximamente" className={soon}>
-          Calendario
-        </span>
-      </nav>
 
-      <div className="ml-auto flex items-center gap-4">
-        <label className="relative">
-          <span className="sr-only">Buscar proyectos, tareas o recursos</span>
-          <Search size={16} strokeWidth={1.9} aria-hidden className="absolute top-1/2 left-3 -translate-y-1/2 text-green-200" />
-          <input
-            type="search"
+        <nav aria-label="Principal" className="flex h-full items-center gap-4 md:gap-6">
+          <Link
+            href="/"
+            aria-current="page"
+            className="flex h-full items-center border-b-2 border-green-300 text-sm font-semibold text-white"
+          >
+            Proyectos
+          </Link>
+          <span aria-disabled="true" title="Próximamente" className={`${soon} hidden md:inline`}>
+            Mis tareas
+          </span>
+          <span aria-disabled="true" title="Próximamente" className={`${soon} hidden md:inline`}>
+            Calendario
+          </span>
+        </nav>
+
+        <div className="ml-auto flex items-center gap-3 md:gap-4">
+          <label className="relative hidden lg:block">
+            <span className="sr-only">Buscar proyectos, tareas o recursos</span>
+            <Search size={16} strokeWidth={1.9} aria-hidden className="absolute top-1/2 left-3 -translate-y-1/2 text-green-200" />
+            <input
+              type="search"
+              disabled
+              title="Próximamente"
+              placeholder="Buscar proyectos, tareas o recursos"
+              className="h-9 w-[280px] cursor-not-allowed rounded-input bg-green-800 pr-3 pl-9 text-sm text-white placeholder:text-green-200 xl:w-[300px]"
+            />
+          </label>
+          <button
+            type="button"
             disabled
-            title="Próximamente"
-            placeholder="Buscar proyectos, tareas o recursos"
-            className="h-9 w-[300px] cursor-not-allowed rounded-input bg-green-800 pr-3 pl-9 text-sm text-white placeholder:text-green-200"
-          />
-        </label>
-        <button
-          type="button"
-          disabled
-          aria-label="Notificaciones (próximamente)"
-          className="flex size-9 cursor-not-allowed items-center justify-center rounded-full text-green-200 opacity-60"
-        >
-          <Bell size={18} strokeWidth={1.9} aria-hidden />
-        </button>
-        <AvatarMenu initials={initials} email={email} />
+            aria-label="Notificaciones (próximamente)"
+            className="hidden size-9 cursor-not-allowed items-center justify-center rounded-full text-green-200 opacity-60 sm:flex"
+          >
+            <Bell size={18} strokeWidth={1.9} aria-hidden />
+          </button>
+          <AvatarMenu initials={initials} email={email} />
+        </div>
       </div>
     </header>
   );

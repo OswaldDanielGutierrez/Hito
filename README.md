@@ -4,7 +4,7 @@ Gestor de proyectos personal para proyectos de automatización e IA. Cada proyec
 
 > "hito" es un nombre provisional. Se cambia en un solo lugar: `src/config/app.ts` (`APP_NAME`).
 
-**Estado:** especificación completa. El código aún no se ha empezado (siguiente paso: hito M0 del plan de construcción).
+**Estado:** en construcción. Hechos M0 a M4 y M6; pendientes M5 (recursos), M7 (alertas) y M8 (pulido). La app es **100% responsive**: se usa en celular, tableta y monitores grandes.
 
 ## Por dónde empezar
 
@@ -53,13 +53,13 @@ Quedan para v2: Mis tareas, Calendario, alertas por Teams, subtareas, cronograma
 
 | Hito | Contenido |
 |---|---|
-| M0 | Base: proyecto Next.js, tema, Supabase, Vercel |
-| M1 | Datos y acceso: migración, login, RLS |
-| M2 | Lógica de dominio con tests |
-| M3 | Pantalla Inicio |
-| M4 | Proyecto: Resumen y Fases y tareas |
+| M0 ✅ | Base: proyecto Next.js, tema, Supabase, Vercel |
+| M1 ✅ | Datos y acceso: migración, login, RLS |
+| M2 ✅ | Lógica de dominio con tests |
+| M3 ✅ | Pantalla Inicio |
+| M4 ✅ | Proyecto: Resumen y Fases y tareas |
 | M5 | Recursos, notas y contactos |
-| M6 | Registrar proyecto |
+| M6 ✅ | Registrar proyecto |
 | M7 | Historial y alertas |
 | M8 | Pulido: búsqueda, PWA, accesibilidad |
 

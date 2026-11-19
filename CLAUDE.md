@@ -1,6 +1,6 @@
 # hito — gestor de proyectos personal
 
-App web personal para gestionar proyectos de automatización e IA. Cada proyecto tiene fases (cada una con fecha de entrega estimada), tareas, recursos a la mano (documentos, flujos, código, enlaces) y alertas por fechas. Un solo usuario (el dueño). Diseñada para computador.
+App web personal para gestionar proyectos de automatización e IA. Cada proyecto tiene fases (cada una con fecha de entrega estimada), tareas, recursos a la mano (documentos, flujos, código, enlaces) y alertas por fechas. Un solo usuario (el dueño). Responsive al 100%: se usa y se ve bien en cualquier pantalla y resolución, desde un celular de 320 px hasta monitores grandes.
 
 > "hito" es un nombre provisional. Está centralizado en `src/config/app.ts` (`APP_NAME`) para cambiarlo en un solo lugar.
 
@@ -50,6 +50,7 @@ supabase/migrations  supabase/functions/send-alerts
 - La lógica de negocio (salud, progreso, notas de fase, días restantes) vive en `src/lib/domain` como funciones puras con tests.
 - Tipos de BD generados en `src/types/database.ts`. No editarlos a mano.
 - Cada cambio de base de datos es un archivo nuevo en `supabase/migrations`.
+- Responsive obligatorio (mobile-first): toda pantalla nueva se verifica a 320, 375, 768, 1024, 1440 y 1920 px, sin desborde horizontal de la página. Campos de formulario con 16 px en móvil, objetivos táctiles de al menos 40 px y diálogos que caben en pantalla.
 - Accesibilidad: HTML semántico, foco visible, `aria-label` en botones de ícono, contraste AA. Nunca comunicar algo solo con color: siempre hay texto.
 - Respeta `prefers-reduced-motion`.
 
@@ -63,10 +64,10 @@ supabase/migrations  supabase/functions/send-alerts
 
 ## No hacer
 - No barra lateral. La navegación es la barra superior.
-- No modo oscuro en v1. No versión móvil nativa.
+- No modo oscuro en v1. No app móvil nativa (la versión web sí es responsive).
 - No agregar dependencias grandes sin preguntar.
 - No guardar datos en `localStorage`. Todo va a Supabase.
 - No inventar pantallas que no estén en `docs/02-diseno.md`; si falta una, usa los mismos componentes y pregunta.
 
 ## Definición de "listo"
-`typecheck`, `lint` y `test` pasan. RLS verificado (un usuario no ve datos de otro). La pantalla coincide con `docs/02-diseno.md`. Se puede usar solo con teclado. Estados vacío, cargando y error cubiertos.
+`typecheck`, `lint` y `test` pasan. RLS verificado (un usuario no ve datos de otro). La pantalla coincide con `docs/02-diseno.md` y es usable en celular (320 px) sin desborde horizontal. Se puede usar solo con teclado. Estados vacío, cargando y error cubiertos.

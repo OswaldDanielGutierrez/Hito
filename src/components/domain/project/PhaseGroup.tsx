@@ -58,9 +58,22 @@ export function PhaseGroup({
   const circle = isDone ? "#007A3D" : isCurrent ? "#D9822B" : "#9AA49F";
   const panelId = `fase-${phase.id}`;
 
+  const view = (task: TaskData) => {
+    const days = task.dueDate ? daysUntil(task.dueDate, today) : null;
+    const dateClass =
+      task.state === "done" || days === null
+        ? "text-muted"
+        : days < 0
+          ? "font-bold text-danger"
+          : days <= 1
+            ? "font-bold text-warn"
+            : "text-muted";
+    return { state: taskStateColors[task.state], priority: priorityColors[task.priority], dateClass };
+  };
+
   return (
     <section className="overflow-hidden rounded-card border border-line bg-white" aria-labelledby={`${panelId}-titulo`}>
-      <div className={`flex flex-wrap items-center gap-3 px-[18px] py-3.5 ${isCurrent ? "bg-[#FFFAF4]" : ""}`}>
+      <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3.5 sm:px-[18px] ${isCurrent ? "bg-[#FFFAF4]" : ""}`}>
         <h2 id={`${panelId}-titulo`}>
           <button
             type="button"
@@ -98,7 +111,7 @@ export function PhaseGroup({
           {note.text}
         </span>
 
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex w-full items-center justify-between gap-4 sm:ml-auto sm:w-auto sm:justify-end">
           {isCurrent && (
             <button type="button" onClick={onComplete} className="text-[13px] font-bold text-green-700 hover:underline">
               Completar fase
@@ -113,7 +126,7 @@ export function PhaseGroup({
             <div
               role="img"
               aria-label={`${counts.done} de ${total} tareas hechas`}
-              className="flex h-2.5 w-[160px] gap-0.5 overflow-hidden"
+              className="flex h-2.5 w-[110px] gap-0.5 overflow-hidden sm:w-[160px]"
             >
               {total === 0 ? (
                 <span className="h-full flex-1 rounded-[3px] bg-[#C9D0CC]" />
@@ -146,9 +159,51 @@ export function PhaseGroup({
       {open && (
         <div id={panelId} className="overflow-x-auto border-t border-surface">
           {total === 0 && !adding ? (
-            <p className="px-[18px] py-4 text-sm text-muted">Esta fase no tiene tareas. Agrega la primera.</p>
+            <p className="px-4 py-4 text-sm text-muted sm:px-[18px]">Esta fase no tiene tareas. Agrega la primera.</p>
           ) : (
-            <table className="w-full min-w-[900px] border-collapse">
+            <>
+            <ul className="lg:hidden">
+              {tasks.map((task) => {
+                const { state, priority, dateClass } = view(task);
+                return (
+                  <li key={task.id} className="flex flex-col gap-2.5 border-t border-surface px-4 py-3 first:border-t-0">
+                    <button
+                      type="button"
+                      onClick={() => onOpenTask(task)}
+                      className="w-full rounded-input text-left text-sm font-semibold break-words"
+                    >
+                      {task.title}
+                    </button>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                      <button
+                        type="button"
+                        onClick={() => onCycleState(task)}
+                        aria-label={`${task.title}: ${taskStateLabel[task.state]}. Cambiar estado`}
+                        className="h-10 min-w-[116px] rounded-label px-3 text-xs font-bold transition-colors duration-[120ms] ease-out"
+                        style={{ backgroundColor: state.bg, color: state.ink }}
+                      >
+                        {taskStateLabel[task.state]}
+                      </button>
+                      <span
+                        className="inline-block rounded-pill px-2.5 py-1 text-xs font-semibold"
+                        style={{ backgroundColor: priority.bg, color: priority.ink }}
+                      >
+                        {priorityLabel[task.priority]}
+                      </span>
+                      {task.dueDate && <span className={`text-[13px] ${dateClass}`}>{formatDate(task.dueDate)}</span>}
+                      {task.estimatedHours !== null && <span className="text-[13px] text-muted">{task.estimatedHours} h</span>}
+                      {task.linkedResourceIds.length > 0 && (
+                        <span className="inline-flex items-center gap-1.5 text-[13px] text-muted">
+                          <LinkIcon size={14} strokeWidth={1.9} aria-hidden />
+                          {task.linkedResourceIds.length} {task.linkedResourceIds.length === 1 ? "recurso" : "recursos"}
+                        </span>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <table className="hidden w-full min-w-[900px] border-collapse lg:table">
               <thead>
                 <tr>
                   <th className={th}>Tarea</th>
@@ -161,17 +216,7 @@ export function PhaseGroup({
               </thead>
               <tbody>
                 {tasks.map((task) => {
-                  const state = taskStateColors[task.state];
-                  const priority = priorityColors[task.priority];
-                  const days = task.dueDate ? daysUntil(task.dueDate, today) : null;
-                  const dateClass =
-                    task.state === "done" || days === null
-                      ? "text-muted"
-                      : days < 0
-                        ? "font-bold text-danger"
-                        : days <= 1
-                          ? "font-bold text-warn"
-                          : "text-muted";
+                  const { state, priority, dateClass } = view(task);
                   return (
                     <tr key={task.id} className="border-t border-surface">
                       <td className="px-3 py-1">
@@ -221,9 +266,10 @@ export function PhaseGroup({
                 })}
               </tbody>
             </table>
+            </>
           )}
 
-          <div className="border-t border-surface px-[18px] py-2.5">
+          <div className="border-t border-surface px-4 py-2.5 sm:px-[18px]">
             {adding ? (
               <form
                 onSubmit={(e) => {
@@ -251,14 +297,14 @@ export function PhaseGroup({
                     }
                   }}
                   placeholder="Título de la tarea y Enter"
-                  className="h-9 flex-1 rounded-input border border-input-border bg-white px-3 text-sm"
+                  className="h-10 flex-1 rounded-input border border-input-border bg-white px-3 text-base sm:h-9 sm:text-sm"
                 />
                 <button type="button" onClick={() => { setDraft(""); onStopAdd(); }} className="text-[13px] font-semibold text-muted hover:text-ink">
                   Listo
                 </button>
               </form>
             ) : (
-              <button type="button" onClick={onStartAdd} className="flex items-center gap-1.5 text-[13px] font-bold text-green-700 hover:underline">
+              <button type="button" onClick={onStartAdd} className="flex items-center gap-1.5 py-1.5 text-[13px] font-bold text-green-700 hover:underline">
                 <Plus size={16} strokeWidth={1.9} aria-hidden />
                 Agregar tarea a {phase.name}
               </button>

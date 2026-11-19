@@ -66,7 +66,7 @@ export function EditPhaseDateDialog({
             maxLength={300}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="w-full rounded-input border border-input-border bg-white px-3 py-2 text-sm"
+            className="w-full rounded-input border border-input-border bg-white px-3 py-2 text-base sm:text-sm"
           />
         </div>
 

@@ -22,7 +22,7 @@ export function ProjectTabs({ projectId, taskCount, resourceCount }: { projectId
   ];
 
   return (
-    <nav aria-label="Secciones del proyecto" className="flex gap-7">
+    <nav aria-label="Secciones del proyecto" className="-mx-4 flex gap-5 overflow-x-auto px-4 whitespace-nowrap [scrollbar-width:none] sm:mx-0 sm:gap-7 sm:px-0">
       {tabs.map((tab) => {
         const active = tab.href === base ? pathname === base : pathname.startsWith(tab.href);
         const content = (
@@ -37,7 +37,7 @@ export function ProjectTabs({ projectId, taskCount, resourceCount }: { projectId
               key={tab.href}
               aria-disabled="true"
               title="Próximamente"
-              className="cursor-not-allowed border-b-2 border-transparent pb-3 text-sm font-medium text-muted opacity-60"
+              className="shrink-0 cursor-not-allowed border-b-2 border-transparent pb-3 text-sm font-medium text-muted opacity-60"
             >
               {content}
             </span>
@@ -48,7 +48,7 @@ export function ProjectTabs({ projectId, taskCount, resourceCount }: { projectId
             key={tab.href}
             href={tab.href}
             aria-current={active ? "page" : undefined}
-            className={`border-b-2 pb-3 text-sm transition-colors duration-[120ms] ease-out ${
+            className={`shrink-0 border-b-2 pb-3 text-sm transition-colors duration-[120ms] ease-out ${
               active ? "border-green-700 font-bold text-ink" : "border-transparent font-medium text-muted hover:text-ink"
             }`}
           >

@@ -16,10 +16,10 @@ export function StatCard({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-3.5 rounded-card border border-line bg-white p-4">
+    <div className="flex items-center gap-3 rounded-card border border-line bg-white p-3 sm:gap-3.5 sm:p-4">
       <span
         aria-hidden
-        className="flex size-11 shrink-0 items-center justify-center rounded-xl"
+        className="flex size-10 shrink-0 sm:size-11 items-center justify-center rounded-xl"
         style={{ backgroundColor: iconBg, color: iconColor }}
       >
         {icon}

@@ -353,7 +353,9 @@ isOneToOne: false
                 }
           }
           Functions: {
-            [_ in never]: never
+            "create_project":
+{ Args: { "p_area": string,"p_description": string,"p_name": string,"p_notify_phase"?: boolean,"p_phases": Json,"p_resources"?: Json,"p_responsible": string,"p_start_date": string }; Returns: string
+                           }
           }
           Enums: {
             "alert_kind": "phase_due_soon"|"final_due"|"task_due"|"stale"|"overdue"|"weekly_summary","change_kind": "status"|"date"|"task"|"phase"|"scope","phase_status": "pending"|"in_progress"|"completed","project_status": "development"|"qa"|"production"|"delivered"|"on_hold","resource_kind": "document"|"flow"|"code"|"link","task_priority": "high"|"medium"|"low","task_state": "pending"|"in_progress"|"done"|"blocked"

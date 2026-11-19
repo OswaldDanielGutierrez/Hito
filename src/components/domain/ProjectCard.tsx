@@ -16,12 +16,12 @@ export function ProjectCard({ project: p }: { project: ProjectCardData }) {
   return (
     <Link
       href={`/proyectos/${p.id}`}
-      className="flex flex-col gap-3.5 rounded-card border border-line bg-white px-5 py-[18px] transition-[border-color,box-shadow] duration-[120ms] ease-out hover:border-input-border hover:shadow-card-hover"
+      className="flex flex-col gap-3.5 rounded-card border border-line bg-white px-4 py-4 sm:px-5 sm:py-[18px] transition-[border-color,box-shadow] duration-[120ms] ease-out hover:border-input-border hover:shadow-card-hover"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           {p.area && <div className="text-xs font-semibold text-muted">{p.area}</div>}
-          <h2 className="text-[17px] leading-[22px] font-extrabold">{p.name}</h2>
+          <h2 className="text-base leading-[22px] font-extrabold break-words sm:text-[17px]">{p.name}</h2>
         </div>
         <StatusLabel status={p.status} />
       </div>

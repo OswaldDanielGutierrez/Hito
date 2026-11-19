@@ -16,12 +16,12 @@ Un solo lugar donde un desarrollador de automatizaciones e IA ve, planea y entre
 - Ninguna fase vence sin haber recibido al menos una alerta.
 
 ## Usuario
-Una sola persona (el dueño). Usa la app a diario desde computador. La base de datos ya queda preparada para varios usuarios (`owner_id` + RLS), pero v1 no incluye colaboración.
+Una sola persona (el dueño). Usa la app a diario, principalmente desde computador, pero también desde el celular u otra pantalla. La base de datos ya queda preparada para varios usuarios (`owner_id` + RLS), pero v1 no incluye colaboración.
 
 ## Alcance
 **Dentro de v1:** acceso, inicio con todos los proyectos, registro y edición de proyectos, fases con fechas estimadas, tareas, recursos, notas y contactos, historial, alertas (en la app y por correo), búsqueda, instalable como PWA.
 
-**Fuera de v1:** colaboración entre usuarios, control de tiempo, facturación, app móvil nativa, guardar contraseñas, integraciones con Jira/Asana, modo oscuro.
+**Fuera de v1:** colaboración entre usuarios, control de tiempo, facturación, app móvil nativa (la web sí es responsive), guardar contraseñas, integraciones con Jira/Asana, modo oscuro.
 
 ## Glosario
 | Término | Significado |

@@ -30,7 +30,7 @@ export function AvatarMenu({ initials, email }: { initials: string; email: strin
               event.preventDefault();
               startTransition(() => logout());
             }}
-            className="flex w-full cursor-pointer items-center gap-2 rounded-input px-3 py-2 text-sm font-medium outline-none data-[disabled]:opacity-60 data-[highlighted]:bg-surface"
+            className="flex w-full cursor-pointer items-center gap-2 rounded-input px-3 py-2 text-base sm:text-sm font-medium outline-none data-[disabled]:opacity-60 data-[highlighted]:bg-surface"
           >
             <LogOut size={18} strokeWidth={1.9} aria-hidden />
             {pending ? "Saliendo…" : "Salir"}

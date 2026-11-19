@@ -68,11 +68,11 @@ export function TaskDetailSheet({
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-input border border-input-border bg-white px-3 py-2 text-sm"
+            className="w-full rounded-input border border-input-border bg-white px-3 py-2 text-base sm:text-sm"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 min-[380px]:grid-cols-2">
           <div>
             <label htmlFor="task-state" className={labelClass}>
               Estado

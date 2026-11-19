@@ -14,6 +14,7 @@ export interface ProjectInfo {
   status: Enums["project_status"];
   startDate: string | null;
   updatedAt: string;
+  archivedAt: string | null;
 }
 
 export interface PhaseData {
@@ -67,7 +68,7 @@ export const getProjectData = cache(async (id: string): Promise<ProjectData | nu
 
   const supabase = await createClient();
   const [project, phases, tasks, resources, links] = await Promise.all([
-    supabase.from("projects").select("*").eq("id", id).is("archived_at", null).maybeSingle(),
+    supabase.from("projects").select("*").eq("id", id).maybeSingle(),
     supabase.from("phases").select("*").eq("project_id", id).order("position"),
     supabase.from("tasks").select("*").eq("project_id", id).order("position"),
     supabase.from("resources").select("*").eq("project_id", id).order("created_at", { ascending: false }),
@@ -92,6 +93,7 @@ export const getProjectData = cache(async (id: string): Promise<ProjectData | nu
       status: p.status,
       startDate: p.start_date,
       updatedAt: p.updated_at,
+      archivedAt: p.archived_at,
     },
     phases: (phases.data ?? []).map((ph) => ({
       id: ph.id,

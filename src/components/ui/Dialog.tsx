@@ -17,13 +17,17 @@ export function Dialog({
   onOpenChange: (open: boolean) => void;
   title: string;
   description?: string;
-  variant?: "center" | "side";
+  variant?: "center" | "wide" | "side";
   children: ReactNode;
 }) {
+  const centered =
+    "fixed top-4 left-1/2 max-h-[calc(100dvh-2rem)] max-w-[calc(100%-1.5rem)] -translate-x-1/2 overflow-y-auto rounded-dialog bg-white shadow-dialog sm:top-10 sm:max-h-[calc(100dvh-5rem)] sm:max-w-[calc(100%-2rem)]";
   const position =
     variant === "side"
-      ? "fixed top-0 right-0 bottom-0 w-[480px] max-w-full overflow-y-auto bg-white p-6 shadow-dialog"
-      : "fixed top-10 left-1/2 w-[520px] max-w-[calc(100%-32px)] -translate-x-1/2 rounded-dialog bg-white p-6 shadow-dialog";
+      ? "fixed top-0 right-0 bottom-0 w-[480px] max-w-full overflow-y-auto bg-white p-5 shadow-dialog sm:p-6"
+      : variant === "wide"
+        ? `${centered} w-[820px] p-5 sm:p-7`
+        : `${centered} w-[520px] p-5 sm:p-6`;
 
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
@@ -32,7 +36,7 @@ export function Dialog({
         <RadixDialog.Content className={`${position} z-50`}>
           <div className="mb-5 flex items-start justify-between gap-4">
             <div>
-              <RadixDialog.Title className="text-[22px] leading-7 font-extrabold">{title}</RadixDialog.Title>
+              <RadixDialog.Title className="text-xl leading-7 font-extrabold sm:text-[22px]">{title}</RadixDialog.Title>
               {description ? (
                 <RadixDialog.Description className="mt-1 text-sm text-muted">{description}</RadixDialog.Description>
               ) : (

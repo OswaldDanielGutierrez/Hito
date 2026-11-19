@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectResource } from "./resourceDetect";
+import { detectResource, normalizeUrl, suggestResourceName } from "./resourceDetect";
 
 describe("detectResource", () => {
   it.each([
@@ -33,5 +33,36 @@ describe("detectResource", () => {
     expect(detectResource("hola mundo")).toBeNull();
     expect(detectResource("javascript:alert(1)")).toBeNull();
     expect(detectResource("ftp://servidor.com/a")).toBeNull();
+  });
+});
+
+describe("normalizeUrl", () => {
+  it("agrega el protocolo y devuelve la URL completa", () => {
+    expect(normalizeUrl("github.com/foo/bar")).toBe("https://github.com/foo/bar");
+    expect(normalizeUrl("  https://www.figma.com/file/abc  ")).toBe("https://www.figma.com/file/abc");
+  });
+
+  it("rechaza lo que no es un enlace web", () => {
+    expect(normalizeUrl("hola")).toBeNull();
+    expect(normalizeUrl("javascript:alert(1)")).toBeNull();
+    expect(normalizeUrl("")).toBeNull();
+  });
+});
+
+describe("suggestResourceName", () => {
+  it("usa el último tramo de la ruta, legible", () => {
+    expect(suggestResourceName("https://github.com/org/mi-repositorio")).toBe("GitHub · mi repositorio");
+    expect(suggestResourceName("https://empresa.sharepoint.com/sites/x/Plan%20de%20trabajo.docx")).toBe(
+      "SharePoint · Plan de trabajo",
+    );
+  });
+
+  it("usa el origen si no hay ruta o la ruta es un identificador", () => {
+    expect(suggestResourceName("https://www.ejemplo.com")).toBe("ejemplo.com");
+    expect(suggestResourceName("https://docs.google.com/document/d/1AbC2dEf3GhI4jKl5MnO6pQr7StU8vWx9")).toBe("Google Docs");
+  });
+
+  it("devuelve vacío si no es un enlace", () => {
+    expect(suggestResourceName("hola")).toBe("");
   });
 });

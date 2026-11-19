@@ -31,7 +31,7 @@ export default function LoginPage() {
           type="email"
           autoComplete="email"
           required
-          className="mb-4 h-10 w-full rounded-input border border-input-border px-3 text-sm"
+          className="mb-4 h-10 w-full rounded-input border border-input-border px-3 text-base sm:text-sm"
         />
 
         <label htmlFor="password" className="mb-1 block text-xs font-medium text-muted">
@@ -43,7 +43,7 @@ export default function LoginPage() {
           type="password"
           autoComplete="current-password"
           required
-          className="mb-4 h-10 w-full rounded-input border border-input-border px-3 text-sm"
+          className="mb-4 h-10 w-full rounded-input border border-input-border px-3 text-base sm:text-sm"
         />
 
         {state.error && (

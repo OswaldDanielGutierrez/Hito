@@ -23,5 +23,5 @@ export const resourceKindColors: Record<ResourceKind, Pair> = {
 };
 
 export const fieldClass =
-  "h-10 w-full rounded-input border border-input-border bg-white px-3 text-sm disabled:opacity-60";
+  "h-10 w-full rounded-input border border-input-border bg-white px-3 text-base sm:text-sm disabled:opacity-60";
 export const labelClass = "mb-1 block text-xs font-medium text-muted";

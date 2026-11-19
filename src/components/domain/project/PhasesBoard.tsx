@@ -99,18 +99,18 @@ export function PhasesBoard({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
-        <Button onClick={startNewTask} disabled={!current}>
+        <Button className="flex-1 sm:flex-none" onClick={startNewTask} disabled={!current}>
           <Plus size={18} strokeWidth={1.9} aria-hidden />
           Nueva tarea
         </Button>
-        <Button variant="secondary" onClick={() => setNewPhaseOpen(true)}>
+        <Button className="flex-1 sm:flex-none" variant="secondary" onClick={() => setNewPhaseOpen(true)}>
           <Plus size={18} strokeWidth={1.9} aria-hidden />
           Nueva fase
         </Button>
-        <p className="text-[13px] text-muted">
+        <p className="basis-full text-[13px] text-muted lg:basis-auto">
           Toca el estado de una tarea para cambiarlo. Toca el nombre de una fase para plegarla.
         </p>
-        <ul aria-label="Leyenda de estados" className="ml-auto flex items-center gap-4">
+        <ul aria-label="Leyenda de estados" className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 lg:ml-auto lg:w-auto">
           {(Object.keys(taskStateLabel) as (keyof typeof taskStateLabel)[]).map((state) => (
             <li key={state} className="flex items-center gap-1.5 text-xs font-medium text-muted">
               <span aria-hidden className="size-3 rounded-[3px]" style={{ backgroundColor: taskStateColors[state].bg }} />

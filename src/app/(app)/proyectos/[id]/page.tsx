@@ -57,7 +57,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
   );
 
   return (
-    <main className="mx-auto flex w-full max-w-[1376px] flex-col gap-[22px] px-8 py-6">
+    <main className="mx-auto flex w-full max-w-[1376px] flex-col gap-5 px-4 py-5 sm:gap-[22px] sm:px-8 sm:py-6">
       <section aria-labelledby="fases-titulo">
         <div className="mb-3.5 flex items-baseline justify-between">
           <h2 id="fases-titulo" className="text-lg font-extrabold">
@@ -69,9 +69,9 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
         </div>
 
         {phases.length === 0 ? (
-          <p className={`${card} p-5 text-sm text-muted`}>Este proyecto aún no tiene fases.</p>
+          <p className={`${card} min-w-0 p-4 sm:p-5 text-sm text-muted`}>Este proyecto aún no tiene fases.</p>
         ) : (
-          <ol className="grid auto-cols-[minmax(180px,1fr)] grid-flow-col gap-3.5 overflow-x-auto pb-1">
+          <ol className="-mx-4 grid auto-cols-[minmax(200px,1fr)] scroll-px-4 snap-x snap-mandatory grid-flow-col gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:scroll-px-0 sm:auto-cols-[minmax(180px,1fr)] sm:gap-3.5 sm:px-0">
             {phases.map((phase, i) => {
               const isCurrent = phase.id === current?.id;
               const isDone = phase.status === "completed";
@@ -87,7 +87,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
                 <li
                   key={phase.id}
                   aria-current={isCurrent ? "step" : undefined}
-                  className={`flex flex-col gap-2 rounded-card px-4 py-3.5 ${
+                  className={`flex snap-start flex-col gap-2 rounded-card px-4 py-3.5 ${
                     isCurrent ? "border-2 border-[#D9822B] bg-[#FFFAF4]" : "border border-line bg-white"
                   }`}
                 >
@@ -121,7 +121,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
       </section>
 
       <div className="grid grid-cols-1 gap-[22px] min-[1100px]:grid-cols-[minmax(600px,1fr)_minmax(360px,0.5fr)]">
-        <section aria-labelledby="tareas-titulo" className={`${card} p-5`}>
+        <section aria-labelledby="tareas-titulo" className={`${card} min-w-0 p-4 sm:p-5`}>
           <div className="mb-3 flex flex-wrap items-center gap-3">
             <h2 id="tareas-titulo" className="text-base font-extrabold">
               Tareas de la fase actual
@@ -150,13 +150,18 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
                 const days = t.dueDate ? daysUntil(t.dueDate, today) : null;
                 const urgent = t.state !== "done" && days !== null && days >= 0 && days <= 1;
                 return (
-                  <li key={t.id} className="flex items-center gap-3 border-t border-surface py-3">
+                  <li
+                    key={t.id}
+                    className="grid grid-cols-[92px_1fr] items-center gap-x-3 gap-y-1 border-t border-surface py-3 sm:grid-cols-[92px_1fr_auto_84px]"
+                  >
                     <TaskStateBadge state={t.state} />
-                    <span className="min-w-0 flex-1 truncate text-sm font-semibold">{t.title}</span>
-                    {t.estimatedHours !== null && <span className="text-xs text-muted">{t.estimatedHours} h</span>}
-                    <span className={`w-[84px] text-right text-xs ${urgent ? "font-bold text-warn" : "text-muted"}`}>
-                      {t.dueDate ? formatDate(t.dueDate) : "—"}
-                    </span>
+                    <span className="min-w-0 text-sm font-semibold break-words sm:truncate">{t.title}</span>
+                    <div className="col-start-2 flex gap-3 text-xs text-muted sm:contents">
+                      <span>{t.estimatedHours !== null ? `${t.estimatedHours} h` : ""}</span>
+                      <span className={`sm:w-[84px] sm:text-right ${urgent ? "font-bold text-warn" : ""}`}>
+                        {t.dueDate ? formatDate(t.dueDate) : "—"}
+                      </span>
+                    </div>
                   </li>
                 );
               })}
@@ -171,7 +176,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
         </section>
 
         <div className="flex flex-col gap-[22px]">
-          <section aria-labelledby="fijados-titulo" className={`${card} p-5`}>
+          <section aria-labelledby="fijados-titulo" className={`${card} min-w-0 p-4 sm:p-5`}>
             <h2 id="fijados-titulo" className="mb-3 text-base font-extrabold">
               Recursos fijados
             </h2>
@@ -220,7 +225,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
             )}
           </section>
 
-          <section aria-labelledby="alertas-titulo" className={`${card} p-5`}>
+          <section aria-labelledby="alertas-titulo" className={`${card} min-w-0 p-4 sm:p-5`}>
             <h2 id="alertas-titulo" className="mb-3 text-base font-extrabold">
               Próximas alertas
             </h2>
