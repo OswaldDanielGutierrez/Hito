@@ -71,3 +71,19 @@ export function isInCurrentWeek(date: string, today: string): boolean {
   const { start, end } = weekBounds(today);
   return date >= start && date <= end;
 }
+
+/** Saludo según la hora de Bogotá: antes de 12:00, hasta 19:00, después. */
+export function greeting(now: Date = new Date()): string {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-GB", { timeZone: TIMEZONE, hour: "2-digit", hourCycle: "h23" }).format(now),
+  );
+  if (hour < 12) return "Buenos días";
+  if (hour < 19) return "Buenas tardes";
+  return "Buenas noches";
+}
+
+/** `Jueves, 19/11/2026` */
+export function formatLongDate(now: Date = new Date()): string {
+  const weekday = new Intl.DateTimeFormat("es-CO", { timeZone: TIMEZONE, weekday: "long" }).format(now);
+  return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}, ${formatDate(todayInBogota(now))}`;
+}

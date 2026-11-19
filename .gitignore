@@ -30,3 +30,7 @@ next-env.d.ts
 *.pem
 .vercel
 .env*
+
+# Herramientas locales
+.playwright-mcp/
+*.png.tmp

@@ -1,0 +1,65 @@
+import { Bell, Search } from "lucide-react";
+import Link from "next/link";
+import { APP_NAME } from "@/config/app";
+import { AvatarMenu } from "./AvatarMenu";
+
+const soon = "cursor-not-allowed text-sm font-medium text-green-200 opacity-60";
+
+export function TopBarSkeleton() {
+  return (
+    <header className="flex h-[var(--top-bar-height)] items-center bg-green-900 px-8">
+      <span aria-hidden className="mr-2 inline-block size-4 rotate-45 rounded-[3px] bg-green-500" />
+      <span className="text-base font-extrabold text-white">{APP_NAME}</span>
+    </header>
+  );
+}
+
+export function TopBar({ initials, email }: { initials: string; email: string }) {
+  return (
+    <header className="flex h-[var(--top-bar-height)] items-center gap-6 bg-green-900 px-8">
+      <Link href="/" className="mr-2 flex items-center gap-2">
+        <span aria-hidden className="inline-block size-4 rotate-45 rounded-[3px] bg-green-500" />
+        <span className="text-base font-extrabold text-white">{APP_NAME}</span>
+      </Link>
+
+      <nav aria-label="Principal" className="flex h-full items-center gap-6">
+        <Link
+          href="/"
+          aria-current="page"
+          className="flex h-full items-center border-b-2 border-green-300 text-sm font-semibold text-white"
+        >
+          Proyectos
+        </Link>
+        <span aria-disabled="true" title="Próximamente" className={soon}>
+          Mis tareas
+        </span>
+        <span aria-disabled="true" title="Próximamente" className={soon}>
+          Calendario
+        </span>
+      </nav>
+
+      <div className="ml-auto flex items-center gap-4">
+        <label className="relative">
+          <span className="sr-only">Buscar proyectos, tareas o recursos</span>
+          <Search size={16} strokeWidth={1.9} aria-hidden className="absolute top-1/2 left-3 -translate-y-1/2 text-green-200" />
+          <input
+            type="search"
+            disabled
+            title="Próximamente"
+            placeholder="Buscar proyectos, tareas o recursos"
+            className="h-9 w-[300px] cursor-not-allowed rounded-input bg-green-800 pr-3 pl-9 text-sm text-white placeholder:text-green-200"
+          />
+        </label>
+        <button
+          type="button"
+          disabled
+          aria-label="Notificaciones (próximamente)"
+          className="flex size-9 cursor-not-allowed items-center justify-center rounded-full text-green-200 opacity-60"
+        >
+          <Bell size={18} strokeWidth={1.9} aria-hidden />
+        </button>
+        <AvatarMenu initials={initials} email={email} />
+      </div>
+    </header>
+  );
+}

@@ -7,6 +7,8 @@ import {
   diffDays,
   formatDate,
   formatDayMonth,
+  formatLongDate,
+  greeting,
   isInCurrentWeek,
   todayInBogota,
   weekBounds,
@@ -71,5 +73,20 @@ describe("semana actual", () => {
     expect(isInCurrentWeek("2026-11-20", "2026-11-18")).toBe(true);
     expect(isInCurrentWeek("2026-11-23", "2026-11-18")).toBe(false);
     expect(isInCurrentWeek("2026-11-15", "2026-11-18")).toBe(false);
+  });
+});
+
+describe("saludo y fecha larga", () => {
+  it("cambia el saludo a las 12:00 y a las 19:00 de Bogotá", () => {
+    expect(greeting(new Date("2026-11-19T16:59:00Z"))).toBe("Buenos días"); // 11:59
+    expect(greeting(new Date("2026-11-19T17:00:00Z"))).toBe("Buenas tardes"); // 12:00
+    expect(greeting(new Date("2026-11-19T23:59:00Z"))).toBe("Buenas tardes"); // 18:59
+    expect(greeting(new Date("2026-11-20T00:00:00Z"))).toBe("Buenas noches"); // 19:00
+    expect(greeting(new Date("2026-11-19T05:00:00Z"))).toBe("Buenos días"); // 00:00
+  });
+
+  it("formatea la fecha larga con el día de la semana", () => {
+    expect(formatLongDate(new Date("2026-11-19T17:00:00Z"))).toBe("Jueves, 19/11/2026");
+    expect(formatLongDate(new Date("2026-11-19T03:00:00Z"))).toBe("Miércoles, 18/11/2026");
   });
 });
