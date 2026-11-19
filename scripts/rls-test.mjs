@@ -78,6 +78,20 @@ try {
   const createAsAnon = await anonymous.rpc("create_project", { p_name: "x", p_area: "", p_description: "", p_responsible: "", p_start_date: "2026-12-01", p_phases: [{ name: "F", date: "2026-12-01" }] });
   check("Sin sesión no se puede crear proyectos (create_project)", !!createAsAnon.error);
 
+  // Pendientes (quick_tasks): cada usuario solo ve y toca los suyos.
+  const quick = await a.from("quick_tasks").insert({ title: "Pendiente de A", requested_by: "Laura P.", project_id: projectId }).select().single();
+  check("A crea un pendiente", !quick.error && quick.data?.owner_id === ids[0]);
+  check("A ve su pendiente", (await a.from("quick_tasks").select("id")).data?.length === 1);
+  check("B no ve pendientes de A", (await b.from("quick_tasks").select("id")).data?.length === 0);
+  check("Sin sesión no se ven pendientes", !(await anonymous.from("quick_tasks").select("id")).data?.length);
+  check("B no puede editar pendientes de A", (await b.from("quick_tasks").update({ title: "hackeado" }).eq("id", quick.data.id).select()).data?.length === 0);
+  check("B no puede borrar pendientes de A", (await b.from("quick_tasks").delete().eq("id", quick.data.id).select()).data?.length === 0);
+  check("B no puede crear pendientes a nombre de A", !!(await b.from("quick_tasks").insert({ title: "Falso", owner_id: ids[0] })).error);
+  const done = await a.from("quick_tasks").update({ done: true }).eq("id", quick.data.id).select().single();
+  check("Marcar como hecho guarda la hora (done_at)", !!done.data?.done_at);
+  const undone = await a.from("quick_tasks").update({ done: false }).eq("id", quick.data.id).select().single();
+  check("Desmarcar limpia la hora (done_at)", undone.data?.done_at === null);
+
   const seenByA = await a.from("projects").select("id");
   check("A ve su proyecto", seenByA.data?.length === 1);
 

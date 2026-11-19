@@ -1,13 +1,13 @@
 "use client";
 
-import { CheckSquare, FileText, Folder, Search } from "lucide-react";
+import { CheckSquare, FileText, Folder, ListTodo, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { searchAll, type SearchResult } from "@/app/(app)/buscar/actions";
 import { Dialog } from "@/components/ui/Dialog";
 
-const typeLabel = { project: "Proyectos", task: "Tareas", resource: "Recursos" } as const;
-const typeIcon = { project: Folder, task: CheckSquare, resource: FileText } as const;
+const typeLabel = { project: "Proyectos", task: "Tareas", resource: "Recursos", quick: "Pendientes" } as const;
+const typeIcon = { project: Folder, task: CheckSquare, resource: FileText, quick: ListTodo } as const;
 
 /** Botón de la barra superior (campo en escritorio, lupa en celular) + panel de búsqueda con Ctrl K. */
 export function SearchTrigger() {
@@ -96,7 +96,7 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
     }
   }
 
-  const groups = (["project", "task", "resource"] as const)
+  const groups = (["project", "task", "quick", "resource"] as const)
     .map((type) => ({ type, items: results.filter((r) => r.type === type) }))
     .filter((g) => g.items.length > 0);
   const searched = query.trim().length >= 2 && !loading;

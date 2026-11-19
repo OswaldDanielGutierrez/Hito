@@ -4,7 +4,16 @@ import { CheckCircle2, X, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type Kind = "success" | "error";
-interface ToastItem {
+
+interface ToastOptions {
+  /** Texto y acción de un botón dentro del aviso (por ejemplo, "Deshacer"). */
+  actionLabel?: string;
+  onAction?: () => void;
+  /** Milisegundos visible. Por defecto 4 s (7 s si es un error). */
+  duration?: number;
+}
+
+interface ToastItem extends ToastOptions {
   id: number;
   kind: Kind;
   message: string;
@@ -14,9 +23,9 @@ const EVENT = "hito:toast";
 let counter = 0;
 
 /** Muestra un aviso breve en la esquina inferior (abajo y centrado en móvil). */
-export function toast(message: string, kind: Kind = "success") {
+export function toast(message: string, kind: Kind = "success", options: ToastOptions = {}) {
   if (typeof window === "undefined") return;
-  window.dispatchEvent(new CustomEvent<ToastItem>(EVENT, { detail: { id: ++counter, kind, message } }));
+  window.dispatchEvent(new CustomEvent<ToastItem>(EVENT, { detail: { id: ++counter, kind, message, ...options } }));
 }
 
 export function Toaster() {
@@ -27,10 +36,13 @@ export function Toaster() {
     const onToast = (e: Event) => {
       const item = (e as CustomEvent<ToastItem>).detail;
       setItems((list) => [...list, item]);
-      const timer = setTimeout(() => {
-        setItems((list) => list.filter((t) => t.id !== item.id));
-        timers.delete(timer);
-      }, item.kind === "error" ? 7000 : 4000);
+      const timer = setTimeout(
+        () => {
+          setItems((list) => list.filter((t) => t.id !== item.id));
+          timers.delete(timer);
+        },
+        item.duration ?? (item.kind === "error" ? 7000 : 4000),
+      );
       timers.add(timer);
     };
     window.addEventListener(EVENT, onToast);
@@ -39,6 +51,8 @@ export function Toaster() {
       timers.forEach(clearTimeout);
     };
   }, []);
+
+  const dismiss = (id: number) => setItems((list) => list.filter((t) => t.id !== id));
 
   return (
     <div className="pointer-events-none fixed inset-x-3 bottom-3 z-[60] flex flex-col items-center gap-2 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:items-end">
@@ -56,10 +70,22 @@ export function Toaster() {
             <CheckCircle2 size={18} strokeWidth={1.9} aria-hidden className="mt-0.5 shrink-0 text-green-700" />
           )}
           <span className="min-w-0 flex-1 break-words">{t.message}</span>
+          {t.actionLabel && t.onAction && (
+            <button
+              type="button"
+              onClick={() => {
+                t.onAction?.();
+                dismiss(t.id);
+              }}
+              className="shrink-0 rounded-input px-2 py-1 text-[13px] font-extrabold text-green-700 hover:bg-green-50"
+            >
+              {t.actionLabel}
+            </button>
+          )}
           <button
             type="button"
             aria-label="Cerrar aviso"
-            onClick={() => setItems((list) => list.filter((x) => x.id !== t.id))}
+            onClick={() => dismiss(t.id)}
             className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted hover:bg-surface"
           >
             <X size={14} strokeWidth={1.9} aria-hidden />

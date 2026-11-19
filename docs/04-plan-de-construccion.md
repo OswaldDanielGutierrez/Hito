@@ -31,6 +31,14 @@ Trabaja por hitos, en orden. Al terminar cada uno: `typecheck`, `lint` y `test` 
 
 **Listo cuando:** con los datos de ejemplo, Inicio coincide con la pantalla 1 de `02-diseno.md` y los filtros funcionan.
 
+## M3b · Pendientes
+- Migración de `quick_tasks`, tipos, Server Actions y funciones de dominio con tests.
+- Pantalla `/pendientes` completa: compositor, pastillas, secciones, tarjetas, panel lateral y filtros.
+- Edición en línea, eliminar con "Deshacer", estados vacío, cargando y error.
+- Ajuste de la barra superior y de la búsqueda global.
+
+**Listo cuando:** escribir un pendiente y presionar Enter lo muestra en su sección al instante; marcarlo actualiza el avance de hoy sin recargar; filtrar por una persona o por un proyecto deja solo sus tarjetas; todos los casos de prueba de dominio pasan; y la pantalla coincide con `docs/05-pendientes.md`.
+
 ## M4 · Proyecto: Resumen y Fases y tareas
 - Cabecera con pestañas, tarjetas de fases, tareas de la fase actual, aviso de fase corrida.
 - Fases plegables, tabla de tareas, cambio de estado con un clic, agregar tarea en línea, panel de detalle.

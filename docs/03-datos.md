@@ -30,6 +30,7 @@ user_settings     (una fila por usuario)
 | `alert_rules` | Reglas de alerta por proyecto (o globales con `project_id` null). |
 | `notifications` | Alertas generadas. Clave única para no duplicarlas. |
 | `user_settings` | Zona horaria, nombre, canales. |
+| `quick_tasks` | Pendientes sueltos del día (pantalla Pendientes): título, proyecto opcional, quién lo pidió, fecha, prioridad y estado. Ver `docs/05-pendientes.md`. |
 
 ## Enums
 | Enum | Valores |

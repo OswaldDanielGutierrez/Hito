@@ -9,27 +9,27 @@ export function NavLinks() {
   const pathname = usePathname();
   const items = [
     { href: "/", label: "Proyectos", short: "Proyectos", active: pathname === "/" || pathname.startsWith("/proyectos") },
-    { href: "/tareas", label: "Mis tareas", short: "Tareas", active: pathname.startsWith("/tareas") },
+    { href: "/pendientes", label: "Pendientes", short: "Pendientes", active: pathname.startsWith("/pendientes") },
   ];
 
   return (
-    <nav aria-label="Principal" className="flex h-full items-center gap-4 md:gap-6 max-[359px]:gap-3">
+    <nav aria-label="Principal" className="flex h-full items-center gap-4 md:gap-6 max-[379px]:gap-2">
       {items.map((item) => (
         <Link
           key={item.href}
           href={item.href}
           aria-current={item.active ? "page" : undefined}
           aria-label={item.label}
-          className={`flex h-full items-center border-b-2 text-sm whitespace-nowrap transition-colors duration-[120ms] ease-out ${
+          className={`flex h-full items-center border-b-2 text-sm whitespace-nowrap max-[379px]:text-[13px] transition-colors duration-[120ms] ease-out ${
             item.active
               ? "border-green-300 font-semibold text-white"
               : "border-transparent font-medium text-green-200 hover:text-white"
           }`}
         >
-          <span aria-hidden className="max-[359px]:hidden">
+          <span aria-hidden className="max-[379px]:hidden">
             {item.label}
           </span>
-          <span aria-hidden className="hidden max-[359px]:inline">
+          <span aria-hidden className="hidden max-[379px]:inline">
             {item.short}
           </span>
         </Link>

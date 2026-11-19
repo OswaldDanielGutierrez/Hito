@@ -9,7 +9,7 @@ Interfaz clara y 100% responsive (desde 320 px hasta monitores grandes), con una
 4. **Fechas siempre visibles** y en el mismo formato: `dd/MM/yyyy`.
 5. **Responsive mobile-first, sin ancho mínimo.** Debe usarse y verse bien en cualquier pantalla y resolución, incluido el celular. Sin desborde horizontal de la página. Las medidas de abajo describen el escritorio; en pantallas menores se adaptan así:
    - **Márgenes:** 16 px en móvil, 32 px desde 640 px. Contenido centrado con ancho máximo de 1376 px.
-   - **Barra superior:** en móvil solo logo y avatar; "Mis tareas" y "Calendario" desde 768 px, buscador desde 1024 px, campana desde 640 px.
+   - **Barra superior:** en móvil logo (solo el rombo bajo 420 px), Proyectos, Pendientes, lupa de búsqueda, campana y avatar; "Calendario" desde 768 px y el buscador completo desde 1024 px.
    - **Cuadrículas de proyectos:** 1 columna en móvil, 2 desde 768 px, 3 desde 1280 px. Indicadores: 2×2 en móvil, 4 en fila desde 1024 px.
    - **Cabecera de proyecto:** título, botones y datos se apilan; las pestañas se desplazan horizontalmente.
    - **Resumen:** las tarjetas de fase se desplazan horizontalmente con ajuste (snap); las dos columnas pasan a una bajo 1100 px.
@@ -60,7 +60,7 @@ Colores de estado, tarea, prioridad, salud, tipo de recurso y tipo de cambio: ve
 
 **TopBar.** Alto 56, fondo #022C17, relleno horizontal 32.
 - Logo: rombo de 16 px #00A859 girado 45° (radio 3) + "hito" 16/800 blanco.
-- Enlaces (Proyectos, Mis tareas, Calendario): 14/500 #B5D8C4. Activo: blanco 600 con borde inferior de 2 px #5FD597. Separación 24.
+- Enlaces (Proyectos, Pendientes, Calendario): 14/500 #B5D8C4. Activo: blanco 600 con borde inferior de 2 px #5FD597. Separación 24.
 - Buscador a la derecha: 300 × 36, fondo #04512A, texto blanco, placeholder "Buscar proyectos, tareas o recursos".
 - Campana 36 × 36 con badge (#5FD597, texto #022C17, 10/800). Avatar 32 px circular #007A3D con iniciales.
 
@@ -113,9 +113,6 @@ Barra superior, luego un `main` con separación de 22 px.
 - Fila de chips: documentos, flujos y código, enlaces (cada uno con ícono y número) y "Actualizado {relativo}" a la derecha.
 
 Estado vacío (sin proyectos): solo la tarjeta punteada, con "Aún no tienes proyectos. Registra el primero."
-
-### 1b · Mis tareas `/tareas`
-Tareas abiertas de todos los proyectos activos, agrupadas por urgencia: Vencidas, Hoy, Esta semana, Más adelante y Sin fecha. Cada fila muestra estado, título, proyecto y fase, prioridad, horas y fecha con su texto de días; al tocarla abre Fases y tareas del proyecto. En móvil la fila se apila en dos líneas.
 
 ### 2 · Proyecto: Resumen `/proyectos/[id]`
 

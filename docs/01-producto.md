@@ -19,7 +19,7 @@ Un solo lugar donde un desarrollador de automatizaciones e IA ve, planea y entre
 Una sola persona (el dueño). Usa la app a diario, principalmente desde computador, pero también desde el celular u otra pantalla. La base de datos ya queda preparada para varios usuarios (`owner_id` + RLS), pero v1 no incluye colaboración.
 
 ## Alcance
-**Dentro de v1:** acceso, inicio con todos los proyectos, registro y edición de proyectos, fases con fechas estimadas, tareas, recursos, notas y contactos, historial, alertas (en la app y por correo), búsqueda, instalable como PWA.
+**Dentro de v1:** acceso, inicio con todos los proyectos, pendientes diarios, registro y edición de proyectos, fases con fechas estimadas, tareas, recursos, notas y contactos, historial, alertas (en la app y por correo), búsqueda, instalable como PWA.
 
 **Fuera de v1:** colaboración entre usuarios, control de tiempo, facturación, app móvil nativa (la web sí es responsive), guardar contraseñas, integraciones con Jira/Asana, modo oscuro.
 
@@ -99,6 +99,9 @@ Diálogo con el nuevo estado y nota opcional. Se registra en el historial. Pasar
 
 ### F14 · Archivar o eliminar
 Archivar oculta el proyecto del Inicio. Eliminar exige escribir el nombre del proyecto.
+
+### F15 · Pendientes
+Pantalla `/pendientes` para anotar tareas sueltas del día, aunque no estén en el plan de un proyecto. Cada pendiente indica el proyecto (opcional) y quién lo pidió. Se agregan escribiendo el título y presionando Enter; se marcan como hechos con un clic; se ven agrupados por día (Atrasados, Hoy, Mañana, Esta semana, Próxima semana, Sin fecha) y se filtran por día, solicitante y proyecto. Reemplaza a "Mis tareas". Detalle completo en `docs/05-pendientes.md`.
 
 ## Reglas de negocio
 

@@ -223,6 +223,32 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"quick_tasks": {
+                  Row: {
+                    "created_at": string,"done": boolean,"done_at": string | null,"due_date": string | null,"id": string,"owner_id": string,"priority": Database["public"]['Enums']["task_priority"],"project_id": string | null,"requested_by": string,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"done"?: boolean,"done_at"?: string | null,"due_date"?: string | null,"id"?: string,"owner_id"?: string,"priority"?: Database["public"]['Enums']["task_priority"],"project_id"?: string | null,"requested_by"?: string,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"done"?: boolean,"done_at"?: string | null,"due_date"?: string | null,"id"?: string,"owner_id"?: string,"priority"?: Database["public"]['Enums']["task_priority"],"project_id"?: string | null,"requested_by"?: string,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "quick_tasks_project_id_fkey"
+      columns: ["project_id"]
+isOneToOne: false
+      referencedRelation: "project_overview"
+      referencedColumns: ["project_id"]
+    },{
+      foreignKeyName: "quick_tasks_project_id_fkey"
+      columns: ["project_id"]
+isOneToOne: false
+      referencedRelation: "projects"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"resources": {
                   Row: {
                     "created_at": string,"id": string,"kind": Database["public"]['Enums']["resource_kind"],"name": string,"owner_id": string,"phase_id": string | null,"pinned": boolean,"project_id": string,"source": string | null,"storage_path": string | null,"updated_at": string,"url": string | null

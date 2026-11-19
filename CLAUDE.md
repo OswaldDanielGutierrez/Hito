@@ -9,7 +9,8 @@ App web personal para gestionar proyectos de automatización e IA. Cada proyecto
 2. `docs/02-diseno.md` — sistema visual y pantallas, con medidas, colores y estados.
 3. `docs/03-datos.md` + `supabase/migrations/0001_init.sql` — modelo de datos y RLS.
 4. `docs/04-plan-de-construccion.md` — hitos de trabajo y criterios de "listo".
-5. `design/tokens.json` — tokens de color, tipografía y radios.
+5. `docs/05-pendientes.md` — pantalla Pendientes (tareas sueltas del día).
+6. `design/tokens.json` — tokens de color, tipografía y radios.
 
 ## Stack
 - Next.js (App Router) + TypeScript estricto. Usa las versiones estables más recientes.
@@ -34,6 +35,7 @@ src/app/(app)/proyectos/[id]/page.tsx     Resumen
 src/app/(app)/proyectos/[id]/fases        Fases y tareas
 src/app/(app)/proyectos/[id]/recursos     Recursos
 src/app/(app)/proyectos/[id]/historial    Historial y alertas
+src/app/(app)/pendientes                  Pendientes (tareas sueltas del día)
 src/components/ui                          Button, Chip, StatusLabel, Bar, Card, Dialog...
 src/components/domain                      ProjectCard, PhaseCard, TaskTable...
 src/lib/domain                             Lógica pura con tests: salud, progreso, fechas

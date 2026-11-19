@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 
 export interface SearchResult {
-  type: "project" | "task" | "resource";
+  type: "project" | "task" | "resource" | "quick";
   id: string;
   title: string;
   subtitle: string | null;
@@ -23,7 +23,7 @@ export async function searchAll(input: { query: string }): Promise<SearchResult[
   const pattern = toPattern(query);
 
   const supabase = await createClient();
-  const [projects, tasks, resources] = await Promise.all([
+  const [projects, tasks, resources, quick] = await Promise.all([
     supabase
       .from("projects")
       .select("id, name, area")
@@ -41,6 +41,13 @@ export async function searchAll(input: { query: string }): Promise<SearchResult[
       .select("id, name, source, project_id, projects!inner(name, archived_at)")
       .ilike("name", pattern)
       .is("projects.archived_at", null)
+      .limit(LIMIT),
+    supabase
+      .from("quick_tasks")
+      .select("id, title, requested_by, done, projects(name)")
+      .or(`title.ilike.${pattern},requested_by.ilike.${pattern}`)
+      .order("done")
+      .order("created_at", { ascending: false })
       .limit(LIMIT),
   ]);
 
@@ -65,6 +72,13 @@ export async function searchAll(input: { query: string }): Promise<SearchResult[
       title: r.name,
       subtitle: [r.projects.name, r.source].filter(Boolean).join(" · "),
       href: `/proyectos/${r.project_id}/recursos`,
+    })),
+    ...(quick.data ?? []).map((q): SearchResult => ({
+      type: "quick",
+      id: q.id,
+      title: q.title,
+      subtitle: [`Pidió ${q.requested_by}`, q.projects?.name, q.done ? "Hecho" : null].filter(Boolean).join(" · "),
+      href: "/pendientes",
     })),
   ];
 }

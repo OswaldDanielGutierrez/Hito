@@ -122,6 +122,36 @@ const PROJECTS: ProjectSeed[] = [
   },
 ];
 
+interface QuickSeed {
+  title: string;
+  project: string | null;
+  by: string;
+  due: number | "friday" | "nextMonday" | null;
+  high?: boolean;
+  done?: boolean;
+}
+
+/** 17 pendientes: 2 atrasados, 7 de hoy (2 hechos, 2 de alta), 3 de mañana, 2 del viernes, 1 del lunes siguiente, 2 sin fecha y 3 sin proyecto. */
+const QUICK_TASKS: QuickSeed[] = [
+  { title: "Enviar el informe de cartera al área financiera", project: "Automatización de cartera", by: "Laura P.", due: -2, high: true },
+  { title: "Confirmar accesos de usuarios del portal", project: "Portal de clientes", by: "Andrés R.", due: -1 },
+  { title: "Responder la consulta de Camilo sobre el flujo de incapacidades", project: "Registro de incapacidades", by: "Camilo V.", due: 0, done: true },
+  { title: "Revisar la conversación de prueba del agente", project: "Agente de atención por WhatsApp", by: "Diana S.", due: 0, high: true },
+  { title: "Actualizar la lista de contactos del proyecto", project: "Portal de clientes", by: "Yo", due: 0, done: true },
+  { title: "Preparar la demo para la reunión de las 3", project: "Agente de atención por WhatsApp", by: "Jorge T.", due: 0, high: true },
+  { title: "Pasar el flujo de cartera a producción", project: "Automatización de cartera", by: "Laura P.", due: 0 },
+  { title: "Ajustar el formulario de incapacidades", project: "Registro de incapacidades", by: "Andrés R.", due: 0 },
+  { title: "Renovar el certificado del servidor de pruebas", project: null, by: "Yo", due: 0 },
+  { title: "Enviar el cronograma actualizado", project: "Portal de clientes", by: "Diana S.", due: 1 },
+  { title: "Cotizar licencias del equipo", project: null, by: "Jorge T.", due: 1 },
+  { title: "Documentar el proceso de conciliación", project: "Automatización de cartera", by: "Yo", due: 1 },
+  { title: "Capacitar al equipo de atención", project: "Agente de atención por WhatsApp", by: "Laura P.", due: "friday" },
+  { title: "Revisar permisos del inventario", project: "Inventario de equipos", by: "Camilo V.", due: "friday" },
+  { title: "Planificar la siguiente fase del portal", project: "Portal de clientes", by: "Yo", due: "nextMonday" },
+  { title: "Ordenar la carpeta de documentos compartidos", project: null, by: "Yo", due: null },
+  { title: "Investigar opciones de respaldo automático", project: "Inventario de equipos", by: "Jorge T.", due: null },
+];
+
 const RESOURCE_TEMPLATES: Record<string, { kind: Kind; source: string; name: string; url: (n: number) => string }> = {
   documents: { kind: "document", source: "SharePoint", name: "Documento", url: (n) => `https://ejemplo.sharepoint.com/sites/proyectos/documento-${n}.docx` },
   flows: { kind: "flow", source: "Power Automate", name: "Flujo", url: (n) => `https://make.powerautomate.com/environments/ejemplo/flows/flujo-${n}` },
@@ -160,6 +190,14 @@ if (!owner) {
   process.exit(1);
 }
 
+// Los pendientes de ejemplo se borran primero: al borrar los proyectos quedarían sin proyecto.
+const { error: quickCleanError } = await admin
+  .from("quick_tasks")
+  .delete()
+  .eq("owner_id", owner.id)
+  .in("title", QUICK_TASKS.map((q) => q.title));
+if (quickCleanError) throw quickCleanError;
+
 const { error: cleanError } = await admin
   .from("projects")
   .delete()
@@ -173,6 +211,7 @@ if (flag === "--clean") {
 }
 
 const today = todayInBogota();
+const projectIds = new Map<string, string>();
 
 for (const p of PROJECTS) {
   const { data: project, error } = await admin
@@ -247,5 +286,24 @@ for (const p of PROJECTS) {
     if (resError) throw resError;
   }
 
+  projectIds.set(p.name, project.id);
   console.log(`✓ ${p.name} · ${p.phases.length} fases · ${tasks.length} tareas · ${resources.length} recursos`);
 }
+
+// ── Pendientes de ejemplo ──
+const weekday = new Date(`${today}T00:00:00Z`).getUTCDay(); // 0 domingo … 6 sábado
+const fridayOffset = ({ 1: 4, 2: 3, 3: 2, 4: 1, 5: 7, 6: 6, 0: 5 } as Record<number, number>)[weekday];
+const nextMondayOffset = ((8 - weekday) % 7) || 7;
+
+const quickRows = QUICK_TASKS.map((q) => ({
+  owner_id: owner.id,
+  title: q.title,
+  project_id: q.project ? (projectIds.get(q.project) ?? null) : null,
+  requested_by: q.by,
+  due_date: q.due === null ? null : addDays(today, q.due === "friday" ? fridayOffset : q.due === "nextMonday" ? nextMondayOffset : q.due),
+  priority: q.high ? ("high" as const) : ("medium" as const),
+  done: q.done ?? false,
+}));
+const { error: quickError } = await admin.from("quick_tasks").insert(quickRows);
+if (quickError) throw quickError;
+console.log(`✓ ${quickRows.length} pendientes`);

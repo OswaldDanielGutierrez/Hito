@@ -47,7 +47,7 @@ Cuando empiece el desarrollo se agregarán `src/` (la app Next.js) y `supabase/f
 
 Acceso con correo · Inicio con todos los proyectos · Registro con plantillas de fases · Fases y tareas · Recursos, notas y contactos · Historial de cambios · Alertas en la app y por correo · Búsqueda global (`Ctrl K`) · Instalable como PWA.
 
-Además de lo anterior: bloc de notas por proyecto, Mis tareas, archivados, Mi cuenta (nombre y contraseña) y administración de fases (renombrar, mover, eliminar).
+Además de lo anterior: bloc de notas por proyecto, **Pendientes** (tareas sueltas del día), archivados, Mi cuenta (nombre y contraseña) y administración de fases (renombrar, mover, eliminar).
 
 Quedan para v2: Calendario, alertas por Teams, subtareas, cronograma, exportar a Excel.
 
