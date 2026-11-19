@@ -114,6 +114,9 @@ Barra superior, luego un `main` con separación de 22 px.
 
 Estado vacío (sin proyectos): solo la tarjeta punteada, con "Aún no tienes proyectos. Registra el primero."
 
+### 1b · Mis tareas `/tareas`
+Tareas abiertas de todos los proyectos activos, agrupadas por urgencia: Vencidas, Hoy, Esta semana, Más adelante y Sin fecha. Cada fila muestra estado, título, proyecto y fase, prioridad, horas y fecha con su texto de días; al tocarla abre Fases y tareas del proyecto. En móvil la fila se apila en dos líneas.
+
 ### 2 · Proyecto: Resumen `/proyectos/[id]`
 
 **Cabecera** (fondo blanco, borde inferior #E1E6E3, relleno 18 × 32):

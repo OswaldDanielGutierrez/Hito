@@ -170,7 +170,6 @@ Funcionamiento:
 - La campana de la barra superior muestra las no leídas y permite marcarlas como leídas.
 
 ## Funciones v2
-- Pantalla **Mis tareas**: tareas de todos los proyectos por vencer hoy y esta semana.
 - Pantalla **Calendario** con fases y tareas.
 - Alertas por Microsoft Teams.
 - Subtareas (el esquema ya incluye `parent_task_id`).

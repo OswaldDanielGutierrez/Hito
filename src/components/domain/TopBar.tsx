@@ -2,8 +2,7 @@ import { Bell, Search } from "lucide-react";
 import Link from "next/link";
 import { APP_NAME } from "@/config/app";
 import { AvatarMenu } from "./AvatarMenu";
-
-const soon = "cursor-not-allowed text-sm font-medium text-green-200 opacity-60";
+import { NavLinks } from "./NavLinks";
 
 export function TopBarSkeleton() {
   return (
@@ -25,21 +24,7 @@ export function TopBar({ initials, email }: { initials: string; email: string })
           <span className="text-base font-extrabold text-white">{APP_NAME}</span>
         </Link>
 
-        <nav aria-label="Principal" className="flex h-full items-center gap-4 md:gap-6">
-          <Link
-            href="/"
-            aria-current="page"
-            className="flex h-full items-center border-b-2 border-green-300 text-sm font-semibold text-white"
-          >
-            Proyectos
-          </Link>
-          <span aria-disabled="true" title="Próximamente" className={`${soon} hidden md:inline`}>
-            Mis tareas
-          </span>
-          <span aria-disabled="true" title="Próximamente" className={`${soon} hidden md:inline`}>
-            Calendario
-          </span>
-        </nav>
+        <NavLinks />
 
         <div className="ml-auto flex items-center gap-3 md:gap-4">
           <label className="relative hidden lg:block">
