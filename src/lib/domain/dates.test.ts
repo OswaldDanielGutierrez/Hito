@@ -10,6 +10,7 @@ import {
   formatLongDate,
   greeting,
   isInCurrentWeek,
+  timeInBogota,
   todayInBogota,
   weekBounds,
 } from "./dates";
@@ -88,5 +89,12 @@ describe("saludo y fecha larga", () => {
   it("formatea la fecha larga con el día de la semana", () => {
     expect(formatLongDate(new Date("2026-11-19T17:00:00Z"))).toBe("Jueves, 19/11/2026");
     expect(formatLongDate(new Date("2026-11-19T03:00:00Z"))).toBe("Miércoles, 18/11/2026");
+  });
+});
+
+describe("timeInBogota", () => {
+  it("devuelve HH:mm de Bogotá", () => {
+    expect(timeInBogota(new Date("2026-11-19T14:05:00Z"))).toBe("09:05");
+    expect(timeInBogota(new Date("2026-11-19T05:00:00Z"))).toBe("00:00");
   });
 });

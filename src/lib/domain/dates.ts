@@ -87,3 +87,8 @@ export function formatLongDate(now: Date = new Date()): string {
   const weekday = new Intl.DateTimeFormat("es-CO", { timeZone: TIMEZONE, weekday: "long" }).format(now);
   return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}, ${formatDate(todayInBogota(now))}`;
 }
+
+/** Hora actual `HH:mm` en America/Bogota. */
+export function timeInBogota(now: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-GB", { timeZone: TIMEZONE, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(now);
+}
