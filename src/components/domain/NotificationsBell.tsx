@@ -39,6 +39,7 @@ export function NotificationsBell({ items, unread }: { items: NotificationItem[]
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
+          aria-label="Notificaciones"
           align="end"
           sideOffset={8}
           collisionPadding={12}

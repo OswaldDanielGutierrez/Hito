@@ -1,7 +1,6 @@
 import { addFileResource } from "@/app/(app)/proyectos/[id]/recursos/actions";
 import type { ActionResult } from "@/lib/actions";
 import { sanitizeFileName } from "@/lib/domain/resourceDetect";
-import { createClient } from "@/lib/supabase/client";
 
 export const MAX_FILE_MB = 25;
 
@@ -23,6 +22,7 @@ export async function uploadProjectFile({
   }
 
   const storagePath = `${userId}/${projectId}/${crypto.randomUUID().slice(0, 8)}-${sanitizeFileName(file.name)}`;
+  const { createClient } = await import("@/lib/supabase/client");
   const supabase = createClient();
   const { error } = await supabase.storage
     .from("project-files")

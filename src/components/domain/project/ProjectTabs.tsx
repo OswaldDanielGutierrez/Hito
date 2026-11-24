@@ -49,7 +49,7 @@ export function ProjectTabs({ projectId, taskCount, resourceCount }: { projectId
             key={tab.href}
             href={tab.href}
             aria-current={active ? "page" : undefined}
-            className={`shrink-0 border-b-2 pb-3 text-sm transition-colors duration-[120ms] ease-out ${
+            className={`tap shrink-0 border-b-2 pb-3 text-sm transition-colors duration-[120ms] ease-out ${
               active ? "border-green-700 font-bold text-ink" : "border-transparent font-medium text-muted hover:text-ink"
             }`}
           >

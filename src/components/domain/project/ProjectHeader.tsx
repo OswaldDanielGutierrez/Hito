@@ -33,10 +33,10 @@ export function ProjectHeader({ data, today }: { data: ProjectData; today: strin
   return (
     <>
     {project.archivedAt && <ArchivedNotice projectId={project.id} />}
-    <div className="border-b border-line bg-white px-4 sm:px-8 pt-4 sm:pt-[18px]">
+    <section aria-label={`Proyecto ${project.name}`} className="border-b border-line bg-white px-4 sm:px-8 pt-4 sm:pt-[18px]">
       <div className="mx-auto max-w-[1376px]">
         <nav aria-label="Ruta" className="mb-3 text-[13px] text-muted">
-          <Link href="/" className="hover:text-ink hover:underline">
+          <Link href="/" className="tap hover:text-ink hover:underline">
             Proyectos
           </Link>{" "}
           / <span aria-current="page">{project.name}</span>
@@ -90,7 +90,7 @@ export function ProjectHeader({ data, today }: { data: ProjectData; today: strin
 
         <ProjectTabs projectId={project.id} taskCount={topLevelTasks} resourceCount={resources.length} />
       </div>
-    </div>
+    </section>
     </>
   );
 }

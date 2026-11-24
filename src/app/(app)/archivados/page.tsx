@@ -33,7 +33,7 @@ async function ArchivedContent() {
   return (
     <main id="contenido" className="mx-auto flex w-full max-w-[1376px] flex-col gap-5 px-4 py-5 sm:gap-[22px] sm:px-8 sm:py-7">
       <div>
-        <Link href="/" className="mb-2 inline-flex items-center gap-1.5 text-[13px] font-bold text-green-700 hover:underline">
+        <Link href="/" className="tap mb-2 inline-flex items-center gap-1.5 text-[13px] font-bold text-green-700 hover:underline">
           <ArrowLeft size={16} strokeWidth={1.9} aria-hidden />
           Volver a Proyectos
         </Link>

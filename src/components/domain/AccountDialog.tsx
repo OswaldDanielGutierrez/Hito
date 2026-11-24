@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { toast } from "@/components/ui/Toaster";
 import { MIN_PASSWORD_LENGTH, validateNewPassword } from "@/lib/domain/password";
-import { createClient } from "@/lib/supabase/client";
 import { fieldClass, labelClass } from "@/lib/ui-colors";
 
 export function AccountDialog({ email, displayName, onClose }: { email: string; displayName: string; onClose: () => void }) {
@@ -37,6 +36,7 @@ export function AccountDialog({ email, displayName, onClose }: { email: string; 
     setPasswordError(null);
 
     startPassword(async () => {
+      const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
       const check = await supabase.auth.signInWithPassword({ email, password: current });
       if (check.error) return setPasswordError("La contraseña actual no es correcta");

@@ -64,7 +64,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
           <h2 id="fases-titulo" className="text-lg font-extrabold">
             Fases y entregas estimadas
           </h2>
-          <Link href={`/proyectos/${project.id}/fases`} className="text-[13px] font-bold text-green-700 hover:underline">
+          <Link href={`/proyectos/${project.id}/fases`} className="tap text-[13px] font-bold text-green-700 hover:underline">
             Ver fases y tareas
           </Link>
         </div>
@@ -72,7 +72,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
         {phases.length === 0 ? (
           <p className={`${card} min-w-0 p-4 sm:p-5 text-sm text-muted`}>Este proyecto aún no tiene fases.</p>
         ) : (
-          <ol className="-mx-4 grid auto-cols-[minmax(200px,1fr)] scroll-px-4 snap-x snap-mandatory grid-flow-col gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:scroll-px-0 sm:auto-cols-[minmax(180px,1fr)] sm:gap-3.5 sm:px-0">
+          <ol tabIndex={0} aria-label="Fases del proyecto" className="-mx-4 grid auto-cols-[minmax(200px,1fr)] scroll-px-4 snap-x snap-mandatory grid-flow-col gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:scroll-px-0 sm:auto-cols-[minmax(180px,1fr)] sm:gap-3.5 sm:px-0">
             {phases.map((phase, i) => {
               const isCurrent = phase.id === current?.id;
               const isDone = phase.status === "completed";
@@ -131,7 +131,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
             {current?.estimatedDate && (
               <span className="text-xs text-muted">estimada al {formatDayMonth(current.estimatedDate)}</span>
             )}
-            <Link href={`/proyectos/${project.id}/fases`} className="ml-auto text-[13px] font-bold text-green-700 hover:underline">
+            <Link href={`/proyectos/${project.id}/fases`} className="tap ml-auto text-[13px] font-bold text-green-700 hover:underline">
               Ver todas
             </Link>
           </div>
@@ -183,7 +183,7 @@ async function SummaryContent({ params }: { params: Promise<{ id: string }> }) {
                 Recursos fijados
               </h2>
               {resources.length > 0 && (
-                <Link href={`/proyectos/${project.id}/recursos`} className="text-[13px] font-bold text-green-700 hover:underline">
+                <Link href={`/proyectos/${project.id}/recursos`} className="tap text-[13px] font-bold text-green-700 hover:underline">
                   Ver los {resources.length}
                 </Link>
               )}

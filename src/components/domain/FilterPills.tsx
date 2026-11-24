@@ -20,7 +20,7 @@ export function FilterPills({ active, counts }: { active: StatusFilter; counts: 
             key={value}
             href={value === "all" ? "/" : `/?estado=${value}`}
             aria-current={isActive ? "true" : undefined}
-            className={`rounded-pill border px-3.5 py-[7px] text-[13px] font-semibold transition-colors duration-[120ms] ease-out ${
+            className={`tap rounded-pill border px-3.5 py-[7px] text-[13px] font-semibold transition-colors duration-[120ms] ease-out ${
               isActive
                 ? "border-green-900 bg-green-900 text-white"
                 : "border-line bg-white text-ink hover:border-input-border"

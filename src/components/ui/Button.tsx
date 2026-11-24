@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes } from "react";
 type Variant = "primary" | "secondary" | "text";
 
 const base =
-  "inline-flex h-[38px] items-center justify-center gap-2 rounded-button px-4 text-sm font-semibold transition-colors duration-[120ms] ease-out disabled:opacity-60";
+  "inline-flex h-10 items-center lg:h-[38px] justify-center gap-2 rounded-button px-4 text-sm font-semibold transition-colors duration-[120ms] ease-out disabled:opacity-60";
 
 const variants: Record<Variant, string> = {
   primary: "bg-green-700 text-white hover:bg-green-700-hover",

@@ -31,8 +31,8 @@ export function TopBar({
 }) {
   return (
     <header className="bg-green-900">
-      <div className="mx-auto flex h-[var(--top-bar-height)] max-w-[1376px] items-center gap-4 px-4 sm:px-8 md:gap-6 max-[379px]:gap-2 max-[379px]:px-2.5">
-        <Link href="/" className="mr-2 flex items-center gap-2 max-[379px]:mr-0">
+      <div className="mx-auto flex h-[var(--top-bar-height)] max-w-[1376px] items-center gap-4 px-4 sm:px-8 md:gap-6 max-[379px]:gap-1.5 max-[379px]:px-2">
+        <Link href="/" className="relative mr-2 flex items-center gap-2 after:absolute after:-inset-3 after:content-[''] max-[379px]:mr-0">
           <span aria-hidden className="inline-block size-4 rotate-45 rounded-[3px] bg-green-500" />
           <span className="hidden text-base font-extrabold text-white min-[420px]:inline">{APP_NAME}</span>
           <span className="sr-only min-[420px]:hidden">{APP_NAME}</span>

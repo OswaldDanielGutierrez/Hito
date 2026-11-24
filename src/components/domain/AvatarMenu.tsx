@@ -18,7 +18,7 @@ export function AvatarMenu({ initials, email, displayName }: { initials: string;
       <DropdownMenu.Root>
         <DropdownMenu.Trigger
           aria-label="Menú de cuenta"
-          className="flex size-8 items-center justify-center rounded-full bg-green-700 text-xs font-bold text-white"
+          className="flex size-10 items-center lg:size-8 justify-center rounded-full bg-green-700 text-xs font-bold text-white"
         >
           {initials}
         </DropdownMenu.Trigger>

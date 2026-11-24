@@ -34,7 +34,7 @@ export function UploadZone({
         over ? "border-green-700 bg-green-50" : "border-green-200 bg-white"
       }`}
     >
-      <h3 className="text-sm font-extrabold">Arrastra un archivo o pega un enlace</h3>
+      <h2 className="text-sm font-extrabold">Arrastra un archivo o pega un enlace</h2>
       <p className="mt-1 mb-3 text-[13px] text-muted">
         Detecto el tipo solo: SharePoint, Power Automate, GitHub, Figma o cualquier URL.
       </p>

@@ -55,6 +55,27 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Objetivos táctiles de al menos 40 px en pantallas táctiles y menores de 1024 px. */
+@media (max-width: 1023px), (pointer: coarse) {
+  button,
+  [role="button"],
+  [role="checkbox"],
+  [role="tab"],
+  select {
+    min-height: 40px;
+    min-width: 40px;
+  }
+}
+
+/* Para enlaces: área táctil de 40 px sin cambiar el aspecto en escritorio. */
+@utility tap {
+  @media (max-width: 1023px), (pointer: coarse) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+}
+
 :focus-visible {
   outline: 2px solid var(--color-green-700);
   outline-offset: 2px;
