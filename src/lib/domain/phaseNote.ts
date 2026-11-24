@@ -35,6 +35,11 @@ export function phaseNote(
     return { text: `Terminó el ${formatDayMonth(completedAt)}`, color: PHASE_NOTE_COLORS.onTime };
   }
 
+  // Terminada sin fecha de cierre registrada (p. ej. fases que ya estaban hechas al registrar el proyecto).
+  if (status === "completed") {
+    return { text: "Terminada", color: PHASE_NOTE_COLORS.onTime };
+  }
+
   if (status === "in_progress") {
     const moved = !!originalDate && !!estimatedDate && originalDate !== estimatedDate;
     return {
