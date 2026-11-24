@@ -23,12 +23,27 @@ export async function searchAll(input: { query: string }): Promise<SearchResult[
   const pattern = toPattern(query);
 
   const supabase = await createClient();
+
+  // Escribir el nombre de una etiqueta encuentra los proyectos y pendientes que la tienen.
+  const { data: matchedTags } = await supabase.from("tags").select("id").ilike("name", pattern).limit(10);
+  const tagIds = (matchedTags ?? []).map((t) => t.id);
+  const [taggedProjects, taggedQuick] =
+    tagIds.length > 0
+      ? await Promise.all([
+          supabase.from("project_tags").select("project_id").in("tag_id", tagIds).limit(50),
+          supabase.from("quick_task_tags").select("quick_task_id").in("tag_id", tagIds).limit(50),
+        ])
+      : [null, null];
+  const projectIds = [...new Set((taggedProjects?.data ?? []).map((r) => r.project_id))];
+  const quickIds = [...new Set((taggedQuick?.data ?? []).map((r) => r.quick_task_id))];
+  const orIds = (column: string, ids: string[]) => (ids.length > 0 ? `,${column}.in.(${ids.join(",")})` : "");
+
   const [projects, tasks, resources, quick] = await Promise.all([
     supabase
       .from("projects")
       .select("id, name, area")
       .is("archived_at", null)
-      .or(`name.ilike.${pattern},area.ilike.${pattern}`)
+      .or(`name.ilike.${pattern},area.ilike.${pattern}${orIds("id", projectIds)}`)
       .limit(LIMIT),
     supabase
       .from("tasks")
@@ -45,7 +60,7 @@ export async function searchAll(input: { query: string }): Promise<SearchResult[
     supabase
       .from("quick_tasks")
       .select("id, title, requested_by, done, projects(name)")
-      .or(`title.ilike.${pattern},requested_by.ilike.${pattern}`)
+      .or(`title.ilike.${pattern},requested_by.ilike.${pattern}${orIds("id", quickIds)}`)
       .order("done")
       .order("created_at", { ascending: false })
       .limit(LIMIT),

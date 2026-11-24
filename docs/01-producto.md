@@ -107,8 +107,8 @@ Pantalla `/pendientes` para anotar tareas sueltas del día, aunque no estén en 
 Etiquetas propias (nombre de hasta 30 caracteres y un color de una paleta de 8) para agrupar proyectos y pendientes, por ejemplo por tecnología: Power Apps, Power Automate.
 - Se gestionan (crear, renombrar, cambiar color, eliminar) desde el menú de la cuenta → **Etiquetas**, o desde «Gestionar etiquetas» en cualquier selector.
 - No se repite el nombre (sin distinguir mayúsculas ni tildes). Al eliminar una etiqueta se avisa en cuántos proyectos y pendientes está y se quita de todos.
-- Un proyecto o pendiente puede tener varias etiquetas. En proyectos se eligen en el encabezado; en pendientes, al crearlos y en «Editar detalles».
-- Se ven como chips en las tarjetas. Inicio filtra por etiqueta (`?etiqueta=`, combinable con el estado) y Pendientes filtra con la fila «Etiquetas».
+- Un proyecto o pendiente puede tener varias etiquetas. En proyectos se eligen (opcional) al registrarlos y luego en el encabezado; en pendientes, al crearlos y en «Editar detalles».
+- La búsqueda (Ctrl K) también encuentra por nombre de etiqueta. Se ven como chips en las tarjetas. Inicio filtra por etiqueta (`?etiqueta=`, combinable con el estado) y Pendientes filtra con la fila «Etiquetas».
 
 ## Reglas de negocio
 

@@ -3,13 +3,16 @@
 import { CalendarDays, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { setProjectTags } from "@/app/(app)/etiquetas/actions";
 import { createProject } from "@/app/(app)/proyectos/actions";
 import { Button } from "@/components/ui/Button";
 import { toast } from "@/components/ui/Toaster";
 import { Dialog } from "@/components/ui/Dialog";
+import { TagPicker } from "@/components/domain/tags/TagPicker";
 import type { TemplateData } from "@/lib/data/templates";
 import { addDays, formatDate } from "@/lib/domain/dates";
 import { finalDeliveryDate } from "@/lib/domain/progress";
+import type { TagWithUsage } from "@/lib/domain/tags";
 import { detectResource, normalizeUrl, suggestResourceName } from "@/lib/domain/resourceDetect";
 import { calculatePhaseDates, hasDatesOutOfOrder } from "@/lib/domain/templates";
 import { resourceKindLabel } from "@/lib/labels";
@@ -33,7 +36,17 @@ const NEXT_LABEL = ["Fases y fechas", "Recursos"];
 
 const newKey = () => crypto.randomUUID();
 
-export function NewProjectDialog({ templates, today, userId }: { templates: TemplateData[]; today: string; userId: string }) {
+export function NewProjectDialog({
+  templates,
+  today,
+  userId,
+  tags,
+}: {
+  templates: TemplateData[];
+  today: string;
+  userId: string;
+  tags: TagWithUsage[];
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -43,6 +56,7 @@ export function NewProjectDialog({ templates, today, userId }: { templates: Temp
   const [description, setDescription] = useState("");
   const [responsible, setResponsible] = useState("");
   const [startDate, setStartDate] = useState(today);
+  const [tagIds, setTagIds] = useState<string[]>([]);
 
   const [templateId, setTemplateId] = useState<string | null>(null);
   const [rows, setRows] = useState<PhaseRow[]>([]);
@@ -142,6 +156,13 @@ export function NewProjectDialog({ templates, today, userId }: { templates: Temp
       });
       if (!result.ok) return setError(result.error);
 
+      // Las etiquetas son opcionales: si fallan, el proyecto ya existe y se pueden asignar después.
+      const chosen = tagIds.filter((id) => tags.some((t) => t.id === id));
+      if (chosen.length > 0) {
+        const tagged = await setProjectTags({ projectId: result.projectId, tagIds: chosen });
+        if (!tagged.ok) toast(`El proyecto se creó, pero no se pudieron guardar las etiquetas: ${tagged.error}`, "error");
+      }
+
       const failed: string[] = [];
       for (const file of files) {
         const uploaded = await uploadProjectFile({ file, projectId: result.projectId, userId, phaseId: null });
@@ -215,6 +236,12 @@ export function NewProjectDialog({ templates, today, userId }: { templates: Temp
                 Fecha de inicio
               </label>
               <input id="np-start" type="date" required value={startDate} onChange={(e) => setStartDate(e.target.value)} className={fieldClass} />
+            </div>
+            <div className="sm:col-span-2">
+              <span className={labelClass}>Etiquetas (opcional)</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <TagPicker id="np-tags" tags={tags} selectedIds={tagIds} onChange={setTagIds} />
+              </div>
             </div>
           </div>
         )}
