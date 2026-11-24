@@ -8,6 +8,12 @@ describe("phaseNote", () => {
     ).toEqual({ text: "Terminó a tiempo", color: "#00652F" });
   });
 
+  it("completada sin fecha estimada muestra solo cuándo terminó", () => {
+    expect(
+      phaseNote({ status: "completed", estimatedDate: null, originalDate: null, completedAt: "2026-11-03" }),
+    ).toEqual({ text: "Terminó el 03/11", color: "#00652F" });
+  });
+
   it("completada justo en la fecha estimada cuenta como a tiempo", () => {
     expect(
       phaseNote({ status: "completed", estimatedDate: "2026-11-10", originalDate: "2026-11-10", completedAt: "2026-11-10" }).text,

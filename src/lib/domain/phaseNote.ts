@@ -30,6 +30,11 @@ export function phaseNote(
     };
   }
 
+  // Fase terminada que nunca tuvo fecha estimada (p. ej. un levantamiento ya realizado).
+  if (status === "completed" && completedAt) {
+    return { text: `Terminó el ${formatDayMonth(completedAt)}`, color: PHASE_NOTE_COLORS.onTime };
+  }
+
   if (status === "in_progress") {
     const moved = !!originalDate && !!estimatedDate && originalDate !== estimatedDate;
     return {

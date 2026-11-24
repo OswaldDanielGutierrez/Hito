@@ -34,3 +34,6 @@ next-env.d.ts
 # Herramientas locales
 .playwright-mcp/
 *.png.tmp
+
+# Excel de levantamiento con datos internos de la empresa: no se suben (el repositorio es público)
+docs/Proyectos/

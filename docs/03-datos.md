@@ -107,3 +107,14 @@ Casos mínimos de prueba: proyecto atrasado, en riesgo por entrega a 3 días, en
 
 ## Datos de ejemplo
 `scripts/seed.ts` (solo desarrollo): usa la llave de servicio, recibe el correo del dueño por argumento y crea los datos descritos al final de `02-diseno.md`. No incluir nombres de empresas reales.
+
+## Importación del levantamiento de procesos (Excel)
+
+Los Excel de `docs/Proyectos/` (Compras, Contabilidad, Tesorería) tienen un proceso por fila en la hoja «Formato».
+No se suben a git (repositorio público, datos internos). `scripts/import-levantamiento.mjs` los carga como proyectos:
+
+- Cada proceso es un proyecto: nombre, área, responsable (persona de contacto del área) y estado **En espera**.
+- Fases: «Levantamiento» (completada, sin fecha estimada) y «Análisis de viabilidad» (en curso, sin fecha).
+- Una nota «Ficha del levantamiento» con frecuencia, tiempos, sistemas, dificultad, impacto y lo que esperan.
+- Contactos: persona de contacto y líder del área. Reglas de alerta por defecto, como en un proyecto nuevo.
+- Es idempotente (omite los que ya existen por nombre) y borra el proyecto en curso si algo falla.
