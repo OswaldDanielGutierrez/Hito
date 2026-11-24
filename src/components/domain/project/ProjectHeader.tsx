@@ -6,7 +6,9 @@ import type { ProjectData } from "@/lib/data/project";
 import { daysColor, daysText, daysUntil, formatDate } from "@/lib/domain/dates";
 import { currentPhase, finalDeliveryDate, projectProgress } from "@/lib/domain/progress";
 import { ArchivedNotice, ProjectActions } from "./ProjectActions";
+import type { TagWithUsage } from "@/lib/domain/tags";
 import { ProjectTabs } from "./ProjectTabs";
+import { ProjectTags } from "./ProjectTags";
 
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
@@ -22,7 +24,17 @@ export function ProjectHeaderSkeleton() {
   );
 }
 
-export function ProjectHeader({ data, today }: { data: ProjectData; today: string }) {
+export function ProjectHeader({
+  data,
+  today,
+  tags,
+  tagIds,
+}: {
+  data: ProjectData;
+  today: string;
+  tags: TagWithUsage[];
+  tagIds: string[];
+}) {
   const { project, phases, tasks, resources } = data;
   const progress = projectProgress(tasks);
   const current = currentPhase(phases);
@@ -61,6 +73,8 @@ export function ProjectHeader({ data, today }: { data: ProjectData; today: strin
             />
           </div>
         </div>
+
+        <ProjectTags projectId={project.id} tags={tags} initialIds={tagIds} />
 
         <dl className="mt-4 mb-4 flex flex-wrap gap-x-6 gap-y-3 sm:mt-[18px] sm:mb-[18px] sm:gap-x-9">
           <Datum label="Fase actual">

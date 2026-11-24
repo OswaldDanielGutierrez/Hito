@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import type { QuickTask } from "@/lib/domain/pendientes";
+import type { TagWithUsage } from "@/lib/domain/tags";
+import { TagPicker } from "../tags/TagPicker";
 import { fieldClass, labelClass } from "@/lib/ui-colors";
 import { PriorityToggle, ProjectSelect, RequesterInput } from "./QuickFields";
 
@@ -13,17 +15,20 @@ export interface QuickTaskPatch {
   requestedBy: string;
   dueDate: string | null;
   priority: "high" | "medium";
+  tagIds: string[];
 }
 
 export function EditDialog({
   task,
   projects,
+  tags,
   requesters,
   onSave,
   onClose,
 }: {
   task: QuickTask;
   projects: { id: string; name: string }[];
+  tags: TagWithUsage[];
   requesters: string[];
   onSave: (patch: QuickTaskPatch) => void;
   onClose: () => void;
@@ -33,6 +38,7 @@ export function EditDialog({
   const [requestedBy, setRequestedBy] = useState(task.requestedBy);
   const [dueDate, setDueDate] = useState(task.dueDate ?? "");
   const [high, setHigh] = useState(task.priority === "high");
+  const [tagIds, setTagIds] = useState(task.tagIds);
 
   // Si el proyecto ya no está activo (entregado o archivado), se conserva como opción para no perderlo.
   const options =
@@ -49,6 +55,7 @@ export function EditDialog({
       requestedBy: requestedBy.trim() || "Yo",
       dueDate: dueDate || null,
       priority: high ? "high" : "medium",
+      tagIds: tagIds.filter((id) => tags.some((t) => t.id === id)),
     });
     onClose();
   }
@@ -97,6 +104,10 @@ export function EditDialog({
           <div className="sm:ml-auto">
             <PriorityToggle pressed={high} onChange={setHigh} />
           </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <TagPicker id="edit-pendiente-etiquetas" tags={tags} selectedIds={tagIds} onChange={setTagIds} />
         </div>
 
         <div className="flex justify-end gap-3">

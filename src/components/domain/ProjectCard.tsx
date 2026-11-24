@@ -6,11 +6,13 @@ import { Bar } from "@/components/ui/Bar";
 import { Chip } from "@/components/ui/Chip";
 import { PhaseSegments } from "@/components/ui/PhaseSegments";
 import { StatusLabel } from "@/components/ui/StatusLabel";
+import { TagChips } from "@/components/domain/tags/TagChip";
 import type { ProjectCardData } from "@/lib/domain/portfolio";
+import type { Tag } from "@/lib/domain/tags";
 
 const icon = { size: 13, strokeWidth: 1.9, "aria-hidden": true } as const;
 
-export function ProjectCard({ project: p }: { project: ProjectCardData }) {
+export function ProjectCard({ project: p, tags = [] }: { project: ProjectCardData; tags?: Tag[] }) {
   const updated = formatDistanceToNow(new Date(p.updatedAt), { addSuffix: true, locale: es });
 
   return (
@@ -25,6 +27,8 @@ export function ProjectCard({ project: p }: { project: ProjectCardData }) {
         </div>
         <StatusLabel status={p.status} />
       </div>
+
+      <TagChips tags={tags} className="-mt-1" />
 
       <div className="flex flex-col gap-1.5">
         <div className="flex items-baseline justify-between gap-2 text-xs">

@@ -10,6 +10,7 @@ import {
   updateQuickTask,
 } from "@/app/(app)/pendientes/actions";
 import { toast } from "@/components/ui/Toaster";
+import { TAG_STYLES, tagsFromIds, type TagWithUsage } from "@/lib/domain/tags";
 import {
   dayCounts,
   groupBySection,
@@ -67,6 +68,7 @@ export function PendientesBoard({
   projects,
   requesters,
   ownerName,
+  tags,
 }: {
   today: string;
   longDate: string;
@@ -74,6 +76,7 @@ export function PendientesBoard({
   projects: { id: string; name: string }[];
   requesters: string[];
   ownerName: string;
+  tags: TagWithUsage[];
 }) {
   const [tasks, apply] = useOptimistic(serverTasks, reduce);
   const [, startTransition] = useTransition();
@@ -81,6 +84,7 @@ export function PendientesBoard({
   const [dayFilter, setDayFilter] = useState<DayFilter>("all");
   const [requesterFilter, setRequesterFilter] = useState<string | null>(null);
   const [projectFilter, setProjectFilter] = useState<string | null>(null);
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [showDone, setShowDone] = useState(true);
   const [editing, setEditing] = useState<QuickTask | null>(null);
   const composerRef = useRef<HTMLInputElement>(null);
@@ -112,11 +116,21 @@ export function PendientesBoard({
         (t) =>
           (showDone || !t.done) &&
           (requesterFilter === null || t.requestedBy === requesterFilter) &&
-          (projectFilter === null || (t.projectId ?? NO_PROJECT_KEY) === projectFilter),
+          (projectFilter === null || (t.projectId ?? NO_PROJECT_KEY) === projectFilter) &&
+          (tagFilter === null || t.tagIds.includes(tagFilter)),
       );
       return { ...g, tasks: filtered, openCount: filtered.filter((t) => !t.done).length };
     })
     .filter((g) => g.tasks.length > 0);
+
+  // Etiquetas con pendientes (o la activa), con cuántos pendientes abiertos tienen.
+  const tagCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const t of tasks) for (const id of t.tagIds) counts.set(id, (counts.get(id) ?? 0) + (t.done ? 0 : 1));
+    return counts;
+  }, [tasks]);
+  const filterTags = tags.filter((t) => tagCounts.has(t.id) || t.id === tagFilter);
+  const tagLabel = tags.find((t) => t.id === tagFilter)?.name ?? "etiqueta";
 
   const hasAny = groups.some((g) => g.tasks.length > 0);
   const projectLabel = projectFilter === NO_PROJECT_KEY ? "Sin proyecto" : (byProject.find((p) => p.key === projectFilter)?.label ?? projects.find((p) => p.id === projectFilter)?.name ?? "proyecto");
@@ -138,6 +152,7 @@ export function PendientesBoard({
       done: false,
       doneAt: null,
       createdAt: new Date().toISOString(),
+      tagIds: n.tagIds,
     };
     startTransition(async () => {
       apply({ type: "add", task: temp });
@@ -175,6 +190,7 @@ export function PendientesBoard({
           requestedBy: patch.requestedBy,
           dueDate: patch.dueDate,
           priority: patch.priority,
+          tagIds: patch.tagIds,
         },
       });
       failIf(await updateQuickTask({ id: task.id, ...patch }));
@@ -199,6 +215,7 @@ export function PendientesBoard({
             priority: task.priority,
             done: task.done,
             createdAt: task.createdAt,
+            tagIds: task.tagIds,
           });
           if (restored.ok) toast("Pendiente restaurado");
           else failIf(restored);
@@ -230,7 +247,7 @@ export function PendientesBoard({
 
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,380px)]">
         <div className="flex min-w-0 flex-col gap-[18px]">
-          <Composer projects={projects} requesters={allRequesters} today={today} inputRef={composerRef} onAdd={add} />
+          <Composer projects={projects} tags={tags} requesters={allRequesters} today={today} inputRef={composerRef} onAdd={add} />
 
           <div role="group" aria-label="Filtrar por día" className="flex flex-wrap gap-2">
             {DAY_PILLS.map(({ value, label }) => {
@@ -251,13 +268,37 @@ export function PendientesBoard({
             })}
           </div>
 
-          {(requesterFilter !== null || projectFilter !== null) && (
+          {filterTags.length > 0 && (
+            <div role="group" aria-label="Filtrar por etiqueta" className="flex flex-wrap items-center gap-2">
+              <span className="text-[13px] font-semibold text-muted">Etiquetas</span>
+              {filterTags.map((t) => {
+                const active = tagFilter === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setTagFilter(active ? null : t.id)}
+                    className={`inline-flex items-center gap-1.5 rounded-pill border px-3 py-[5px] text-[13px] font-semibold transition-colors duration-[120ms] ease-out ${
+                      active ? "border-green-900 bg-green-900 text-white" : "border-line bg-white text-ink hover:border-input-border"
+                    }`}
+                  >
+                    <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: TAG_STYLES[t.color].dot }} />
+                    {t.name} <span className="opacity-75">{tagCounts.get(t.id) ?? 0}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {(requesterFilter !== null || projectFilter !== null || tagFilter !== null) && (
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[13px] font-semibold text-muted">Filtrando por</span>
               {requesterFilter !== null && (
                 <FilterChip label={requesterFilter} onRemove={() => setRequesterFilter(null)} />
               )}
               {projectFilter !== null && <FilterChip label={projectLabel} onRemove={() => setProjectFilter(null)} />}
+              {tagFilter !== null && <FilterChip label={tagLabel} onRemove={() => setTagFilter(null)} />}
             </div>
           )}
 
@@ -283,6 +324,7 @@ export function PendientesBoard({
                           <TaskCard
                             key={task.id}
                             task={task}
+                            tags={tagsFromIds(task.tagIds, tags)}
                             today={today}
                             ownerName={ownerName}
                             onToggle={() => toggle(task)}
@@ -342,6 +384,7 @@ export function PendientesBoard({
           key={editing.id}
           task={editing}
           projects={projects}
+          tags={tags}
           requesters={allRequesters}
           onSave={(patch) => saveDetails(editing, patch)}
           onClose={() => setEditing(null)}

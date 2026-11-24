@@ -2,12 +2,15 @@ import { Calendar, Pin, Plus, StickyNote, Workflow } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
 import { FilterPills } from "@/components/domain/FilterPills";
+import { TagFilter } from "@/components/domain/tags/TagFilter";
 import { ProjectCard } from "@/components/domain/ProjectCard";
 import { StatCard } from "@/components/domain/StatCard";
 import { buttonClass } from "@/components/ui/Button";
 import { loadPortfolioInput } from "@/lib/data/portfolio";
+import { loadProjectTagIds, loadTags } from "@/lib/data/tags";
 import { formatLongDate, greeting, todayInBogota } from "@/lib/domain/dates";
 import { buildPortfolio, type StatusFilter } from "@/lib/domain/portfolio";
+import { tagsFromIds } from "@/lib/domain/tags";
 import { createClient } from "@/lib/supabase/server";
 
 const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
@@ -18,12 +21,14 @@ function firstName(displayName: string | null | undefined, email: string | undef
   return raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : "";
 }
 
-export async function HomeContent({ filter }: { filter: StatusFilter }) {
+export async function HomeContent({ filter, tagId }: { filter: StatusFilter; tagId?: string }) {
   await connection();
 
   const supabase = await createClient();
-  const [input, userResult, settingsResult, archived] = await Promise.all([
+  const [input, tags, tagIdsByProject, userResult, settingsResult, archived] = await Promise.all([
     loadPortfolioInput(),
+    loadTags(),
+    loadProjectTagIds(),
     supabase.auth.getUser(),
     supabase.from("user_settings").select("display_name").maybeSingle(),
     supabase.from("projects").select("id", { count: "exact", head: true }).not("archived_at", "is", null),
@@ -31,7 +36,10 @@ export async function HomeContent({ filter }: { filter: StatusFilter }) {
 
   const now = new Date();
   const { cards, stats, counts } = buildPortfolio(input, todayInBogota(now));
-  const visible = filter === "all" ? cards : cards.filter((c) => c.status === filter);
+  const activeTag = tags.find((t) => t.id === tagId);
+  const visible = cards
+    .filter((c) => filter === "all" || c.status === filter)
+    .filter((c) => !activeTag || (tagIdsByProject[c.id] ?? []).includes(activeTag.id));
   const name = firstName(settingsResult.data?.display_name, userResult.data.user?.email);
 
   return (
@@ -83,7 +91,7 @@ export async function HomeContent({ filter }: { filter: StatusFilter }) {
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <FilterPills active={filter} counts={counts} />
+        <FilterPills active={filter} counts={counts} tagId={activeTag?.id} />
         <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted">
           {(archived.count ?? 0) > 0 && (
             <Link href="/archivados" className="font-bold text-green-700 hover:underline">
@@ -94,9 +102,11 @@ export async function HomeContent({ filter }: { filter: StatusFilter }) {
         </span>
       </div>
 
+      <TagFilter tags={tags} activeId={activeTag?.id} estado={filter} />
+
       <section aria-label="Proyectos" className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-[18px] min-[1280px]:grid-cols-3">
         {visible.map((p) => (
-          <ProjectCard key={p.id} project={p} />
+          <ProjectCard key={p.id} project={p} tags={tagsFromIds(tagIdsByProject[p.id] ?? [], tags)} />
         ))}
         <Link
           href="/proyectos/nuevo"
@@ -108,7 +118,7 @@ export async function HomeContent({ filter }: { filter: StatusFilter }) {
           <span className="text-sm font-bold text-green-700">Registrar proyecto</span>
           {counts.all === 0 && <span className="text-sm text-muted">Aún no tienes proyectos. Registra el primero.</span>}
           {counts.all > 0 && visible.length === 0 && (
-            <span className="text-sm text-muted">No hay proyectos con este estado.</span>
+            <span className="text-sm text-muted">No hay proyectos con este filtro.</span>
           )}
         </Link>
       </section>

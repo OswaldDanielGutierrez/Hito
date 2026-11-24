@@ -33,6 +33,7 @@ const task = (over: Partial<QuickTask> = {}): QuickTask => ({
   done: false,
   doneAt: null,
   createdAt: "2026-11-18T14:00:00Z",
+  tagIds: [],
   ...over,
 });
 

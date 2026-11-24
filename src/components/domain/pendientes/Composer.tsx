@@ -5,6 +5,8 @@ import { useState, type RefObject } from "react";
 import { Button } from "@/components/ui/Button";
 import { addDays } from "@/lib/domain/dates";
 import { fridayOfWeek, SELF_NAME } from "@/lib/domain/pendientes";
+import type { TagWithUsage } from "@/lib/domain/tags";
+import { TagPicker } from "../tags/TagPicker";
 import { PriorityToggle, ProjectSelect, RequesterInput, Segmented } from "./QuickFields";
 
 export type DateKey = "today" | "tomorrow" | "week" | "none";
@@ -29,16 +31,19 @@ export interface NewQuickTask {
   requestedBy: string;
   dueDate: string | null;
   priority: "high" | "medium";
+  tagIds: string[];
 }
 
 export function Composer({
   projects,
+  tags,
   requesters,
   today,
   inputRef,
   onAdd,
 }: {
   projects: { id: string; name: string }[];
+  tags: TagWithUsage[];
   requesters: string[];
   today: string;
   inputRef: RefObject<HTMLInputElement | null>;
@@ -49,6 +54,7 @@ export function Composer({
   const [requestedBy, setRequestedBy] = useState("");
   const [dateKey, setDateKey] = useState<DateKey>("today");
   const [high, setHigh] = useState(false);
+  const [tagIds, setTagIds] = useState<string[]>([]);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -60,8 +66,9 @@ export function Composer({
       requestedBy: requestedBy.trim() || SELF_NAME,
       dueDate: resolveDate(dateKey, today),
       priority: high ? "high" : "medium",
+      tagIds: tagIds.filter((id) => tags.some((t) => t.id === id)),
     });
-    // Se conservan proyecto, solicitante y fecha para capturar varios seguidos.
+    // Se conservan proyecto, solicitante, fecha y etiquetas para capturar varios seguidos.
     setTitle("");
     setHigh(false);
   }
@@ -96,6 +103,7 @@ export function Composer({
         <RequesterInput id="pendiente-pidio" value={requestedBy} requesters={requesters} onChange={setRequestedBy} />
         <Segmented label="Fecha" value={dateKey} options={DATE_OPTIONS} onChange={setDateKey} />
         <PriorityToggle pressed={high} onChange={setHigh} />
+        <TagPicker id="pendiente-etiquetas" tags={tags} selectedIds={tagIds} onChange={setTagIds} />
         <Button type="submit" className="w-full sm:ml-auto sm:w-auto">
           <Plus size={18} strokeWidth={1.9} aria-hidden />
           Agregar

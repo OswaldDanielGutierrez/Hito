@@ -2,6 +2,7 @@ import { connection } from "next/server";
 import { Suspense, type ReactNode } from "react";
 import type { NotificationItem } from "@/components/domain/NotificationsBell";
 import { TopBar, TopBarSkeleton } from "@/components/domain/TopBar";
+import { loadTags } from "@/lib/data/tags";
 import { createClient } from "@/lib/supabase/server";
 
 function initialsOf(name: string) {
@@ -16,7 +17,7 @@ async function AccountTopBar() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const [{ data: settings }, { data: notifications }, { count: unread }] = await Promise.all([
+  const [{ data: settings }, { data: notifications }, { count: unread }, tags] = await Promise.all([
     supabase.from("user_settings").select("display_name").maybeSingle(),
     supabase
       .from("notifications")
@@ -25,6 +26,7 @@ async function AccountTopBar() {
       .order("created_at", { ascending: false })
       .limit(15),
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("channel", "in_app").is("read_at", null),
+    loadTags(),
   ]);
 
   const items: NotificationItem[] = (notifications ?? []).map((n) => ({
@@ -46,6 +48,7 @@ async function AccountTopBar() {
       displayName={settings?.display_name ?? ""}
       notifications={items}
       unread={unread ?? 0}
+      tags={tags}
     />
   );
 }

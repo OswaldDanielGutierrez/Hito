@@ -53,6 +53,7 @@ async function PendientesContent() {
       projects={data.projects}
       requesters={data.requesters}
       ownerName={data.ownerName}
+      tags={data.tags}
     />
   );
 }

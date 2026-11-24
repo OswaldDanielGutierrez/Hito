@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { APP_NAME } from "@/config/app";
+import type { TagWithUsage } from "@/lib/domain/tags";
 import { AvatarMenu } from "./AvatarMenu";
 import { NavLinks } from "./NavLinks";
 import { NotificationsBell, type NotificationItem } from "./NotificationsBell";
@@ -22,12 +23,14 @@ export function TopBar({
   displayName,
   notifications,
   unread,
+  tags,
 }: {
   initials: string;
   email: string;
   displayName: string;
   notifications: NotificationItem[];
   unread: number;
+  tags: TagWithUsage[];
 }) {
   return (
     <header className="bg-green-900">
@@ -43,7 +46,7 @@ export function TopBar({
         <div className="ml-auto flex items-center gap-3 md:gap-4 max-[379px]:gap-0.5">
           <SearchTrigger />
           <NotificationsBell items={notifications} unread={unread} />
-          <AvatarMenu initials={initials} email={email} displayName={displayName} />
+          <AvatarMenu initials={initials} email={email} displayName={displayName} tags={tags} />
         </div>
       </div>
     </header>

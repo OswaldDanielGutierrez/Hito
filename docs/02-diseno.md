@@ -192,6 +192,12 @@ Misma cabecera con "Historial" activa. Dos columnas.
 - **Login:** tarjeta centrada de 400 px sobre fondo #F6F8F7 con logo, correo y botón primario.
 - **Toasts:** esquina inferior derecha, para confirmaciones y errores.
 
+### Etiquetas (sin pantalla nueva)
+Se gestionan en un diálogo («Etiquetas», desde el menú de la cuenta) con los mismos componentes de diálogo y botones. El selector de etiquetas es un popover con lista, creación rápida y el enlace «Gestionar etiquetas».
+- Chip de etiqueta: píldora de `text-xs`, negrita, fondo y texto de la paleta de 8 colores (verde, azul, ámbar, rojo, morado, turquesa, rosa, gris). Siempre lleva el nombre en texto.
+- Muestras de color: botones de 40 px con círculo de 28 px, nombre accesible y marca de verificación en la elegida.
+- Inicio: fila «Etiquetas» bajo los filtros de estado. Pendientes: fila «Etiquetas» bajo los filtros de día.
+
 ## Estados
 - **Cargando:** esqueletos con la misma forma (tarjetas, filas) en #EEF2F0. Sin spinners de pantalla completa.
 - **Vacío:** mensaje corto y una acción.

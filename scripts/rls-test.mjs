@@ -92,6 +92,23 @@ try {
   const undone = await a.from("quick_tasks").update({ done: false }).eq("id", quick.data.id).select().single();
   check("Desmarcar limpia la hora (done_at)", undone.data?.done_at === null);
 
+  // Etiquetas: cada usuario solo ve y toca las suyas; las asignaciones no cruzan usuarios.
+  const tagA = await a.from("tags").insert({ name: "Power Apps", color: "blue" }).select().single();
+  check("A crea una etiqueta", !tagA.error && !!tagA.data);
+  check("A no puede repetir el nombre (sin importar mayúsculas)", !!(await a.from("tags").insert({ name: " power apps " })).error);
+  check("Color inválido se rechaza", !!(await a.from("tags").insert({ name: "Otra", color: "fucsia" })).error);
+  check("B no ve etiquetas de A", (await b.from("tags").select("id")).data?.length === 0);
+  check("B puede crear una etiqueta con el mismo nombre", !(await b.from("tags").insert({ name: "Power Apps" })).error);
+  check("B no puede editar etiquetas de A", (await b.from("tags").update({ name: "hackeada" }).eq("id", tagA.data.id).select()).data?.length === 0);
+  check("A etiqueta su proyecto", !(await a.from("project_tags").insert({ project_id: proj.data.id, tag_id: tagA.data.id })).error);
+  check("A etiqueta su pendiente", !(await a.from("quick_task_tags").insert({ quick_task_id: quick.data.id, tag_id: tagA.data.id })).error);
+  check("B no ve asignaciones de A", (await b.from("project_tags").select("tag_id")).data?.length === 0 && (await b.from("quick_task_tags").select("tag_id")).data?.length === 0);
+  check("B no puede etiquetar el proyecto de A", !!(await b.from("project_tags").insert({ project_id: proj.data.id, tag_id: tagA.data.id })).error);
+  const tagB = await b.from("tags").select("id").single();
+  check("B no puede usar su etiqueta en el pendiente de A", !!(await b.from("quick_task_tags").insert({ quick_task_id: quick.data.id, tag_id: tagB.data.id })).error);
+  await a.from("tags").delete().eq("id", tagA.data.id);
+  check("Eliminar la etiqueta la quita de proyectos y pendientes", (await a.from("project_tags").select("tag_id")).data?.length === 0 && (await a.from("quick_task_tags").select("tag_id")).data?.length === 0);
+
   const seenByA = await a.from("projects").select("id");
   check("A ve su proyecto", seenByA.data?.length === 1);
 

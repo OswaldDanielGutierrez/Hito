@@ -3,6 +3,8 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Check, Flag, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { TagChips } from "@/components/domain/tags/TagChip";
+import type { Tag } from "@/lib/domain/tags";
 import { dueLabel, NO_PROJECT_COLOR, projectColor, requesterAvatar, type QuickTask } from "@/lib/domain/pendientes";
 
 const menuItem =
@@ -10,6 +12,7 @@ const menuItem =
 
 export function TaskCard({
   task,
+  tags,
   today,
   ownerName,
   onToggle,
@@ -18,6 +21,7 @@ export function TaskCard({
   onDelete,
 }: {
   task: QuickTask;
+  tags: Tag[];
   today: string;
   ownerName: string;
   onToggle: () => void;
@@ -151,6 +155,8 @@ export function TaskCard({
             Sin proyecto
           </span>
         )}
+
+        <TagChips tags={tags} />
 
         <div className="mt-auto flex items-center gap-2.5 border-t border-surface pt-2.5">
           <span

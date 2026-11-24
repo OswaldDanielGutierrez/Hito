@@ -31,6 +31,9 @@ user_settings     (una fila por usuario)
 | `notifications` | Alertas generadas. Clave única para no duplicarlas. |
 | `user_settings` | Zona horaria, nombre, canales. |
 | `quick_tasks` | Pendientes sueltos del día (pantalla Pendientes): título, proyecto opcional, quién lo pidió, fecha, prioridad y estado. Ver `docs/05-pendientes.md`. |
+| `tags` | Etiquetas del usuario: nombre (único sin distinguir mayúsculas) y color de una paleta fija. |
+| `project_tags` | Asignación de etiquetas a proyectos (`project_id`, `tag_id`). |
+| `quick_task_tags` | Asignación de etiquetas a pendientes (`quick_task_id`, `tag_id`). |
 
 ## Enums
 | Enum | Valores |

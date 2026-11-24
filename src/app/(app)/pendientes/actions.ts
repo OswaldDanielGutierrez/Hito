@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { fail, firstIssue, isoDate, uuid, type ActionResult } from "@/lib/actions";
+import { syncQuickTaskTags } from "@/lib/data/tags";
 import { SELF_NAME, type QuickPriority } from "@/lib/domain/pendientes";
 import { createClient } from "@/lib/supabase/server";
 
@@ -13,6 +14,7 @@ const requestedBy = z
   .max(80, "El nombre de quien lo pidió es muy largo")
   .transform((v) => v || SELF_NAME);
 const priority = z.enum(["high", "medium"]);
+const tagIds = z.array(uuid).max(50, "Máximo 50 etiquetas");
 
 function refresh() {
   revalidatePath("/pendientes");
@@ -41,6 +43,7 @@ const createSchema = z.object({
   requestedBy,
   dueDate: isoDate.nullable(),
   priority,
+  tagIds: tagIds.default([]),
 });
 
 export type CreateQuickTaskResult = { ok: true; id: string } | { ok: false; error: string };
@@ -60,6 +63,10 @@ export async function createQuickTask(input: z.input<typeof createSchema>): Prom
       .select("id")
       .single();
     if (error) return { ok: false, error: error.message };
+    if (v.tagIds.length > 0) {
+      const message = await syncQuickTaskTags(supabase, data.id, v.tagIds);
+      if (message) return { ok: false, error: message };
+    }
     return { ok: true, id: data.id };
   });
   return result as CreateQuickTaskResult;
@@ -85,6 +92,7 @@ const updateSchema = z.object({
   requestedBy: requestedBy.optional(),
   dueDate: isoDate.nullable().optional(),
   priority: priority.optional(),
+  tagIds: tagIds.optional(),
 });
 
 export async function updateQuickTask(input: z.input<typeof updateSchema>): Promise<ActionResult> {
@@ -103,11 +111,15 @@ export async function updateQuickTask(input: z.input<typeof updateSchema>): Prom
       ...(v.dueDate !== undefined && { due_date: v.dueDate }),
       ...(v.priority !== undefined && { priority: v.priority }),
     };
-    if (Object.keys(changes).length === 0) return { ok: true };
-
-    const { data, error } = await supabase.from("quick_tasks").update(changes).eq("id", v.id).select("id").maybeSingle();
-    if (error) return fail(error.message);
-    if (!data) return fail("No se encontró el pendiente");
+    if (Object.keys(changes).length > 0) {
+      const { data, error } = await supabase.from("quick_tasks").update(changes).eq("id", v.id).select("id").maybeSingle();
+      if (error) return fail(error.message);
+      if (!data) return fail("No se encontró el pendiente");
+    }
+    if (v.tagIds !== undefined) {
+      const message = await syncQuickTaskTags(supabase, v.id, v.tagIds);
+      if (message) return fail(message);
+    }
     return { ok: true };
   });
 }
@@ -133,6 +145,7 @@ const restoreSchema = z.object({
   priority: z.enum(["high", "medium", "low"]),
   done: z.boolean(),
   createdAt: z.string(),
+  tagIds: tagIds.default([]),
 });
 
 /** Deshacer una eliminación: vuelve a crear el pendiente con el mismo id y fecha de creación. */
@@ -154,6 +167,11 @@ export async function restoreQuickTask(input: z.input<typeof restoreSchema>): Pr
       created_at: v.createdAt,
     });
     if (error) return fail(error.message);
+    // Las etiquetas que ya no existan se omiten: lo importante es recuperar el pendiente.
+    if (v.tagIds.length > 0) {
+      const { data: existing } = await supabase.from("tags").select("id").in("id", v.tagIds);
+      await syncQuickTaskTags(supabase, v.id, (existing ?? []).map((t) => t.id));
+    }
     return { ok: true };
   });
 }

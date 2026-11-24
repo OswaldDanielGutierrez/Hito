@@ -10,7 +10,24 @@ export const FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "delivered", label: "Entregados" },
 ];
 
-export function FilterPills({ active, counts }: { active: StatusFilter; counts: Record<StatusFilter, number> }) {
+/** Dirección de Inicio con los filtros de estado y etiqueta. */
+export function homeHref(estado: StatusFilter, tagId?: string) {
+  const params = new URLSearchParams();
+  if (estado !== "all") params.set("estado", estado);
+  if (tagId) params.set("etiqueta", tagId);
+  const query = params.toString();
+  return query ? `/?${query}` : "/";
+}
+
+export function FilterPills({
+  active,
+  counts,
+  tagId,
+}: {
+  active: StatusFilter;
+  counts: Record<StatusFilter, number>;
+  tagId?: string;
+}) {
   return (
     <nav aria-label="Filtrar proyectos por estado" className="flex flex-wrap gap-2">
       {FILTERS.map(({ value, label }) => {
@@ -18,7 +35,7 @@ export function FilterPills({ active, counts }: { active: StatusFilter; counts: 
         return (
           <Link
             key={value}
-            href={value === "all" ? "/" : `/?estado=${value}`}
+            href={homeHref(value, tagId)}
             aria-current={isActive ? "true" : undefined}
             className={`tap rounded-pill border px-3.5 py-[7px] text-[13px] font-semibold transition-colors duration-[120ms] ease-out ${
               isActive

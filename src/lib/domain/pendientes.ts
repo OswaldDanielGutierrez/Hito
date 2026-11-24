@@ -13,6 +13,7 @@ export interface QuickTask {
   done: boolean;
   doneAt: string | null;
   createdAt: string;
+  tagIds: string[];
 }
 
 export type SectionKey = "overdue" | "today" | "tomorrow" | "week" | "nextWeek" | "none";

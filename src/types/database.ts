@@ -209,6 +209,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"project_tags": {
+                  Row: {
+                    "owner_id": string,"project_id": string,"tag_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "owner_id"?: string,"project_id": string,"tag_id": string
+                  }
+                  Update: {
+                    "owner_id"?: string,"project_id"?: string,"tag_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "project_tags_project_id_fkey"
+      columns: ["project_id"]
+isOneToOne: false
+      referencedRelation: "project_overview"
+      referencedColumns: ["project_id"]
+    },{
+      foreignKeyName: "project_tags_project_id_fkey"
+      columns: ["project_id"]
+isOneToOne: false
+      referencedRelation: "projects"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "project_tags_tag_id_fkey"
+      columns: ["tag_id"]
+isOneToOne: false
+      referencedRelation: "tags"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"projects": {
                   Row: {
                     "archived_at": string | null,"area": string | null,"created_at": string,"description": string | null,"id": string,"name": string,"notepad": string,"owner_id": string,"responsible": string | null,"start_date": string | null,"status": Database["public"]['Enums']["project_status"],"updated_at": string
@@ -222,6 +254,32 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"quick_task_tags": {
+                  Row: {
+                    "owner_id": string,"quick_task_id": string,"tag_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "owner_id"?: string,"quick_task_id": string,"tag_id": string
+                  }
+                  Update: {
+                    "owner_id"?: string,"quick_task_id"?: string,"tag_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "quick_task_tags_quick_task_id_fkey"
+      columns: ["quick_task_id"]
+isOneToOne: false
+      referencedRelation: "quick_tasks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "quick_task_tags_tag_id_fkey"
+      columns: ["tag_id"]
+isOneToOne: false
+      referencedRelation: "tags"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"quick_tasks": {
                   Row: {
@@ -280,6 +338,20 @@ isOneToOne: false
       referencedRelation: "projects"
       referencedColumns: ["id"]
     }
+                  ]
+                },"tags": {
+                  Row: {
+                    "color": string,"created_at": string,"id": string,"name": string,"owner_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "color"?: string,"created_at"?: string,"id"?: string,"name": string,"owner_id"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "color"?: string,"created_at"?: string,"id"?: string,"name"?: string,"owner_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
                   ]
                 },"task_resources": {
                   Row: {
