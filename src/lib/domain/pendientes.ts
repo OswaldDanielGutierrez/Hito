@@ -14,8 +14,10 @@ export interface QuickTask {
   doneAt: string | null;
   createdAt: string;
   tagIds: string[];
-  sectionsCount: number;
   notesCount: number;
+  attachmentsCount: number;
+  /** Tiene texto en el bloc de escritura libre. */
+  hasNotepad: boolean;
 }
 
 export type SectionKey = "overdue" | "today" | "tomorrow" | "week" | "nextWeek" | "none";
@@ -110,13 +112,19 @@ export function olderDone(tasks: QuickTask[], today: string): QuickTask[] {
     .sort((a, b) => (b.doneAt ?? "").localeCompare(a.doneAt ?? "") || b.createdAt.localeCompare(a.createdAt));
 }
 
-/** Texto corto con las notas y secciones de un pendiente; vacío si no tiene. */
-export function detailSummary(t: Pick<QuickTask, "notesCount" | "sectionsCount">): string {
+/** Texto corto con lo que tiene un pendiente (apuntes, notas importantes, adjuntos); vacío si no tiene nada. */
+export function detailSummary(t: Pick<QuickTask, "notesCount" | "attachmentsCount" | "hasNotepad">): string {
   const parts = [
+    t.hasNotepad && "Apuntes",
     t.notesCount > 0 && `${t.notesCount} ${t.notesCount === 1 ? "nota" : "notas"}`,
-    t.sectionsCount > 0 && `${t.sectionsCount} ${t.sectionsCount === 1 ? "sección" : "secciones"}`,
+    t.attachmentsCount > 0 && `${t.attachmentsCount} ${t.attachmentsCount === 1 ? "adjunto" : "adjuntos"}`,
   ].filter(Boolean);
   return parts.join(" · ");
+}
+
+/** ¿Eliminarlo borraría contenido propio (apuntes, notas o adjuntos)? Pide confirmación. */
+export function hasContent(t: Pick<QuickTask, "notesCount" | "attachmentsCount" | "hasNotepad">): boolean {
+  return t.hasNotepad || t.notesCount > 0 || t.attachmentsCount > 0;
 }
 
 /** Abiertos antes que hechos; entre abiertos, prioridad alta primero y luego el más reciente. */

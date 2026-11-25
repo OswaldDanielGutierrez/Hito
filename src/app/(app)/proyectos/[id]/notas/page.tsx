@@ -21,7 +21,7 @@ async function NotesContent({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <main id="contenido" className="mx-auto w-full max-w-[1376px] px-4 py-5 sm:px-8 sm:py-6">
-      <NotepadEditor key={data.project.id} projectId={data.project.id} initial={data.project.notepad} />
+      <NotepadEditor key={data.project.id} kind="project" id={data.project.id} initial={data.project.notepad} />
     </main>
   );
 }

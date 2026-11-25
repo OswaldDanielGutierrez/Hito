@@ -17,6 +17,7 @@ import {
   visibleDone,
   olderDone,
   detailSummary,
+  hasContent,
   type QuickTask,
 } from "./pendientes";
 
@@ -36,8 +37,9 @@ const task = (over: Partial<QuickTask> = {}): QuickTask => ({
   doneAt: null,
   createdAt: "2026-11-18T14:00:00Z",
   tagIds: [],
-  sectionsCount: 0,
   notesCount: 0,
+  attachmentsCount: 0,
+  hasNotepad: false,
   ...over,
 });
 
@@ -315,8 +317,18 @@ describe("olderDone", () => {
 
 describe("detailSummary", () => {
   it("resume notas y secciones", () => {
-    expect(detailSummary({ notesCount: 0, sectionsCount: 0 })).toBe("");
-    expect(detailSummary({ notesCount: 1, sectionsCount: 0 })).toBe("1 nota");
-    expect(detailSummary({ notesCount: 3, sectionsCount: 2 })).toBe("3 notas · 2 secciones");
+    expect(detailSummary({ notesCount: 0, attachmentsCount: 0, hasNotepad: false })).toBe("");
+    expect(detailSummary({ notesCount: 1, attachmentsCount: 0, hasNotepad: false })).toBe("1 nota");
+    expect(detailSummary({ notesCount: 3, attachmentsCount: 2, hasNotepad: true })).toBe("Apuntes · 3 notas · 2 adjuntos");
+    expect(detailSummary({ notesCount: 0, attachmentsCount: 1, hasNotepad: false })).toBe("1 adjunto");
+  });
+});
+
+describe("hasContent", () => {
+  it("detecta si borrar el pendiente borraría apuntes, notas o adjuntos", () => {
+    expect(hasContent(task())).toBe(false);
+    expect(hasContent(task({ hasNotepad: true }))).toBe(true);
+    expect(hasContent(task({ notesCount: 1 }))).toBe(true);
+    expect(hasContent(task({ attachmentsCount: 2 }))).toBe(true);
   });
 });

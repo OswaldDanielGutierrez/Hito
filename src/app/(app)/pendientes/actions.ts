@@ -130,8 +130,12 @@ export async function deleteQuickTask(input: { id: string }): Promise<ActionResu
 
   return run(async () => {
     const supabase = await createClient();
+    // Los archivos adjuntos viven en Storage: se borran junto con el pendiente.
+    const { data: files } = await supabase.from("quick_task_attachments").select("storage_path").eq("quick_task_id", parsed.data.id);
     const { error } = await supabase.from("quick_tasks").delete().eq("id", parsed.data.id);
     if (error) return fail(error.message);
+    const paths = (files ?? []).map((f) => f.storage_path).filter((p): p is string => !!p);
+    if (paths.length > 0) await supabase.storage.from("project-files").remove(paths);
     return { ok: true };
   });
 }

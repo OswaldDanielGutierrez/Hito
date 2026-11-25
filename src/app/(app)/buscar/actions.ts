@@ -93,7 +93,7 @@ export async function searchAll(input: { query: string }): Promise<SearchResult[
       id: q.id,
       title: q.title,
       subtitle: [`Pidió ${q.requested_by}`, q.projects?.name, q.done ? "Hecho" : null].filter(Boolean).join(" · "),
-      href: "/pendientes",
+      href: `/pendientes/${q.id}`,
     })),
   ];
 }

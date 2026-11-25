@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { saveQuickTaskNotepad } from "@/app/(app)/pendientes/[id]/actions";
 import { saveNotepad } from "@/app/(app)/proyectos/[id]/notas/actions";
+import type { ActionResult } from "@/lib/actions";
 
 const MAX = 50000;
 const DEBOUNCE_MS = 800;
@@ -15,7 +17,29 @@ const statusText: Record<Status, string> = {
   error: "No se pudo guardar",
 };
 
-export function NotepadEditor({ projectId, initial }: { projectId: string; initial: string }) {
+type Kind = "project" | "quick";
+
+const COPY: Record<Kind, { title: string; hint: string; label: string; placeholder: string }> = {
+  project: {
+    title: "Bloc de notas",
+    hint: "Apuntes e ideas sueltas del proyecto. Se guardan solos.",
+    label: "Bloc de notas del proyecto",
+    placeholder: "Escribe aquí lo que quieras: ideas, pendientes, enlaces, apuntes de reuniones…",
+  },
+  quick: {
+    title: "Escritura libre",
+    hint: "Anota ideas, pasos y apuntes de este pendiente. Se guarda solo.",
+    label: "Escritura libre del pendiente",
+    placeholder: "Escribe aquí lo que quieras: ideas, pasos, apuntes de la conversación…",
+  },
+};
+
+const save = (kind: Kind, id: string, content: string): Promise<ActionResult> =>
+  kind === "project" ? saveNotepad({ projectId: id, content }) : saveQuickTaskNotepad({ id, content });
+
+/** Bloc de texto libre con autoguardado, para proyectos (`project`) y pendientes (`quick`). */
+export function NotepadEditor({ kind = "project", id, initial }: { kind?: Kind; id: string; initial: string }) {
+  const copy = COPY[kind];
   const [value, setValue] = useState(initial);
   const [status, setStatus] = useState<Status>("saved");
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +55,7 @@ export function NotepadEditor({ projectId, initial }: { projectId: string; initi
 
     const content = latest.current;
     setStatus("saving");
-    const result = await saveNotepad({ projectId, content });
+    const result = await save(kind, id, content);
     if (result.ok) {
       saved.current = content;
       setError(null);
@@ -54,18 +78,18 @@ export function NotepadEditor({ projectId, initial }: { projectId: string; initi
   useEffect(() => {
     return () => {
       if (timer.current) clearTimeout(timer.current);
-      if (latest.current !== saved.current) void saveNotepad({ projectId, content: latest.current });
+      if (latest.current !== saved.current) void save(kind, id, latest.current);
     };
-  }, [projectId]);
+  }, [kind, id]);
 
   return (
     <section aria-labelledby="notas-bloc-titulo" className="rounded-card border border-line bg-white p-4 sm:p-5">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <div>
           <h2 id="notas-bloc-titulo" className="text-base font-extrabold">
-            Bloc de notas
+            {copy.title}
           </h2>
-          <p className="text-[13px] text-muted">Apuntes e ideas sueltas del proyecto. Se guardan solos.</p>
+          <p className="text-[13px] text-muted">{copy.hint}</p>
         </div>
         <p
           role="status"
@@ -77,7 +101,7 @@ export function NotepadEditor({ projectId, initial }: { projectId: string; initi
       </div>
 
       <label htmlFor="bloc-notas" className="sr-only">
-        Bloc de notas del proyecto
+        {copy.label}
       </label>
       <textarea
         id="bloc-notas"
@@ -85,7 +109,7 @@ export function NotepadEditor({ projectId, initial }: { projectId: string; initi
         maxLength={MAX}
         onChange={(e) => onChange(e.target.value)}
         onBlur={flush}
-        placeholder="Escribe aquí lo que quieras: ideas, pendientes, enlaces, apuntes de reuniones…"
+        placeholder={copy.placeholder}
         className="block min-h-[55dvh] w-full resize-y rounded-input border border-line bg-page p-3.5 text-base leading-7 sm:text-sm sm:leading-6"
       />
 

@@ -4,6 +4,20 @@ Pantalla para anotar tareas diarias sueltas: lo que te piden en el día, aunque 
 
 Ruta: `/pendientes`. Se suma a los documentos existentes; no reemplaza nada de `docs/01` a `docs/04`.
 
+## Página de un pendiente (`/pendientes/[id]`)
+
+Se abre desde el enlace de la tarjeta («Apuntes · 1 nota · 2 adjuntos» o «Abrir»), el menú ⋯ → «Abrir pendiente» o la búsqueda Ctrl K. Misma barra superior que el resto; contenido en `max-w-[1376px]`.
+
+1. **Encabezado** (Card): ruta «Pendientes / título», H1 con el título (tachado y gris si está hecho), botón **Marcar como hecho / Volver a pendiente** y selector de **Etiquetas**; debajo, Proyecto, Pidió, Fecha límite (misma etiqueta de color que la tarjeta), Prioridad (si es alta) y **Creado** (fecha y hora, no editable).
+2. **Columna izquierda (70 %, `lg:grid-cols-[7fr_3fr]`): Escritura libre.** Mismo editor que el bloc de notas del proyecto: autoguardado a los 800 ms, estado «Guardado / Guardando… / No se pudo guardar», límite de 50.000 caracteres. Se guarda en `quick_tasks.notepad`.
+3. **Columna derecha (30 %):**
+   - **Adjuntos:** lista con icono (archivo o enlace), nombre que abre en pestaña nueva, origen y fecha; eliminar con confirmación. Debajo, «Adjuntar archivo» (varios, hasta 25 MB cada uno) y formulario de enlace (nombre opcional; si falta se sugiere desde la URL).
+   - **Notas importantes:** lista con fecha y hora (marca «editada»), editar y eliminar con confirmación; campo para agregar una nueva.
+4. Por debajo de 1024 px las columnas se apilan: escritura libre primero y luego adjuntos y notas.
+5. Estados: cargando (esqueleto), no encontrado («No encontramos este pendiente»), vacíos de adjuntos y notas.
+
+**Eliminar:** si el pendiente tiene apuntes, notas o adjuntos se pide confirmación y no hay «Deshacer». Los archivos adjuntos se borran del almacenamiento.
+
 ## Instrucciones para Claude Code
 Al implementar esta pantalla, aplica también estos ajustes menores:
 1. **Barra superior** (`docs/02-diseno.md`, componente TopBar): los enlaces pasan a ser **Proyectos, Pendientes, Calendario**. "Mis tareas" desaparece; Pendientes cumple ese papel. Pendientes queda activo en `/pendientes`.

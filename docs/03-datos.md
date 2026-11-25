@@ -30,9 +30,10 @@ user_settings     (una fila por usuario)
 | `alert_rules` | Reglas de alerta por proyecto (o globales con `project_id` null). |
 | `notifications` | Alertas generadas. Clave única para no duplicarlas. |
 | `user_settings` | Zona horaria, nombre, canales. |
-| `quick_tasks` | Pendientes sueltos del día (pantalla Pendientes): título, proyecto opcional, quién lo pidió, fecha, prioridad y estado. Ver `docs/05-pendientes.md`. |
-| `quick_task_sections` | Secciones con título dentro de un pendiente (`quick_task_id`, `title`, `position`). |
-| `quick_task_notes` | Notas de un pendiente: generales (`section_id` nulo) o dentro de una sección; al borrar la sección se borran sus notas. |
+| `quick_tasks` (`notepad`, `notepad_length`) | Pendientes sueltos del día (pantalla Pendientes): título, proyecto opcional, quién lo pidió, fecha, prioridad y estado. Ver `docs/05-pendientes.md`. |
+| `quick_task_notes` | Notas importantes de un pendiente (`section_id` nulo). |
+| `quick_task_attachments` | Adjuntos de un pendiente: archivos (`storage_path` en el bucket `project-files`, ruta `{usuario}/pendientes/{pendiente}/…`) y enlaces (`url`). |
+| `quick_task_sections` | Sin uso en la app (la migración 0010 las creó para un diseño anterior). Vacía; se puede eliminar. |
 | `tags` | Etiquetas del usuario: nombre (único sin distinguir mayúsculas) y color de una paleta fija. |
 | `project_tags` | Asignación de etiquetas a proyectos (`project_id`, `tag_id`). |
 | `quick_task_tags` | Asignación de etiquetas a pendientes (`quick_task_id`, `tag_id`). |

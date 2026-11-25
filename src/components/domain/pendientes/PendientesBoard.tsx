@@ -9,11 +9,14 @@ import {
   toggleQuickTask,
   updateQuickTask,
 } from "@/app/(app)/pendientes/actions";
+import { Button } from "@/components/ui/Button";
+import { Dialog } from "@/components/ui/Dialog";
 import { toast } from "@/components/ui/Toaster";
 import { TAG_STYLES, tagsFromIds, type TagWithUsage } from "@/lib/domain/tags";
 import {
   dayCounts,
   groupBySection,
+  hasContent,
   matchesDayFilter,
   olderDone,
   NO_PROJECT_COLOR,
@@ -29,7 +32,6 @@ import {
 } from "@/lib/domain/pendientes";
 import { Composer, type NewQuickTask } from "./Composer";
 import { EditDialog, type QuickTaskPatch } from "./EditDialog";
-import { QuickTaskDetail } from "./QuickTaskDetail";
 import { ProgressCard, TallyCard } from "./SidePanel";
 import { TaskCard } from "./TaskCard";
 
@@ -89,7 +91,7 @@ export function PendientesBoard({
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [showDone, setShowDone] = useState(true);
   const [editing, setEditing] = useState<QuickTask | null>(null);
-  const [openingId, setOpeningId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<QuickTask | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const composerRef = useRef<HTMLInputElement>(null);
 
@@ -110,7 +112,6 @@ export function PendientesBoard({
   const groups = useMemo(() => groupBySection(tasks, today), [tasks, today]);
   const counts = useMemo(() => dayCounts(tasks, today), [tasks, today]);
   const history = useMemo(() => olderDone(tasks, today), [tasks, today]);
-  const opened = tasks.find((t) => t.id === openingId) ?? null;
   const progress = useMemo(() => progressToday(tasks, today), [tasks, today]);
   const byRequester = useMemo(() => tallyByRequester(tasks), [tasks]);
   const byProject = useMemo(() => tallyByProject(tasks), [tasks]);
@@ -170,8 +171,9 @@ export function PendientesBoard({
       doneAt: null,
       createdAt: new Date().toISOString(),
       tagIds: n.tagIds,
-      sectionsCount: 0,
       notesCount: 0,
+      attachmentsCount: 0,
+      hasNotepad: false,
     };
     startTransition(async () => {
       apply({ type: "add", task: temp });
@@ -216,11 +218,19 @@ export function PendientesBoard({
     });
   }
 
+  // Un pendiente con apuntes, notas o adjuntos pide confirmación y no se puede deshacer.
+  function requestRemove(task: QuickTask) {
+    if (hasContent(task)) setConfirmDelete(task);
+    else remove(task);
+  }
+
   function remove(task: QuickTask) {
+    const undoable = !hasContent(task);
     startTransition(async () => {
       apply({ type: "remove", id: task.id });
       const result = await deleteQuickTask({ id: task.id });
       if (!result.ok) return failIf(result);
+      if (!undoable) return toast("Pendiente eliminado");
       toast("Pendiente eliminado", "success", {
         duration: 5000,
         actionLabel: "Deshacer",
@@ -252,9 +262,8 @@ export function PendientesBoard({
       ownerName={ownerName}
       onToggle={() => toggle(task)}
       onRename={(title) => rename(task, title)}
-      onOpen={() => setOpeningId(task.id)}
       onEdit={() => setEditing(task)}
-      onDelete={() => remove(task)}
+      onDelete={() => requestRemove(task)}
     />
   );
 
@@ -425,7 +434,31 @@ export function PendientesBoard({
         </aside>
       </div>
 
-      {opened && <QuickTaskDetail key={opened.id} task={opened} onClose={() => setOpeningId(null)} />}
+      {confirmDelete && (
+        <Dialog
+          open
+          onOpenChange={(open) => !open && setConfirmDelete(null)}
+          title="Eliminar pendiente"
+          description={`«${confirmDelete.title}» tiene apuntes, notas o adjuntos. Se eliminarán para siempre y no se podrán recuperar.`}
+        >
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="text" onClick={() => setConfirmDelete(null)}>
+              Cancelar
+            </Button>
+            <button
+              type="button"
+              onClick={() => {
+                const task = confirmDelete;
+                setConfirmDelete(null);
+                remove(task);
+              }}
+              className="inline-flex h-10 items-center justify-center rounded-button bg-danger px-4 text-sm font-semibold text-white lg:h-[38px]"
+            >
+              Eliminar pendiente
+            </button>
+          </div>
+        </Dialog>
+      )}
 
       {editing && (
         <EditDialog

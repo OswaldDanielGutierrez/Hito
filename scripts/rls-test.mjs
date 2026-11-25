@@ -136,6 +136,24 @@ try {
   check("Eliminar una sección elimina sus notas (las generales quedan)", (await a.from("quick_task_notes").select("id").eq("quick_task_id", quick.data.id)).data?.length === 1);
   await a.from("quick_tasks").delete().eq("id", quick2.data.id);
 
+  // Página del pendiente: bloc de escritura libre y adjuntos.
+  const pad = await a.from("quick_tasks").update({ notepad: "Idea: automatizar el reporte" }).eq("id", quick.data.id).select("notepad, notepad_length").single();
+  check("A escribe en el bloc de su pendiente", pad.data?.notepad === "Idea: automatizar el reporte" && pad.data?.notepad_length === 28);
+  check("B no puede escribir en el bloc de A", (await b.from("quick_tasks").update({ notepad: "hackeado" }).eq("id", quick.data.id).select()).data?.length === 0);
+  const att = await a.from("quick_task_attachments").insert({ quick_task_id: quick.data.id, kind: "link", name: "Manual", url: "https://example.com/manual" }).select().single();
+  check("A adjunta un enlace a su pendiente", !att.error && !!att.data);
+  check("Un adjunto necesita enlace o archivo", !!(await a.from("quick_task_attachments").insert({ quick_task_id: quick.data.id, kind: "link", name: "Vacío" })).error);
+  check("B no ve adjuntos de A", (await b.from("quick_task_attachments").select("id")).data?.length === 0);
+  check("B no puede adjuntar al pendiente de A", !!(await b.from("quick_task_attachments").insert({ quick_task_id: quick.data.id, kind: "link", name: "Falso", url: "https://example.com" })).error);
+  check("B no puede borrar adjuntos de A", (await b.from("quick_task_attachments").delete().eq("id", att.data.id).select()).data?.length === 0);
+  const attBefore = att.data.created_at;
+  const attEdit = await a.from("quick_task_attachments").update({ name: "Manual v2", created_at: "2000-01-01T00:00:00Z" }).eq("id", att.data.id).select("created_at, name").single();
+  check("Editar un adjunto conserva su fecha de creación", attEdit.data?.created_at === attBefore && attEdit.data?.name === "Manual v2");
+  await a.from("quick_tasks").delete().eq("id", quick.data.id);
+  check("Eliminar el pendiente elimina sus adjuntos y notas", (await a.from("quick_task_attachments").select("id")).data?.length === 0 && (await a.from("quick_task_notes").select("id")).data?.length === 0);
+  const quickBack = await a.from("quick_tasks").insert({ title: "Pendiente de A (de nuevo)", requested_by: "Laura P.", project_id: projectId }).select().single();
+  quick.data = quickBack.data;
+
   const seenByA = await a.from("projects").select("id");
   check("A ve su proyecto", seenByA.data?.length === 1);
 

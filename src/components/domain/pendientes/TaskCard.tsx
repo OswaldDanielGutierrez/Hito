@@ -2,6 +2,8 @@
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Check, Flag, MoreHorizontal, NotebookPen, Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TagChips } from "@/components/domain/tags/TagChip";
 import type { Tag } from "@/lib/domain/tags";
@@ -18,7 +20,6 @@ export function TaskCard({
   ownerName,
   onToggle,
   onRename,
-  onOpen,
   onEdit,
   onDelete,
 }: {
@@ -28,10 +29,10 @@ export function TaskCard({
   ownerName: string;
   onToggle: () => void;
   onRename: (title: string) => void;
-  onOpen: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(task.title);
 
@@ -134,9 +135,9 @@ export function TaskCard({
                 sideOffset={4}
                 className="z-50 min-w-[180px] rounded-card border border-line bg-white p-1.5 shadow-card-hover"
               >
-                <DropdownMenu.Item className={menuItem} onSelect={onOpen}>
+                <DropdownMenu.Item className={menuItem} onSelect={() => router.push(`/pendientes/${task.id}`)}>
                   <NotebookPen size={16} strokeWidth={1.9} aria-hidden />
-                  Abrir notas y secciones
+                  Abrir pendiente
                 </DropdownMenu.Item>
                 <DropdownMenu.Item className={menuItem} onSelect={onEdit}>
                   <Pencil size={16} strokeWidth={1.9} aria-hidden />
@@ -166,16 +167,21 @@ export function TaskCard({
         <TagChips tags={tags} />
 
         <div className="flex flex-col items-start gap-0.5">
-          <button
-            type="button"
-            disabled={isTemp}
-            onClick={onOpen}
-            aria-label={`${summary || "Abrir y agregar notas"} · ${task.title}`}
-            className="inline-flex items-center gap-1.5 text-[13px] font-bold text-green-700 hover:underline"
-          >
-            <NotebookPen size={14} strokeWidth={1.9} aria-hidden />
-            {summary || "Abrir y agregar notas"}
-          </button>
+          {isTemp ? (
+            <span className="inline-flex items-center gap-1.5 text-[13px] font-bold text-muted">
+              <NotebookPen size={14} strokeWidth={1.9} aria-hidden />
+              Guardando…
+            </span>
+          ) : (
+            <Link
+              href={`/pendientes/${task.id}`}
+              aria-label={`${summary || "Abrir"} · ${task.title}`}
+              className="tap inline-flex items-center gap-1.5 text-[13px] font-bold text-green-700 hover:underline"
+            >
+              <NotebookPen size={14} strokeWidth={1.9} aria-hidden />
+              {summary || "Abrir"}
+            </Link>
+          )}
           <span className="text-[11px] font-semibold text-muted">Creado {created}</span>
         </div>
 

@@ -255,6 +255,26 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"quick_task_attachments": {
+                  Row: {
+                    "created_at": string,"id": string,"kind": string,"name": string,"owner_id": string,"quick_task_id": string,"source": string | null,"storage_path": string | null,"url": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"kind": string,"name": string,"owner_id"?: string,"quick_task_id": string,"source"?: string | null,"storage_path"?: string | null,"url"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"kind"?: string,"name"?: string,"owner_id"?: string,"quick_task_id"?: string,"source"?: string | null,"storage_path"?: string | null,"url"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "quick_task_attachments_quick_task_id_fkey"
+      columns: ["quick_task_id"]
+isOneToOne: false
+      referencedRelation: "quick_tasks"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"quick_task_notes": {
                   Row: {
                     "body": string,"created_at": string,"id": string,"owner_id": string,"position": number,"quick_task_id": string,"section_id": string | null,"updated_at": string
@@ -329,14 +349,14 @@ isOneToOne: false
                   ]
                 },"quick_tasks": {
                   Row: {
-                    "created_at": string,"done": boolean,"done_at": string | null,"due_date": string | null,"id": string,"owner_id": string,"priority": Database["public"]['Enums']["task_priority"],"project_id": string | null,"requested_by": string,"title": string,"updated_at": string
+                    "created_at": string,"done": boolean,"done_at": string | null,"due_date": string | null,"id": string,"notepad": string,"notepad_length": number | null,"owner_id": string,"priority": Database["public"]['Enums']["task_priority"],"project_id": string | null,"requested_by": string,"title": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"done"?: boolean,"done_at"?: string | null,"due_date"?: string | null,"id"?: string,"owner_id"?: string,"priority"?: Database["public"]['Enums']["task_priority"],"project_id"?: string | null,"requested_by"?: string,"title": string,"updated_at"?: string
+                    "created_at"?: string,"done"?: boolean,"done_at"?: string | null,"due_date"?: string | null,"id"?: string,"notepad"?: string,"notepad_length"?: never,"owner_id"?: string,"priority"?: Database["public"]['Enums']["task_priority"],"project_id"?: string | null,"requested_by"?: string,"title": string,"updated_at"?: string
                   }
                   Update: {
-                    "created_at"?: string,"done"?: boolean,"done_at"?: string | null,"due_date"?: string | null,"id"?: string,"owner_id"?: string,"priority"?: Database["public"]['Enums']["task_priority"],"project_id"?: string | null,"requested_by"?: string,"title"?: string,"updated_at"?: string
+                    "created_at"?: string,"done"?: boolean,"done_at"?: string | null,"due_date"?: string | null,"id"?: string,"notepad"?: string,"notepad_length"?: never,"owner_id"?: string,"priority"?: Database["public"]['Enums']["task_priority"],"project_id"?: string | null,"requested_by"?: string,"title"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
