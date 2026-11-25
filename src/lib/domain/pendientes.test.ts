@@ -15,6 +15,8 @@ import {
   tallyByProject,
   tallyByRequester,
   visibleDone,
+  olderDone,
+  detailSummary,
   type QuickTask,
 } from "./pendientes";
 
@@ -34,6 +36,8 @@ const task = (over: Partial<QuickTask> = {}): QuickTask => ({
   doneAt: null,
   createdAt: "2026-11-18T14:00:00Z",
   tagIds: [],
+  sectionsCount: 0,
+  notesCount: 0,
   ...over,
 });
 
@@ -284,5 +288,35 @@ describe("iniciales", () => {
     expect(requesterAvatar("Yo", "Oswald Gutiérrez")).toEqual({ initials: "OG", bg: "#022C17", ink: "#FFFFFF" });
     expect(requesterAvatar("Yo", "")).toMatchObject({ initials: "YO" });
     expect(requesterAvatar("Laura P.", "Oswald")).toMatchObject({ initials: "LP" });
+  });
+});
+
+describe("olderDone", () => {
+  it("incluye solo hechos que no se ven hoy, del más reciente al más antiguo", () => {
+    const tasks = [
+      task({ id: "abierto", dueDate: "2026-01-01" }),
+      task({ id: "hoy", done: true, doneAt: TODAY_NOON }),
+      task({ id: "futuro", done: true, doneAt: "2026-11-10T15:00:00Z", dueDate: "2026-12-01" }),
+      task({ id: "vieja", done: true, doneAt: "2026-10-01T15:00:00Z", dueDate: "2026-10-01" }),
+      task({ id: "ayer", done: true, doneAt: "2026-11-17T15:00:00Z", dueDate: "2026-11-17" }),
+    ];
+    expect(olderDone(tasks, TODAY).map((t) => t.id)).toEqual(["ayer", "vieja"]);
+  });
+
+  it("nunca pierde un hecho: visible hoy o en anteriores", () => {
+    const tasks = [
+      task({ id: "a", done: true, doneAt: "2026-01-05T15:00:00Z" }),
+      task({ id: "b", done: true, doneAt: TODAY_NOON }),
+    ];
+    const seen = new Set([...olderDone(tasks, TODAY), ...tasks.filter((t) => visibleDone(t, TODAY))].map((t) => t.id));
+    expect(seen).toEqual(new Set(["a", "b"]));
+  });
+});
+
+describe("detailSummary", () => {
+  it("resume notas y secciones", () => {
+    expect(detailSummary({ notesCount: 0, sectionsCount: 0 })).toBe("");
+    expect(detailSummary({ notesCount: 1, sectionsCount: 0 })).toBe("1 nota");
+    expect(detailSummary({ notesCount: 3, sectionsCount: 2 })).toBe("3 notas · 2 secciones");
   });
 });

@@ -12,40 +12,36 @@ export interface PendientesData {
   tags: TagWithUsage[];
 }
 
-/**
- * Pendientes abiertos, más los hechos hoy (Bogotá) o con fecha de hoy en adelante.
- * Los demás hechos quedan fuera (el historial de pendientes es v2).
- */
-export async function loadPendientes(today: string): Promise<PendientesData> {
-  const supabase = await createClient();
-  const startOfToday = new Date(`${today}T00:00:00-05:00`).toISOString();
+const COLUMNS =
+  "id, title, project_id, requested_by, due_date, priority, done, done_at, created_at, projects(id, name), quick_task_tags(tag_id), quick_task_sections(count), quick_task_notes(count)";
 
-  const [tasks, projects, requesters, settings, tags] = await Promise.all([
-    supabase
-      .from("quick_tasks")
-      .select("id, title, project_id, requested_by, due_date, priority, done, done_at, created_at, projects(id, name), quick_task_tags(tag_id)")
-      .or(`done.eq.false,done_at.gte.${startOfToday},due_date.gte.${today}`)
-      .order("created_at", { ascending: false })
-      .limit(500),
-    supabase
-      .from("projects")
-      .select("id, name")
-      .is("archived_at", null)
-      .neq("status", "delivered")
-      .order("name"),
+/**
+ * Todos los pendientes: nada se oculta ni se borra con el tiempo. La pantalla decide cuáles
+ * se ven arriba (abiertos y hechos de hoy) y cuáles van a «Hechos anteriores».
+ * PostgREST entrega máximo 1000 filas por consulta; se piden por separado abiertos y hechos.
+ */
+export async function loadPendientes(): Promise<PendientesData> {
+  const supabase = await createClient();
+
+  const [open, done, projects, requesters, settings, tags] = await Promise.all([
+    supabase.from("quick_tasks").select(COLUMNS).eq("done", false).order("created_at", { ascending: false }).limit(1000),
+    supabase.from("quick_tasks").select(COLUMNS).eq("done", true).order("done_at", { ascending: false, nullsFirst: false }).limit(1000),
+    supabase.from("projects").select("id, name").is("archived_at", null).neq("status", "delivered").order("name"),
     supabase.from("quick_tasks").select("requested_by").limit(1000),
     supabase.from("user_settings").select("display_name").maybeSingle(),
     loadTags(),
   ]);
 
-  const error = tasks.error ?? projects.error ?? requesters.error ?? settings.error;
+  const error = open.error ?? done.error ?? projects.error ?? requesters.error ?? settings.error;
   if (error) throw new Error(error.message);
 
   const known = new Set<string>([SELF_NAME]);
   for (const r of requesters.data ?? []) known.add(r.requested_by);
 
+  const rows = [...(open.data ?? []), ...(done.data ?? [])];
+
   return {
-    tasks: (tasks.data ?? []).map((t) => ({
+    tasks: rows.map((t) => ({
       id: t.id,
       title: t.title,
       projectId: t.project_id,
@@ -57,6 +53,8 @@ export async function loadPendientes(today: string): Promise<PendientesData> {
       doneAt: t.done_at,
       createdAt: t.created_at,
       tagIds: t.quick_task_tags.map((x) => x.tag_id),
+      sectionsCount: t.quick_task_sections[0]?.count ?? 0,
+      notesCount: t.quick_task_notes[0]?.count ?? 0,
     })),
     projects: projects.data ?? [],
     requesters: [...known].sort((a, b) => (a === SELF_NAME ? -1 : b === SELF_NAME ? 1 : a.localeCompare(b, "es"))),

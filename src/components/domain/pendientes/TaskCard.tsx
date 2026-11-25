@@ -1,11 +1,12 @@
 "use client";
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { Check, Flag, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Check, Flag, MoreHorizontal, NotebookPen, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { TagChips } from "@/components/domain/tags/TagChip";
 import type { Tag } from "@/lib/domain/tags";
-import { dueLabel, NO_PROJECT_COLOR, projectColor, requesterAvatar, type QuickTask } from "@/lib/domain/pendientes";
+import { formatDate, todayInBogota } from "@/lib/domain/dates";
+import { detailSummary, dueLabel, NO_PROJECT_COLOR, projectColor, requesterAvatar, type QuickTask } from "@/lib/domain/pendientes";
 
 const menuItem =
   "flex cursor-pointer items-center gap-2 rounded-input px-3 py-2.5 text-base outline-none data-[highlighted]:bg-surface sm:py-2 sm:text-sm";
@@ -17,6 +18,7 @@ export function TaskCard({
   ownerName,
   onToggle,
   onRename,
+  onOpen,
   onEdit,
   onDelete,
 }: {
@@ -26,6 +28,7 @@ export function TaskCard({
   ownerName: string;
   onToggle: () => void;
   onRename: (title: string) => void;
+  onOpen: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }) {
@@ -37,6 +40,8 @@ export function TaskCard({
   const color = task.projectId ? projectColor(task.projectId) : NO_PROJECT_COLOR;
   const overdueOpen = !task.done && task.dueDate !== null && task.dueDate < today;
   const isTemp = task.id.startsWith("temp-");
+  const summary = detailSummary(task);
+  const created = formatDate(todayInBogota(new Date(task.createdAt)));
 
   function commit() {
     const title = draft.trim();
@@ -48,9 +53,7 @@ export function TaskCard({
   return (
     <article
       aria-label={task.title}
-      className={`group relative flex min-h-[132px] overflow-hidden rounded-card border bg-white ${overdueOpen ? "border-[#E8B4AE]" : "border-line"} ${
-        task.done ? "opacity-60" : ""
-      }`}
+      className={`group relative flex min-h-[132px] overflow-hidden rounded-card border bg-white ${overdueOpen ? "border-[#E8B4AE]" : "border-line"}`}
     >
       <span aria-hidden className="w-1.5 shrink-0" style={{ backgroundColor: color }} />
 
@@ -104,7 +107,7 @@ export function TaskCard({
                   setDraft(task.title);
                   setEditing(true);
                 }}
-                className={`block w-full text-left text-[15px] leading-5 font-bold break-words ${task.done ? "line-through" : "hover:underline"}`}
+                className={`block w-full text-left text-[15px] leading-5 font-bold break-words ${task.done ? "text-muted line-through" : "hover:underline"}`}
               >
                 {task.title}
               </button>
@@ -131,6 +134,10 @@ export function TaskCard({
                 sideOffset={4}
                 className="z-50 min-w-[180px] rounded-card border border-line bg-white p-1.5 shadow-card-hover"
               >
+                <DropdownMenu.Item className={menuItem} onSelect={onOpen}>
+                  <NotebookPen size={16} strokeWidth={1.9} aria-hidden />
+                  Abrir notas y secciones
+                </DropdownMenu.Item>
                 <DropdownMenu.Item className={menuItem} onSelect={onEdit}>
                   <Pencil size={16} strokeWidth={1.9} aria-hidden />
                   Editar detalles
@@ -157,6 +164,20 @@ export function TaskCard({
         )}
 
         <TagChips tags={tags} />
+
+        <div className="flex flex-col items-start gap-0.5">
+          <button
+            type="button"
+            disabled={isTemp}
+            onClick={onOpen}
+            aria-label={`${summary || "Abrir y agregar notas"} · ${task.title}`}
+            className="inline-flex items-center gap-1.5 text-[13px] font-bold text-green-700 hover:underline"
+          >
+            <NotebookPen size={14} strokeWidth={1.9} aria-hidden />
+            {summary || "Abrir y agregar notas"}
+          </button>
+          <span className="text-[11px] font-semibold text-muted">Creado {created}</span>
+        </div>
 
         <div className="mt-auto flex items-center gap-2.5 border-t border-surface pt-2.5">
           <span

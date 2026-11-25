@@ -14,6 +14,8 @@ export interface QuickTask {
   doneAt: string | null;
   createdAt: string;
   tagIds: string[];
+  sectionsCount: number;
+  notesCount: number;
 }
 
 export type SectionKey = "overdue" | "today" | "tomorrow" | "week" | "nextWeek" | "none";
@@ -96,6 +98,25 @@ const doneToday = (task: Pick<QuickTask, "done" | "doneAt">, today: string) =>
 export function visibleDone(task: Pick<QuickTask, "done" | "doneAt" | "dueDate">, today: string): boolean {
   if (!task.done) return true;
   return doneToday(task, today) || (task.dueDate !== null && task.dueDate >= today);
+}
+
+/**
+ * Hechos de días anteriores: no se ven en las secciones del día pero nunca se pierden.
+ * Van a «Hechos anteriores», del más reciente al más antiguo.
+ */
+export function olderDone(tasks: QuickTask[], today: string): QuickTask[] {
+  return tasks
+    .filter((t) => t.done && !visibleDone(t, today))
+    .sort((a, b) => (b.doneAt ?? "").localeCompare(a.doneAt ?? "") || b.createdAt.localeCompare(a.createdAt));
+}
+
+/** Texto corto con las notas y secciones de un pendiente; vacío si no tiene. */
+export function detailSummary(t: Pick<QuickTask, "notesCount" | "sectionsCount">): string {
+  const parts = [
+    t.notesCount > 0 && `${t.notesCount} ${t.notesCount === 1 ? "nota" : "notas"}`,
+    t.sectionsCount > 0 && `${t.sectionsCount} ${t.sectionsCount === 1 ? "sección" : "secciones"}`,
+  ].filter(Boolean);
+  return parts.join(" · ");
 }
 
 /** Abiertos antes que hechos; entre abiertos, prioridad alta primero y luego el más reciente. */

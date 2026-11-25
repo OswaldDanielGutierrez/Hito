@@ -255,6 +255,52 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"quick_task_notes": {
+                  Row: {
+                    "body": string,"created_at": string,"id": string,"owner_id": string,"position": number,"quick_task_id": string,"section_id": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body": string,"created_at"?: string,"id"?: string,"owner_id"?: string,"position"?: number,"quick_task_id": string,"section_id"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "body"?: string,"created_at"?: string,"id"?: string,"owner_id"?: string,"position"?: number,"quick_task_id"?: string,"section_id"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "quick_task_notes_quick_task_id_fkey"
+      columns: ["quick_task_id"]
+isOneToOne: false
+      referencedRelation: "quick_tasks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "quick_task_notes_section_id_fkey"
+      columns: ["section_id"]
+isOneToOne: false
+      referencedRelation: "quick_task_sections"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"quick_task_sections": {
+                  Row: {
+                    "created_at": string,"id": string,"owner_id": string,"position": number,"quick_task_id": string,"title": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"owner_id"?: string,"position"?: number,"quick_task_id": string,"title": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"owner_id"?: string,"position"?: number,"quick_task_id"?: string,"title"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "quick_task_sections_quick_task_id_fkey"
+      columns: ["quick_task_id"]
+isOneToOne: false
+      referencedRelation: "quick_tasks"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"quick_task_tags": {
                   Row: {
                     "owner_id": string,"quick_task_id": string,"tag_id": string

@@ -110,6 +110,11 @@ Etiquetas propias (nombre de hasta 30 caracteres y un color de una paleta de 8) 
 - Un proyecto o pendiente puede tener varias etiquetas. En proyectos se eligen (opcional) al registrarlos y luego en el encabezado; en pendientes, al crearlos y en «Editar detalles».
 - La búsqueda (Ctrl K) también encuentra por nombre de etiqueta. Se ven como chips en las tarjetas. Inicio filtra por etiqueta (`?etiqueta=`, combinable con el estado) y Pendientes filtra con la fila «Etiquetas».
 
+### F17 · Fecha de creación y detalle de pendientes
+- Proyectos y pendientes guardan su **fecha de creación**, que pone el sistema y no se puede editar. Se ve en el encabezado del proyecto («Creado») y en la tarjeta y el panel del pendiente.
+- Los pendientes **no se borran con el tiempo**: los hechos de días anteriores quedan en «Hechos anteriores». Solo se eliminan cuando tú los eliminas.
+- Cada pendiente se puede **abrir** (botón de la tarjeta o menú ⋯ → «Abrir notas y secciones») para agregar **notas** generales y **secciones** con título, cada una con sus notas. Notas y secciones se pueden editar y eliminar (las secciones avisan antes de borrar sus notas).
+
 ## Reglas de negocio
 
 ### Salud del proyecto

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Bar } from "@/components/ui/Bar";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import type { ProjectData } from "@/lib/data/project";
-import { daysColor, daysText, daysUntil, formatDate } from "@/lib/domain/dates";
+import { daysColor, daysText, daysUntil, formatDate, todayInBogota } from "@/lib/domain/dates";
 import { currentPhase, finalDeliveryDate, projectProgress } from "@/lib/domain/progress";
 import { ArchivedNotice, ProjectActions } from "./ProjectActions";
 import type { TagWithUsage } from "@/lib/domain/tags";
@@ -92,6 +92,7 @@ export function ProjectHeader({
             )}
           </Datum>
           <Datum label="Responsable">{project.responsible ?? "—"}</Datum>
+          <Datum label="Creado">{formatDate(todayInBogota(new Date(project.createdAt)))}</Datum>
           <div className="basis-full sm:basis-auto">
             <dt className="text-xs font-medium text-muted">
               Avance · {progress.done} de {topLevelTasks} tareas

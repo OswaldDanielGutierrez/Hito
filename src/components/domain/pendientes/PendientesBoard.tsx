@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 import { useEffect, useMemo, useOptimistic, useRef, useState, useTransition } from "react";
 import {
   createQuickTask,
@@ -15,6 +15,7 @@ import {
   dayCounts,
   groupBySection,
   matchesDayFilter,
+  olderDone,
   NO_PROJECT_COLOR,
   NO_PROJECT_KEY,
   progressToday,
@@ -28,6 +29,7 @@ import {
 } from "@/lib/domain/pendientes";
 import { Composer, type NewQuickTask } from "./Composer";
 import { EditDialog, type QuickTaskPatch } from "./EditDialog";
+import { QuickTaskDetail } from "./QuickTaskDetail";
 import { ProgressCard, TallyCard } from "./SidePanel";
 import { TaskCard } from "./TaskCard";
 
@@ -87,6 +89,8 @@ export function PendientesBoard({
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [showDone, setShowDone] = useState(true);
   const [editing, setEditing] = useState<QuickTask | null>(null);
+  const [openingId, setOpeningId] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const composerRef = useRef<HTMLInputElement>(null);
 
   // Atajo N: enfoca el compositor si no hay otro campo (ni un diálogo) con foco.
@@ -105,6 +109,8 @@ export function PendientesBoard({
 
   const groups = useMemo(() => groupBySection(tasks, today), [tasks, today]);
   const counts = useMemo(() => dayCounts(tasks, today), [tasks, today]);
+  const history = useMemo(() => olderDone(tasks, today), [tasks, today]);
+  const opened = tasks.find((t) => t.id === openingId) ?? null;
   const progress = useMemo(() => progressToday(tasks, today), [tasks, today]);
   const byRequester = useMemo(() => tallyByRequester(tasks), [tasks]);
   const byProject = useMemo(() => tallyByProject(tasks), [tasks]);
@@ -132,7 +138,18 @@ export function PendientesBoard({
   const filterTags = tags.filter((t) => tagCounts.has(t.id) || t.id === tagFilter);
   const tagLabel = tags.find((t) => t.id === tagFilter)?.name ?? "etiqueta";
 
-  const hasAny = groups.some((g) => g.tasks.length > 0);
+  // Hechos de días anteriores: se guardan siempre y se ven con «Todos», respetando los demás filtros.
+  const historyShown =
+    showDone && dayFilter === "all"
+      ? history.filter(
+          (t) =>
+            (requesterFilter === null || t.requestedBy === requesterFilter) &&
+            (projectFilter === null || (t.projectId ?? NO_PROJECT_KEY) === projectFilter) &&
+            (tagFilter === null || t.tagIds.includes(tagFilter)),
+        )
+      : [];
+
+  const hasAny = groups.some((g) => g.tasks.length > 0) || history.length > 0;
   const projectLabel = projectFilter === NO_PROJECT_KEY ? "Sin proyecto" : (byProject.find((p) => p.key === projectFilter)?.label ?? projects.find((p) => p.id === projectFilter)?.name ?? "proyecto");
 
   function failIf(result: { ok: boolean; error?: string }) {
@@ -153,6 +170,8 @@ export function PendientesBoard({
       doneAt: null,
       createdAt: new Date().toISOString(),
       tagIds: n.tagIds,
+      sectionsCount: 0,
+      notesCount: 0,
     };
     startTransition(async () => {
       apply({ type: "add", task: temp });
@@ -223,6 +242,21 @@ export function PendientesBoard({
       });
     });
   }
+
+  const renderCard = (task: QuickTask) => (
+    <TaskCard
+      key={task.id}
+      task={task}
+      tags={tagsFromIds(task.tagIds, tags)}
+      today={today}
+      ownerName={ownerName}
+      onToggle={() => toggle(task)}
+      onRename={(title) => rename(task, title)}
+      onOpen={() => setOpeningId(task.id)}
+      onEdit={() => setEditing(task)}
+      onDelete={() => remove(task)}
+    />
+  );
 
   const empty = (title: string, hint: string) => (
     <div className="rounded-card border-2 border-dashed border-green-200 bg-white px-5 py-8 text-center">
@@ -304,7 +338,7 @@ export function PendientesBoard({
 
           {!hasAny
             ? empty("Aún no tienes pendientes", "Escribe el primero arriba.")
-            : shown.length === 0
+            : shown.length === 0 && historyShown.length === 0
               ? empty("No hay pendientes aquí", "Cambia el filtro o agrega uno nuevo arriba.")
               : shown.map((group) => {
                   const overdue = group.key === "overdue";
@@ -320,23 +354,35 @@ export function PendientesBoard({
                         {group.range && <span className="text-xs font-semibold text-muted">{group.range}</span>}
                       </div>
                       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 min-[1280px]:grid-cols-3">
-                        {group.tasks.map((task) => (
-                          <TaskCard
-                            key={task.id}
-                            task={task}
-                            tags={tagsFromIds(task.tagIds, tags)}
-                            today={today}
-                            ownerName={ownerName}
-                            onToggle={() => toggle(task)}
-                            onRename={(title) => rename(task, title)}
-                            onEdit={() => setEditing(task)}
-                            onDelete={() => remove(task)}
-                          />
-                        ))}
+                        {group.tasks.map((task) => renderCard(task))}
                       </div>
                     </section>
                   );
                 })}
+
+          {historyShown.length > 0 && (
+            <section aria-label="Hechos anteriores" className="flex flex-col gap-3">
+              <h2 className="text-base font-extrabold">
+                <button
+                  type="button"
+                  aria-expanded={historyOpen}
+                  aria-controls="hechos-anteriores"
+                  onClick={() => setHistoryOpen((v) => !v)}
+                  className="inline-flex items-center gap-2 text-left"
+                >
+                  <ChevronRight size={18} strokeWidth={1.9} aria-hidden className={`transition-transform duration-[120ms] ${historyOpen ? "rotate-90" : ""}`} />
+                  Hechos anteriores
+                  <span className="rounded-pill bg-surface px-2 py-0.5 text-xs font-bold">{historyShown.length}</span>
+                </button>
+              </h2>
+              <p className="text-xs text-muted">Los pendientes que terminaste en días anteriores se guardan aquí; no se borran con el tiempo.</p>
+              {historyOpen && (
+                <div id="hechos-anteriores" className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 min-[1280px]:grid-cols-3">
+                  {historyShown.map((task) => renderCard(task))}
+                </div>
+              )}
+            </section>
+          )}
         </div>
 
         <aside aria-label="Resumen de pendientes" className="flex min-w-0 flex-col gap-4">
@@ -378,6 +424,8 @@ export function PendientesBoard({
           />
         </aside>
       </div>
+
+      {opened && <QuickTaskDetail key={opened.id} task={opened} onClose={() => setOpeningId(null)} />}
 
       {editing && (
         <EditDialog

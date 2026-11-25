@@ -13,6 +13,7 @@ export interface ProjectInfo {
   responsible: string | null;
   status: Enums["project_status"];
   startDate: string | null;
+  createdAt: string;
   updatedAt: string;
   archivedAt: string | null;
   notepad: string;
@@ -97,6 +98,7 @@ export const getProjectData = cache(async (id: string): Promise<ProjectData | nu
       updatedAt: p.updated_at,
       archivedAt: p.archived_at,
       notepad: p.notepad,
+      createdAt: p.created_at,
     },
     phases: (phases.data ?? []).map((ph) => ({
       id: ph.id,

@@ -31,6 +31,8 @@ user_settings     (una fila por usuario)
 | `notifications` | Alertas generadas. Clave única para no duplicarlas. |
 | `user_settings` | Zona horaria, nombre, canales. |
 | `quick_tasks` | Pendientes sueltos del día (pantalla Pendientes): título, proyecto opcional, quién lo pidió, fecha, prioridad y estado. Ver `docs/05-pendientes.md`. |
+| `quick_task_sections` | Secciones con título dentro de un pendiente (`quick_task_id`, `title`, `position`). |
+| `quick_task_notes` | Notas de un pendiente: generales (`section_id` nulo) o dentro de una sección; al borrar la sección se borran sus notas. |
 | `tags` | Etiquetas del usuario: nombre (único sin distinguir mayúsculas) y color de una paleta fija. |
 | `project_tags` | Asignación de etiquetas a proyectos (`project_id`, `tag_id`). |
 | `quick_task_tags` | Asignación de etiquetas a pendientes (`quick_task_id`, `tag_id`). |
@@ -121,3 +123,6 @@ No se suben a git (repositorio público, datos internos). `scripts/import-levant
 - Una nota «Ficha del levantamiento» con frecuencia, tiempos, sistemas, dificultad, impacto y lo que esperan.
 - Contactos: persona de contacto y líder del área. Reglas de alerta por defecto, como en un proyecto nuevo.
 - Es idempotente (omite los que ya existen por nombre) y borra el proyecto en curso si algo falla.
+
+## Fecha de creación inmutable
+`projects.created_at` y `quick_tasks.created_at` los pone la base al crear la fila. Un disparador (`keep_created_at`, migración 0009) conserva el valor original en cualquier UPDATE, así que no se puede editar desde la app ni desde el cliente. Las notas de pendientes también la conservan.

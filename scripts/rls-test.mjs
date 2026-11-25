@@ -109,6 +109,33 @@ try {
   await a.from("tags").delete().eq("id", tagA.data.id);
   check("Eliminar la etiqueta la quita de proyectos y pendientes", (await a.from("project_tags").select("tag_id")).data?.length === 0 && (await a.from("quick_task_tags").select("tag_id")).data?.length === 0);
 
+  // Fecha de creación inmutable.
+  const projBefore = (await a.from("projects").select("created_at").eq("id", proj.data.id).single()).data.created_at;
+  const projAfter = await a.from("projects").update({ created_at: "2000-01-01T00:00:00Z", name: "Proyecto de A" }).eq("id", proj.data.id).select("created_at").single();
+  check("La fecha de creación de un proyecto no se puede cambiar", projAfter.data?.created_at === projBefore);
+  const quickBefore = (await a.from("quick_tasks").select("created_at").eq("id", quick.data.id).single()).data.created_at;
+  const quickAfter = await a.from("quick_tasks").update({ created_at: "2000-01-01T00:00:00Z", title: "Pendiente de A" }).eq("id", quick.data.id).select("created_at").single();
+  check("La fecha de creación de un pendiente no se puede cambiar", quickAfter.data?.created_at === quickBefore);
+
+  // Detalle del pendiente: secciones y notas.
+  const sec = await a.from("quick_task_sections").insert({ quick_task_id: quick.data.id, title: "Contactos" }).select().single();
+  check("A crea una sección en su pendiente", !sec.error && !!sec.data);
+  const note = await a.from("quick_task_notes").insert({ quick_task_id: quick.data.id, section_id: sec.data.id, body: "Llamar a Laura" }).select().single();
+  check("A crea una nota dentro de la sección", !note.error && !!note.data);
+  check("A crea una nota general", !(await a.from("quick_task_notes").insert({ quick_task_id: quick.data.id, body: "General" })).error);
+  const noteCreated = note.data.created_at;
+  const noteEdit = await a.from("quick_task_notes").update({ body: "Llamar a Laura hoy", created_at: "2000-01-01T00:00:00Z" }).eq("id", note.data.id).select("created_at, body").single();
+  check("Editar una nota conserva su fecha de creación", noteEdit.data?.created_at === noteCreated && noteEdit.data?.body === "Llamar a Laura hoy");
+  check("B no ve secciones ni notas de A", (await b.from("quick_task_sections").select("id")).data?.length === 0 && (await b.from("quick_task_notes").select("id")).data?.length === 0);
+  check("B no puede agregar secciones al pendiente de A", !!(await b.from("quick_task_sections").insert({ quick_task_id: quick.data.id, title: "Falsa" })).error);
+  check("B no puede agregar notas al pendiente de A", !!(await b.from("quick_task_notes").insert({ quick_task_id: quick.data.id, body: "Falsa" })).error);
+  check("B no puede editar ni borrar notas de A", (await b.from("quick_task_notes").update({ body: "x" }).eq("id", note.data.id).select()).data?.length === 0 && (await b.from("quick_task_notes").delete().eq("id", note.data.id).select()).data?.length === 0);
+  const quick2 = await a.from("quick_tasks").insert({ title: "Otro pendiente de A" }).select().single();
+  check("Una nota no puede usar la sección de otro pendiente", !!(await a.from("quick_task_notes").insert({ quick_task_id: quick2.data.id, section_id: sec.data.id, body: "cruzada" })).error);
+  await a.from("quick_task_sections").delete().eq("id", sec.data.id);
+  check("Eliminar una sección elimina sus notas (las generales quedan)", (await a.from("quick_task_notes").select("id").eq("quick_task_id", quick.data.id)).data?.length === 1);
+  await a.from("quick_tasks").delete().eq("id", quick2.data.id);
+
   const seenByA = await a.from("projects").select("id");
   check("A ve su proyecto", seenByA.data?.length === 1);
 

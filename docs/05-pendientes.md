@@ -67,7 +67,7 @@ Rectángulo con borde 1 px #E1E6E3 (atrasado y abierto: #E8B4AE), radio 14, `ove
   1. **Casilla + título + prioridad.** Casilla de 22 px, borde 2 px #7F8A84, radio 6 (marcada: fondo y borde #007A3D con check blanco). Título 15/20 peso 700, sin límite de líneas (la tarjeta crece). Si es de prioridad alta y está abierta: etiqueta "Alta" con bandera (11/800, texto #B42318, fondo #FDECEA, radio 6).
   2. **Chip de proyecto** (alineado a la izquierda): fondo #EEF2F0, radio 6, relleno 4 × 10, 12/700, punto de 9 px con el color del proyecto y nombre con elipsis. Sin proyecto: borde punteado 1 px #9AA49F, fondo blanco, texto #58635D, "Sin proyecto".
   3. **Pie** (borde superior #EEF2F0, relleno superior 10, `margin-top: auto`): avatar de 28 px con iniciales; a su lado "Pidió" (11/600 muted) y el nombre (13/700, elipsis); a la derecha el **chip de fecha** (12/700, relleno 3 × 8, radio 6, sin salto de línea).
-- **Hecha:** opacidad 0.6 y título tachado; la etiqueta "Alta" se oculta.
+- **Hecha:** título tachado y en gris (`muted`), sin atenuar la tarjeta para mantener contraste AA; la etiqueta "Alta" se oculta.
 
 **Chip de fecha**
 | Caso | Texto | Fondo / texto |
@@ -120,7 +120,7 @@ Días abreviados: Lun, Mar, Mié, Jue, Vie, Sáb, Dom.
 | Desde el lunes siguiente | Próxima semana |
 
 **Pendientes hechos:**
-- Aparecen solo si se completaron hoy (`done_at` es de hoy en Bogotá) o si su fecha es hoy o posterior. Los demás se ocultan (historial de pendientes queda para v2).
+- En las secciones del día aparecen los completados hoy (`done_at` es de hoy en Bogotá) o con fecha de hoy o posterior. Los hechos de días anteriores **no se borran nunca**: van a la sección plegable **Hechos anteriores** (al final, con «Todos» y respetando los demás filtros), del más reciente al más antiguo.
 - Un hecho con fecha anterior a hoy se muestra en la sección **Hoy**, no en Atrasados.
 - Dentro de una sección: primero los abiertos, luego los hechos. Entre abiertos: prioridad alta primero y luego el más reciente primero.
 
@@ -186,7 +186,8 @@ create policy "owner full access" on public.quick_tasks for all to authenticated
 - `requested_by` es texto libre. "Yo" significa el dueño. El autocompletado sale de los valores distintos ya usados:
   `select distinct requested_by from quick_tasks where owner_id = auth.uid()`.
 - Al eliminar un proyecto, sus pendientes quedan sin proyecto (`on delete set null`).
-- Consulta de la pantalla: pendientes abiertos, más los hechos con `done_at >= hoy 00:00 (Bogotá)` o `due_date >= hoy`, con el proyecto (`id`, `name`) unido.
+- Consulta de la pantalla: todos los pendientes (abiertos y hechos, sin filtrar por fecha), con el proyecto, las etiquetas y el conteo de secciones y notas.
+- `created_at` es la fecha de creación: la pone la base de datos y **no se puede editar** (un disparador conserva el valor original en cualquier UPDATE). Se muestra en la tarjeta («Creado dd/MM/yyyy») y en el panel de detalle.
 
 ### Server Actions (validar con Zod)
 `createQuickTask`, `toggleQuickTask`, `updateQuickTask`, `deleteQuickTask`.

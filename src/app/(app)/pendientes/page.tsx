@@ -43,7 +43,7 @@ async function PendientesContent() {
   await connection();
   const now = new Date();
   const today = todayInBogota(now);
-  const data = await loadPendientes(today);
+  const data = await loadPendientes();
 
   return (
     <PendientesBoard

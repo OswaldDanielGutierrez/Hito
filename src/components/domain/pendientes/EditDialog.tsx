@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import { formatDateTime } from "@/lib/domain/dates";
 import type { QuickTask } from "@/lib/domain/pendientes";
 import type { TagWithUsage } from "@/lib/domain/tags";
 import { TagPicker } from "../tags/TagPicker";
@@ -77,6 +78,8 @@ export function EditDialog({
             className={fieldClass}
           />
         </div>
+
+        <p className="-mt-2 text-xs text-muted">Creado el {formatDateTime(task.createdAt)} · la fecha de creación no se puede editar</p>
 
         <div className="flex flex-wrap gap-2.5">
           <ProjectSelect id="edit-pendiente-proyecto" value={projectId} projects={options} onChange={setProjectId} />
