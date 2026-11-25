@@ -79,9 +79,9 @@ async function QuickTaskContent({ params }: { params: Promise<{ id: string }> })
 
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)]">
         <NotepadEditor key={task.id} kind="quick" id={task.id} initial={task.notepad} />
-        <aside aria-label="Adjuntos y notas importantes" className="flex min-w-0 flex-col gap-4">
-          <TaskAttachments quickTaskId={task.id} userId={userId} attachments={attachments} />
+        <aside aria-label="Notas importantes y adjuntos" className="flex min-w-0 flex-col gap-4">
           <TaskNotes quickTaskId={task.id} notes={notes} />
+          <TaskAttachments quickTaskId={task.id} userId={userId} attachments={attachments} />
         </aside>
       </div>
     </main>

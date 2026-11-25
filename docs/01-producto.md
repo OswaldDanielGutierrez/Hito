@@ -113,7 +113,7 @@ Etiquetas propias (nombre de hasta 30 caracteres y un color de una paleta de 8) 
 ### F17 · Fecha de creación y detalle de pendientes
 - Proyectos y pendientes guardan su **fecha de creación**, que pone el sistema y no se puede editar. Se ve en el encabezado del proyecto («Creado») y en la tarjeta y el panel del pendiente.
 - Los pendientes **no se borran con el tiempo**: los hechos de días anteriores quedan en «Hechos anteriores». Solo se eliminan cuando tú los eliminas.
-- Cada pendiente se **abre como una página** (`/pendientes/[id]`, como un proyecto): a la izquierda (70 %) una zona de **escritura libre** con autoguardado para ideas y apuntes; a la derecha (30 %) los **adjuntos** (archivos de hasta 25 MB y enlaces) y las **notas importantes** (cortas, editables y eliminables). Se abre desde el enlace de la tarjeta, su menú ⋯ o la búsqueda.
+- Cada pendiente se **abre como una página** (`/pendientes/[id]`, como un proyecto): a la izquierda (70 %) una zona de **escritura libre** con autoguardado para ideas y apuntes; a la derecha (30 %) las **notas importantes** (cortas, editables y eliminables) arriba y los **adjuntos** (archivos de hasta 25 MB y enlaces) abajo. Se abre desde el enlace de la tarjeta, su menú ⋯ o la búsqueda.
 - Eliminar un pendiente que tiene apuntes, notas o adjuntos pide confirmación y no se puede deshacer; los archivos adjuntos también se borran del almacenamiento. Los pendientes sin contenido se eliminan con «Deshacer», como antes.
 
 ## Reglas de negocio
