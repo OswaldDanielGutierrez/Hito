@@ -34,7 +34,7 @@ Capturar en segundos una petición del día y ver de un vistazo qué está atras
 - Agregar un pendiente escribiendo el título y presionando Enter. Opcionalmente: proyecto, quién lo pidió, fecha y prioridad alta.
 - Marcar como hecho con un clic en la casilla (se puede desmarcar).
 - Ver los pendientes en tarjetas rectangulares agrupadas por día: Atrasados, Hoy, Mañana, Esta semana, Próxima semana, Sin fecha.
-- Filtrar por día (pastillas), por solicitante y por proyecto (clic en el panel lateral).
+- Filtrar por día (pastillas), por solicitante y por proyecto (selectores «Pidió» y «Proyecto») y por etiqueta.
 - Ver el avance del día y cuántos pendientes abiertos tiene cada solicitante y cada proyecto.
 
 ## Diseño
@@ -42,13 +42,11 @@ Capturar en segundos una petición del día y ver de un vistazo qué está atras
 Usa los tokens de `design/tokens.json` y los componentes de `docs/02-diseno.md` (TopBar, Button, FilterPill, Card).
 
 ### Estructura
-`main` centrado, ancho máximo 1376 px, relleno 28 × 32, separación vertical 20.
+`main` centrado, ancho máximo 1600 px, relleno 28 × 32, separación vertical 20. **No hay panel lateral**: el contenido usa todo el ancho para ver varios pendientes a la vez.
 
 1. **Encabezado:** fecha ("Miércoles, 18/11/2026", 14 muted), H1 "Pendientes" (30/38, peso 800, tracking -0.02em) y subtítulo "Lo que te piden en el día, aunque no esté en el plan de un proyecto." (14 muted). A la derecha, casilla "Mostrar hechos" (marcada por defecto).
-2. **Dos columnas** con separación 20:
-   - **Principal** (flex 999, mínimo 700 px, separación 18): compositor, pastillas, filtros activos, secciones.
-   - **Lateral** (flex 1, mínimo 320, máximo 380, separación 16): Avance de hoy, Quién los pidió, Por proyecto.
-3. Entre 1024 y 1280 px las tarjetas pasan de 3 a 2 columnas.
+2. **Contenido a todo el ancho** (separación 18): compositor, pastillas de día, selectores «Pidió» y «Proyecto», etiquetas, filtros activos y secciones.
+3. Las tarjetas se reparten en 1 columna (menos de 640 px), 2 (≥ 640), 3 (≥ 1024), 4 (≥ 1280) y 5 (≥ 1536).
 
 ### Compositor (rectángulo para agregar)
 Tarjeta blanca, borde 2 px #B5D8C4, radio 16, relleno 16 × 18, sombra `0 4px 16px rgba(2,44,23,.06)`. Con foco dentro, el borde pasa a #007A3D.
@@ -72,7 +70,8 @@ Si hay filtro por proyecto o solicitante, aparece la fila "Filtrando por" con un
 En este orden: **Atrasados, Hoy, Mañana, Esta semana, Próxima semana, Sin fecha**. Solo se muestran las que tienen tarjetas.
 - Encabezado: título 16/800 + contador de abiertos (pastilla 12/700, fondo #EEF2F0) + rango de fechas (12/600 muted, tabular): Hoy "Mié 18/11", Mañana "Jue 19/11", Esta semana "Vie 20/11 – Dom 22/11", Próxima semana "Desde Lun 23/11".
 - **Atrasados** va en rojo: título y contador en #B42318, contador con fondo #FDECEA.
-- Cuadrícula de **3 columnas**, separación 14.
+- Cuadrícula de 1 a 5 columnas según el ancho (ver Estructura), separación 12.
+- Toda la tarjeta es un enlace a `/pendientes/[id]` (el título es el enlace, estirado sobre la tarjeta); la casilla y el menú ⋯ quedan por encima y no navegan. Ya no hay edición del título en línea: el título se edita en «Editar detalles».
 
 ### Tarjeta de pendiente
 Rectángulo con borde 1 px #E1E6E3 (atrasado y abierto: #E8B4AE), radio 14, `overflow: hidden`, alto mínimo 132.
@@ -98,10 +97,8 @@ Días abreviados: Lun, Mar, Mié, Jue, Vie, Sáb, Dom.
 
 **Color de proyecto:** paleta fija de 8 colores asignada por una suma de los caracteres del `id` del proyecto módulo 8: `#00A859, #D9822B, #2F6FC4, #04512A, #5FD597, #9AA49F, #1D4F91, #8A4A0B`. El mismo proyecto siempre tiene el mismo color en toda la app.
 
-### Panel lateral
-1. **Avance de hoy** (Card, relleno 18 × 20): etiqueta "Avance de hoy" (12 muted); "{hechos} de {total}" (30/800, con "de {total}" en 16/500 muted); mensaje 12/600 muted: "Día completo" si todos están hechos, si no "{n} por terminar entre hoy y atrasados". Debajo, un rectángulo de 28 × 16 (radio 4) por pendiente, con separación 6: hecho #007A3D; abierto atrasado fondo #FDECEA y borde 1.5 px #B42318; abierto normal transparente con borde 1.5 px #7F8A84. Los hechos van primero.
-2. **Quién los pidió** (Card, relleno 14 × 12): título 16/800. Una fila-botón por solicitante, ordenadas por abiertos de mayor a menor: avatar + nombre (14/600) + cantidad (13/800) y debajo una barra de 6 px (#00A859) con ancho proporcional al mayor. Clic filtra; otro clic quita el filtro. Activa: fondo #E4F5EB y borde #007A3D; `aria-pressed`.
-3. **Por proyecto:** igual, con un punto del color del proyecto en lugar del avatar y la barra de ese color. Incluye "Sin proyecto".
+### Panel lateral (retirado)
+Se retiraron las tarjetas «Avance de hoy», «Quién los pidió» y «Por proyecto». Sus filtros por solicitante y por proyecto pasaron a los selectores «Pidió» y «Proyecto» (con `aria-label` propio) bajo las pastillas de día.
 
 ### Estados
 - **Vacío total:** tarjeta con borde punteado 2 px #B5D8C4: "Aún no tienes pendientes" y "Escribe el primero arriba."
@@ -117,7 +114,7 @@ Días abreviados: Lun, Mar, Mié, Jue, Vie, Sáb, Dom.
 ### Accesibilidad
 - Casilla: `button` con `role="checkbox"`, `aria-checked` y `aria-label` igual al título.
 - Cada sección es una `section` con `aria-label` del título.
-- Filas del panel lateral: `aria-pressed`. Interruptor de prioridad: `aria-pressed`.
+- Selectores de filtro: `aria-label` «Pidió, filtrar pendientes» y «Proyecto, filtrar pendientes». Interruptor de prioridad: `aria-pressed`.
 - El color del proyecto nunca es el único indicador: siempre va el nombre. Estados con texto además de color. Foco visible de 2 px #007A3D.
 
 ## Reglas de negocio
@@ -140,11 +137,11 @@ Días abreviados: Lun, Mar, Mié, Jue, Vie, Sáb, Dom.
 
 **Fecha "Esta semana" del compositor:** el viernes de la semana actual. Si hoy es viernes, sábado o domingo, el viernes siguiente.
 
-**Avance de hoy:** total = abiertos con fecha atrasada o de hoy + hechos hoy; hechos = completados hoy.
+**Avance de hoy:** (retirado de la pantalla; `progressToday` sigue en el dominio con sus pruebas por si vuelve a usarse).
 
 **Pastillas:** Hoy = atrasados + hoy; Próximos = esta semana + próxima semana. Los contadores cuentan abiertos y no dependen de los otros filtros.
 
-**Panel lateral:** cuenta abiertos por solicitante y por proyecto sobre todos los pendientes, sin aplicar los filtros.
+**Filtros por solicitante y proyecto:** selectores con todas las personas y proyectos conocidos; filtran las tarjetas visibles.
 
 **Marcar o desmarcar:** actualización optimista inmediata; se guarda con una Server Action.
 
@@ -224,8 +221,8 @@ Genéricos, sin nombres de empresas reales. Solicitantes: Yo, Laura P., Andrés 
 ## Hito M3b · Pendientes
 Insertar en `docs/04-plan-de-construccion.md` después de M3.
 - Migración `0002`, tipos, Server Actions y funciones de dominio con tests.
-- Pantalla `/pendientes` completa: compositor, pastillas, secciones, tarjetas, panel lateral y filtros.
+- Pantalla `/pendientes` completa: compositor, pastillas, secciones, tarjetas a todo el ancho y filtros.
 - Edición en línea, eliminar con "Deshacer", estados vacío, cargando y error.
 - Ajuste de la barra superior y de la búsqueda global.
 
-**Listo cuando:** escribir un pendiente y presionar Enter lo muestra en su sección al instante; marcarlo actualiza el avance de hoy sin recargar; filtrar por una persona o por un proyecto deja solo sus tarjetas; todos los casos de prueba de dominio pasan; y la pantalla coincide con este documento.
+**Listo cuando:** escribir un pendiente y presionar Enter lo muestra en su sección al instante; marcarlo lo tacha sin recargar y un clic en la tarjeta lo abre; filtrar por una persona o por un proyecto deja solo sus tarjetas; todos los casos de prueba de dominio pasan; y la pantalla coincide con este documento.

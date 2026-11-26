@@ -15,24 +15,18 @@ export default function PendientesPage() {
 function PendientesSkeleton() {
   const block = "animate-pulse rounded-card bg-surface";
   return (
-    <main id="contenido" aria-busy="true" aria-label="Cargando pendientes" className="mx-auto flex w-full max-w-[1376px] flex-col gap-5 px-4 py-5 sm:px-8 sm:py-7">
+    <main id="contenido" aria-busy="true" aria-label="Cargando pendientes" className="mx-auto flex w-full max-w-[1600px] flex-col gap-5 px-4 py-5 sm:px-8 sm:py-7">
       <div className="flex flex-col gap-2">
         <div className={`${block} h-4 w-40`} />
         <div className={`${block} h-9 w-56`} />
       </div>
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,380px)]">
-        <div className="flex flex-col gap-[18px]">
-          <div className={`${block} h-[120px]`} />
-          <div className={`${block} h-9 w-[420px] max-w-full`} />
-          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 min-[1280px]:grid-cols-3">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className={`${block} h-[132px]`} />
-            ))}
-          </div>
-        </div>
-        <div className="flex flex-col gap-4">
-          <div className={`${block} h-[150px]`} />
-          <div className={`${block} h-[180px]`} />
+      <div className="flex flex-col gap-[18px]">
+        <div className={`${block} h-[120px]`} />
+        <div className={`${block} h-9 w-[420px] max-w-full`} />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className={`${block} h-[124px]`} />
+          ))}
         </div>
       </div>
     </main>

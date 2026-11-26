@@ -19,20 +19,13 @@ import {
   hasContent,
   matchesDayFilter,
   olderDone,
-  NO_PROJECT_COLOR,
   NO_PROJECT_KEY,
-  progressToday,
-  projectColor,
-  requesterAvatar,
-  tallyByProject,
-  tallyByRequester,
   type DayFilter,
   type QuickTask,
   type SectionKey,
 } from "@/lib/domain/pendientes";
 import { Composer, type NewQuickTask } from "./Composer";
 import { EditDialog, type QuickTaskPatch } from "./EditDialog";
-import { ProgressCard, TallyCard } from "./SidePanel";
 import { TaskCard } from "./TaskCard";
 
 type Op =
@@ -112,9 +105,6 @@ export function PendientesBoard({
   const groups = useMemo(() => groupBySection(tasks, today), [tasks, today]);
   const counts = useMemo(() => dayCounts(tasks, today), [tasks, today]);
   const history = useMemo(() => olderDone(tasks, today), [tasks, today]);
-  const progress = useMemo(() => progressToday(tasks, today), [tasks, today]);
-  const byRequester = useMemo(() => tallyByRequester(tasks), [tasks]);
-  const byProject = useMemo(() => tallyByProject(tasks), [tasks]);
 
   const shown = groups
     .filter((g) => matchesDayFilter(g.key as SectionKey, dayFilter))
@@ -151,7 +141,7 @@ export function PendientesBoard({
       : [];
 
   const hasAny = groups.some((g) => g.tasks.length > 0) || history.length > 0;
-  const projectLabel = projectFilter === NO_PROJECT_KEY ? "Sin proyecto" : (byProject.find((p) => p.key === projectFilter)?.label ?? projects.find((p) => p.id === projectFilter)?.name ?? "proyecto");
+    const projectLabel = projectFilter === NO_PROJECT_KEY ? "Sin proyecto" : (projects.find((p) => p.id === projectFilter)?.name ?? "proyecto");
 
   function failIf(result: { ok: boolean; error?: string }) {
     if (!result.ok) toast(result.error ?? "No se pudo guardar el cambio", "error");
@@ -188,13 +178,6 @@ export function PendientesBoard({
     startTransition(async () => {
       apply({ type: "toggle", id: task.id, done, doneAt });
       failIf(await toggleQuickTask({ id: task.id, done }));
-    });
-  }
-
-  function rename(task: QuickTask, title: string) {
-    startTransition(async () => {
-      apply({ type: "patch", id: task.id, patch: { title } });
-      failIf(await updateQuickTask({ id: task.id, title }));
     });
   }
 
@@ -261,7 +244,6 @@ export function PendientesBoard({
       today={today}
       ownerName={ownerName}
       onToggle={() => toggle(task)}
-      onRename={(title) => rename(task, title)}
       onEdit={() => setEditing(task)}
       onDelete={() => requestRemove(task)}
     />
@@ -275,7 +257,7 @@ export function PendientesBoard({
   );
 
   return (
-    <main id="contenido" className="mx-auto flex w-full max-w-[1376px] flex-col gap-5 px-4 py-5 sm:px-8 sm:py-7">
+    <main id="contenido" className="mx-auto flex w-full max-w-[1600px] flex-col gap-5 px-4 py-5 sm:px-8 sm:py-7">
       <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
         <div>
           <p className="text-sm text-muted">{longDate}</p>
@@ -288,7 +270,7 @@ export function PendientesBoard({
         </label>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,380px)]">
+      <div className="flex flex-col">
         <div className="flex min-w-0 flex-col gap-[18px]">
           <Composer projects={projects} tags={tags} requesters={allRequesters} today={today} inputRef={composerRef} onAdd={add} />
 
@@ -309,6 +291,42 @@ export function PendientesBoard({
                 </button>
               );
             })}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2.5">
+            <label className="flex h-10 min-w-0 items-center gap-2 rounded-input border border-input-border bg-white px-2.5 sm:h-[38px]">
+              <span className="text-xs font-semibold text-muted">Pidió</span>
+              <select
+                aria-label="Pidió, filtrar pendientes"
+                value={requesterFilter ?? ""}
+                onChange={(e) => setRequesterFilter(e.target.value || null)}
+                className="min-w-0 max-w-[180px] bg-transparent text-base font-semibold outline-none sm:text-[13px]"
+              >
+                <option value="">Todos</option>
+                {allRequesters.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex h-10 min-w-0 items-center gap-2 rounded-input border border-input-border bg-white px-2.5 sm:h-[38px]">
+              <span className="text-xs font-semibold text-muted">Proyecto</span>
+              <select
+                aria-label="Proyecto, filtrar pendientes"
+                value={projectFilter ?? ""}
+                onChange={(e) => setProjectFilter(e.target.value || null)}
+                className="min-w-0 max-w-[200px] bg-transparent text-base font-semibold outline-none sm:text-[13px]"
+              >
+                <option value="">Todos</option>
+                <option value={NO_PROJECT_KEY}>Sin proyecto</option>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
           {filterTags.length > 0 && (
@@ -362,7 +380,7 @@ export function PendientesBoard({
                         </span>
                         {group.range && <span className="text-xs font-semibold text-muted">{group.range}</span>}
                       </div>
-                      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 min-[1280px]:grid-cols-3">
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                         {group.tasks.map((task) => renderCard(task))}
                       </div>
                     </section>
@@ -386,7 +404,7 @@ export function PendientesBoard({
               </h2>
               <p className="text-xs text-muted">Los pendientes que terminaste en días anteriores se guardan aquí; no se borran con el tiempo.</p>
               {historyOpen && (
-                <div id="hechos-anteriores" className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 min-[1280px]:grid-cols-3">
+                <div id="hechos-anteriores" className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                   {historyShown.map((task) => renderCard(task))}
                 </div>
               )}
@@ -394,44 +412,6 @@ export function PendientesBoard({
           )}
         </div>
 
-        <aside aria-label="Resumen de pendientes" className="flex min-w-0 flex-col gap-4">
-          <ProgressCard progress={progress} />
-          <TallyCard
-            title="Quién los pidió"
-            rows={byRequester}
-            active={requesterFilter}
-            onToggle={(key) => setRequesterFilter((cur) => (cur === key ? null : key))}
-            leading={(row) => {
-              const a = requesterAvatar(row.key, ownerName);
-              return (
-                <span
-                  aria-hidden
-                  className="flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-extrabold"
-                  style={{ backgroundColor: a.bg, color: a.ink }}
-                >
-                  {a.initials}
-                </span>
-              );
-            }}
-            barColor={() => "#00A859"}
-            empty="Sin pendientes abiertos."
-          />
-          <TallyCard
-            title="Por proyecto"
-            rows={byProject}
-            active={projectFilter}
-            onToggle={(key) => setProjectFilter((cur) => (cur === key ? null : key))}
-            leading={(row) => (
-              <span
-                aria-hidden
-                className="size-2.5 shrink-0 rounded-full"
-                style={{ backgroundColor: row.key === NO_PROJECT_KEY ? NO_PROJECT_COLOR : projectColor(row.key) }}
-              />
-            )}
-            barColor={(row) => (row.key === NO_PROJECT_KEY ? NO_PROJECT_COLOR : projectColor(row.key))}
-            empty="Sin pendientes abiertos."
-          />
-        </aside>
       </div>
 
       {confirmDelete && (
