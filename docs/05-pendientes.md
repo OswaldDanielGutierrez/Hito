@@ -70,6 +70,7 @@ Si hay filtro por proyecto o solicitante, aparece la fila "Filtrando por" con un
 En este orden: **Atrasados, Hoy, Mañana, Esta semana, Próxima semana, Sin fecha**. Solo se muestran las que tienen tarjetas.
 - Encabezado: título 16/800 + contador de abiertos (pastilla 12/700, fondo #EEF2F0) + rango de fechas (12/600 muted, tabular): Hoy "Mié 18/11", Mañana "Jue 19/11", Esta semana "Vie 20/11 – Dom 22/11", Próxima semana "Desde Lun 23/11".
 - **Atrasados** va en rojo: título y contador en #B42318, contador con fondo #FDECEA.
+- **Sin secciones:** todos los pendientes visibles van juntos en una sola cuadrícula, abiertos primero (atrasados, hoy, mañana, esta semana, próxima semana y sin fecha, en ese orden) y hechos al final. Cada tarjeta indica su fecha con la etiqueta de color (Hoy, Mañana, Atrasado…). Los hechos de días anteriores siguen en «Hechos anteriores».
 - Cuadrícula de 1 a 5 columnas según el ancho (ver Estructura), separación 12.
 - Toda la tarjeta es un enlace a `/pendientes/[id]` (el título es el enlace, estirado sobre la tarjeta); la casilla y el menú ⋯ quedan por encima y no navegan. Ya no hay edición del título en línea: el título se edita en «Editar detalles».
 

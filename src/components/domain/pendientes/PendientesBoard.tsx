@@ -120,6 +120,9 @@ export function PendientesBoard({
     })
     .filter((g) => g.tasks.length > 0);
 
+  // Todos juntos en una sola cuadrícula (sin secciones): abiertos primero, hechos al final.
+  const flat = [...shown.flatMap((g) => g.tasks.filter((t) => !t.done)), ...shown.flatMap((g) => g.tasks.filter((t) => t.done))];
+
   // Etiquetas con pendientes (o la activa), con cuántos pendientes abiertos tienen.
   const tagCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -367,25 +370,14 @@ export function PendientesBoard({
             ? empty("Aún no tienes pendientes", "Escribe el primero arriba.")
             : shown.length === 0 && historyShown.length === 0
               ? empty("No hay pendientes aquí", "Cambia el filtro o agrega uno nuevo arriba.")
-              : shown.map((group) => {
-                  const overdue = group.key === "overdue";
-                  return (
-                    <section key={group.key} aria-label={group.label} className="flex flex-col gap-3">
-                      <div className="flex flex-wrap items-center gap-2.5">
-                        <h2 className={`text-base font-extrabold ${overdue ? "text-danger" : ""}`}>{group.label}</h2>
-                        <span
-                          className={`rounded-pill px-2 py-0.5 text-xs font-bold ${overdue ? "bg-[#FDECEA] text-danger" : "bg-surface"}`}
-                        >
-                          {group.openCount}
-                        </span>
-                        {group.range && <span className="text-xs font-semibold text-muted">{group.range}</span>}
-                      </div>
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-                        {group.tasks.map((task) => renderCard(task))}
-                      </div>
-                    </section>
-                  );
-                })}
+              : flat.length > 0 && (
+                  <section
+                    aria-label="Pendientes"
+                    className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+                  >
+                    {flat.map((task) => renderCard(task))}
+                  </section>
+                )}
 
           {historyShown.length > 0 && (
             <section aria-label="Hechos anteriores" className="flex flex-col gap-3">
